@@ -255,13 +255,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a662ddc7ee0b22842b438242c94fb86e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _jumpForce: 550
+  _movementSpeed: 0.14
+  _runSpeed: 37.5
+  _ceilingCheck: {fileID: 1435981563}
   _groundCheck: {fileID: 1056509081}
   _groundLayerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
+  _airControl: 0
+  _horizontalInput: 0
   OnLandEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 542220380}
+        m_TargetAssemblyTypeName: Resources.Scripts.Player.PlayerMovement, Assembly-CSharp
+        m_MethodName: Print
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!58 &542220381
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -318,12 +336,12 @@ Rigidbody2D:
   m_UseAutoMass: 0
   m_Mass: 1
   m_LinearDrag: 0
-  m_AngularDrag: 0.05
-  m_GravityScale: 3
+  m_AngularDrag: 0
+  m_GravityScale: 2.5
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!1 &1056509080
 GameObject:
@@ -367,7 +385,7 @@ GameObject:
   - component: {fileID: 1364303487}
   - component: {fileID: 1364303486}
   m_Layer: 6
-  m_Name: Square
+  m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
