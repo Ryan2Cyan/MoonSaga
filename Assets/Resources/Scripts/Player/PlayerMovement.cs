@@ -6,6 +6,7 @@ using UnityEngine.Events;
 namespace Resources.Scripts.Player
 {
     public class PlayerMovement : MonoBehaviour{
+        [SerializeField] private playerMoveState _state = playerMoveState.Idle;
         [Range(0, 1000.0f)] [SerializeField] private float _jumpForce = 400f;
         [Range(0, 0.3f)] [SerializeField] private float _movementSpeed = 0.14f;
         [Range(0, 100f)] [SerializeField] private float _runSpeed = 37.5f;
@@ -13,32 +14,29 @@ namespace Resources.Scripts.Player
         [SerializeField] private Transform _ceilingCheck;
         [SerializeField] private Transform _groundCheck;
         [SerializeField] private LayerMask _groundLayerMask;
-        [SerializeField] private bool _airControl = false;
-        [SerializeField] private bool _isJumping = false;
         [SerializeField] private float _horizontalInput;
 
 
         private const float _groundedRadius = 0.2f;
-        private bool _isGrounded;
+        [SerializeField] private bool _isGrounded;
         public UnityEvent OnLandEvent;
         private Vector3 _velocity = Vector3.zero;
 
         private void Awake(){
-            
             // Fetch components:
             _rigidbody2D = GetComponent<Rigidbody2D>();
-            
-            if (OnLandEvent == null)
-                OnLandEvent = new UnityEvent();
+
+            OnLandEvent ??= new UnityEvent();
         }
 
         private void Update(){
             
+            // Update current state:
+            UpdateState(ref _state, _rigidbody2D, _isGrounded);
+
             // Process keyboard input:
             _horizontalInput = Input.GetAxisRaw("Horizontal") * _runSpeed;
-            if (Input.GetKeyDown(KeyCode.Space)){
-                _isJumping = true;
-            }
+
         }
 
         private void FixedUpdate(){
@@ -52,29 +50,31 @@ namespace Resources.Scripts.Player
                 _groundedRadius,
                 _groundLayerMask
             );
+            
             // Check if no ground is detected:
             if(collider2Ds.Length == 0)
-                _airControl = true;
-            foreach (var colliderArg in collider2Ds){
-                if (colliderArg.gameObject != gameObject)
+                _state = playerMoveState.AirControl;
+            
+            // Check all detected colliders for the ground:
+            foreach (Collider2D colliderArg in collider2Ds){
+                if (colliderArg.gameObject != gameObject){
                     _isGrounded = true;
-                else
-                    _airControl = true;
+                }
                 if (!wasGrounded){
                     // If the player has landed, call OnLand event:
                     OnLandEvent.Invoke();
-                    _airControl = false;
                 }
             }
             
             // Move the player based on input:
-            Move(_horizontalInput * Time.fixedDeltaTime, _isJumping);
+            Move(_horizontalInput * Time.fixedDeltaTime, ref _state);
         }
 
-        private void Move(float move, bool jump){
-
+        private void Move(float move, ref playerMoveState currentState){
+            
+            
             // Modify movement speed when the player is in the air:
-            if (_airControl){
+            if (_state == playerMoveState.AirControl){
                 move *= 1.2f;
             }
             
@@ -84,17 +84,47 @@ namespace Resources.Scripts.Player
             _rigidbody2D.velocity = Vector3.SmoothDamp(_rigidbody2D.velocity, targetVelocity,
                 ref _velocity, _movementSpeed);
             
-            // Check if the player could jump:
-            if (_isGrounded && jump){
+            // Check if the player jumped, if they did, apply force:
+            if (currentState == playerMoveState.Jump){
                 _isGrounded = false;
                 _rigidbody2D.AddForce(new Vector2(0.0f, _jumpForce));
+                _state = playerMoveState.AirControl;
+            }
+        }
+
+        private static void UpdateState(ref playerMoveState currentState, Rigidbody2D rb, bool grounded){
+
+            if (currentState == playerMoveState.Jump){
+                return;
+            }
+            
+            switch (grounded){
+                // Jump check:
+                case true when Input.GetKeyDown(KeyCode.Space):
+                    currentState = playerMoveState.Jump;
+                    return;
+                // Idle check:
+                case true when rb.velocity == Vector2.zero && currentState != playerMoveState.Jump:
+                    currentState = playerMoveState.Idle;
+                    return;
+                // Walking check:
+                case true when rb.velocity != Vector2.zero && currentState != playerMoveState.Jump:
+                    currentState = playerMoveState.Walking;
+                    return;
+                // Air control check:
+                case false:
+                    currentState = playerMoveState.AirControl;
+                    return;
             }
         }
 
         public void Print(){
             
-            _isJumping = false;
             Debug.Log("Landed");
         }
+    }
+
+    internal enum playerMoveState{
+        Idle, Walking, Running, Jump, AirControl 
     }
 }
