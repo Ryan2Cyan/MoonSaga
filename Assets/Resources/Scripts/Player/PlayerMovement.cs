@@ -104,11 +104,11 @@ namespace Resources.Scripts.Player
                     currentState = playerMoveState.Jump;
                     return;
                 // Idle check:
-                case true when rb.velocity == Vector2.zero && currentState != playerMoveState.Jump:
+                case true when rb.velocity == Vector2.zero:
                     currentState = playerMoveState.Idle;
                     return;
                 // Walking check:
-                case true when rb.velocity != Vector2.zero && currentState != playerMoveState.Jump:
+                case true when rb.velocity != Vector2.zero:
                     currentState = playerMoveState.Walking;
                     return;
                 // Air control check:
