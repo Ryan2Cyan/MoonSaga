@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Resources.Scripts.Player{
     public class EnergyBar : MonoBehaviour{
@@ -8,6 +9,7 @@ namespace Resources.Scripts.Player{
         [SerializeField] private bool _inLightCollider;
         [SerializeField] private GameObject[] _sceneLights;
         [SerializeField] private LineRenderer _lineRenderer;
+        [SerializeField] private Image _debugSymbol;
 
         private void Awake(){
             _sceneLights = GameObject.FindGameObjectsWithTag("Light");
@@ -23,6 +25,10 @@ namespace Resources.Scripts.Player{
                 // Check if the player is in line-of-sight of this light source:
                 RayCastLightCheck(inRangeLightSource, ref _inLightLOS);
             }
+
+            _debugSymbol.sprite = 
+                UnityEngine.Resources.Load<Sprite>(!_inLightLOS ? 
+                    "Sprites/MoonSaga-Symbols-dark" : "Sprites/MoonSaga-Symbols-light");
         }
         
         private IEnumerable<GameObject> FindLightsInRange(IEnumerable<GameObject> sceneLights, float maxDistance){
@@ -51,7 +57,6 @@ namespace Resources.Scripts.Player{
                 // Check for any game objects:
                 if (hitValue.transform.gameObject != null){
                         
-                    Debug.Log(hitValue.transform.gameObject.transform.name);
                     // If the ray hits a game object that is not a light, then exit:
                     if (!hitValue.transform.gameObject.CompareTag("Light")){
                         lineOfSight = false;
