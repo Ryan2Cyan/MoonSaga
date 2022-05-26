@@ -2,11 +2,20 @@
 // functions are general in application, and non-specific.
 
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Resources.Scripts.General
 {
     public class Utility
     {
+        // Set the base values for a slider:
+        public static void SetSlider(ref Slider slider, int minVal, int maxVal, int startVal){
+            slider.maxValue = maxVal;
+            slider.minValue = minVal;
+            slider.value = startVal;
+        }
+        
+        // Using a line renderer, draw a circle:
         public static void DrawCircle(ref LineRenderer circleRenderer, int steps, float radius){
 
             // Set steps (how many lines) of the circle:

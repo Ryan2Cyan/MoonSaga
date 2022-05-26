@@ -1,18 +1,37 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Utility = Resources.Scripts.General.Utility;
 
 namespace Resources.Scripts.Player{
     public class EnergyBar : MonoBehaviour{
+        
         [SerializeField] private float _lightDetectionDistance = 90.0f;
         [SerializeField] private bool _inLightLOS;
         [SerializeField] private bool _inLightCollider;
-        [SerializeField] private GameObject[] _sceneLights;
         [SerializeField] private LineRenderer _lineRenderer;
-        [SerializeField] private Image _debugSymbol;
+        [SerializeField] private Slider _shadowSlider;
+        [SerializeField] private GameObject[] _sceneLights;
+
+        private const int _maxValue = 100;
+        private const int _minValue = 0;
+        private const float _incrementDelay = 0.1f;
+        private float _incrementTimer;
 
         private void Awake(){
+            
+            // Fetch all lights in the scene:
             _sceneLights = GameObject.FindGameObjectsWithTag("Light");
+            
+            // Set values:
+            Utility.SetSlider(ref _shadowSlider, _minValue, _maxValue, _minValue);
+        }
+
+        private void Update(){
+            
+            // Update shadow meter:
+            UpdateShadowMeter(ref _shadowSlider, ref _incrementTimer, _incrementDelay,
+                _inLightLOS, _inLightCollider);
         }
 
         private void FixedUpdate(){
@@ -25,10 +44,6 @@ namespace Resources.Scripts.Player{
                 // Check if the player is in line-of-sight of this light source:
                 RayCastLightCheck(inRangeLightSource, ref _inLightLOS);
             }
-
-            _debugSymbol.sprite = 
-                UnityEngine.Resources.Load<Sprite>(!_inLightLOS ? 
-                    "Sprites/MoonSaga-Symbols-dark" : "Sprites/MoonSaga-Symbols-light");
         }
         
         private IEnumerable<GameObject> FindLightsInRange(IEnumerable<GameObject> sceneLights, float maxDistance){
@@ -66,6 +81,25 @@ namespace Resources.Scripts.Player{
                         lineOfSight = true; // Player is in line-of-sight of the light
                 }   
             }
+        }
+
+        private static void UpdateShadowMeter(ref Slider shadowSlider, ref float timer, float delay,
+            bool isLOSLight, bool isCollidingLight){
+
+            // Decrease timer:
+            timer -= Time.deltaTime;
+            
+            // Player in light - decrease value:
+            if (isLOSLight && isCollidingLight && timer <= 0.0f){
+                shadowSlider.value -= 1;
+                timer = delay;
+            }
+            // Player in shadow - increase value:
+            else if (timer <= 0.0f){
+                shadowSlider.value += 1;
+                timer = delay;
+            }
+            
         }
 
         private void OnTriggerEnter2D(Collider2D other){
