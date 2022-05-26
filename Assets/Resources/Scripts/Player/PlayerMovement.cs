@@ -1,3 +1,4 @@
+using System;
 using Resources.Scripts.General;
 using UnityEngine;
 using UnityEngine.Events;
@@ -9,7 +10,8 @@ namespace Resources.Scripts.Player
     public class PlayerMovement : MonoBehaviour{
         [SerializeField] private playerMoveState _state = playerMoveState.Idle;
         [Range(0, 1000.0f)] [SerializeField] private float _jumpForce = 100f;
-        [Range(0, 0.3f)] [SerializeField] private float _movementSpeed = 0.14f;
+        [Range(0, 1.0f)] [SerializeField] private float _accelerationSpeed = 0.14f;
+        [Range(0, 0.3f)] [SerializeField] private float _decelerationSpeed = 0.14f;
         [Range(0, 100f)] [SerializeField] private float _runSpeed = 37.5f;
         private Rigidbody2D _rigidbody2D;
         [SerializeField] private Transform _ceilingCheck;
@@ -25,8 +27,11 @@ namespace Resources.Scripts.Player
         [SerializeField] private float _jumpTimer;
         [SerializeField] private bool _isGrounded;
         [SerializeField] private bool _isFacingRight = true;
+        [SerializeField] private bool _jumpPress;
+        [SerializeField] private bool _jumpRelease;
         public UnityEvent OnLandEvent;
-        private Vector3 _velocity = Vector3.zero;
+        private Vector2 _velocity = Vector2.zero;
+        private Vector2 _lastVelocity = Vector2.zero;
 
 
         private void Awake(){
@@ -40,16 +45,12 @@ namespace Resources.Scripts.Player
 
         private void Update(){
             
-            // Process player input:
             ProcessInput();
-            
-            // Update current state:
-            UpdateState(ref _state, _rigidbody2D, _isGrounded);
-            
+            ProcessStateInput();
         }
 
         private void FixedUpdate(){
-
+            
             bool wasGrounded = _isGrounded;
             _isGrounded = false;
             
@@ -67,104 +68,162 @@ namespace Resources.Scripts.Player
                     if (colliderArg.gameObject != gameObject){
                         _isGrounded = true;
                     }
-
+            
                     if (!wasGrounded){
                         // If the player has landed, call OnLand event:
                         OnLandEvent.Invoke();
                     }
                 }
             }
-
-            // Move the player based on input:
-            Move(_horizontalInput * Time.fixedDeltaTime, ref _state);
+            
+            ProcessStateMovement();
         }
-        private void Move(float move, ref playerMoveState currentState){
-            
-            
-            // Modify movement speed when the player is in the air:
-            if (_state == playerMoveState.AirControl){
-                move *= 1.2f;
-            }
-            
-            // Check if the player needs to be flipped depending on move direction:
-            if (move > 0.0f && !_isFacingRight){ // Flip Right
-                transform.localScale = UtilityFunctions.Flip(transform.localScale, ref _isFacingRight);
-            }
-            else if (move < 0.0f && _isFacingRight){ // Flip Left
-                transform.localScale = UtilityFunctions.Flip(transform.localScale, ref _isFacingRight);
-            }
-                
-            // Move the character via target velocity:
-            Vector3 targetVelocity = new Vector2(move * 10.0f, _rigidbody2D.velocity.y);
-            // Apply smoothing:
-            _rigidbody2D.velocity = Vector3.SmoothDamp(_rigidbody2D.velocity, targetVelocity,
-                ref _velocity, _movementSpeed);
-            
-            // Change movement based on current state:
-            switch (currentState){
-                // Check if the player jumped, if they did, apply force:
-                case playerMoveState.Jump when _isGrounded:
-                    _rigidbody2D.AddForce(new Vector2(0.0f, _jumpForce));
-                    break;
-                // If player has released jump, reduce their y-axis velocity:
-                case playerMoveState.ReleaseJump:
-                    _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _rigidbody2D.velocity.y / 2.0f);
-                    _state = playerMoveState.AirControl;
-                    break;
-            }
-        }
-        private static void UpdateState(ref playerMoveState currentState, Rigidbody2D rb, bool grounded){
-
-            if (currentState == playerMoveState.Jump){
-                return;
-            }
-            
-            switch (grounded){
-                // Jump check:
-                case true when Input.GetKeyDown(KeyCode.Space):
-                    currentState = playerMoveState.Jump;
-                    return;
-                // Idle check:
-                case true when rb.velocity == Vector2.zero:
-                    currentState = playerMoveState.Idle;
-                    return;
-                // Walking check:
-                case true when rb.velocity != Vector2.zero:
-                    currentState = playerMoveState.Walking;
-                    return;
-            }
-        }
-
+        
         private void ProcessInput(){
             
             // Inputs Variables:
-            bool _jumpPress = Input.GetButtonDown("Jump");
-            bool _jumpRelease = Input.GetButtonUp("Jump");
+            _jumpPress = Input.GetButtonDown("Jump") || _jumpPress;
+            _jumpRelease = Input.GetButtonUp("Jump") || _jumpRelease;
             _horizontalInput = Input.GetAxisRaw("Horizontal") * _runSpeed;
+        }
+        private void ResetInput(){
+            _jumpPress = false;
+            _jumpRelease = false;
+        }
+        
+        private void IdleInput(){
             
-            // JUMP inputs:
-            
+            // Decrement time till player can jump again:
             if(_isGrounded)
                 _jumpTimer -= Time.deltaTime;
             
-            // Player jumped:
-            if (_jumpPress && _jumpTimer <= 0.0f){
+            // If the player is moving [Walking]:
+            if (_horizontalInput < 0.0f || _horizontalInput > 0.0f && _isGrounded)
+                _state = playerMoveState.Walking;
+
+            // If player presses jump button [Jump]:
+            if (Input.GetButtonDown("Jump")){
+                _state = playerMoveState.Jump;
+                _maxAirTimer = _maxAirTime;
+            }
+        }
+        private void IdleMovement(){
+            ApplyNormMovement(8.0f);
+        }
+        private void WalkingInput(){
+            
+            // Decrement time till player can jump again:
+            if(_isGrounded)
+                _jumpTimer -= Time.deltaTime;
+            
+            // If the player isn't moving [Idle]:
+            if (_horizontalInput == 0.0f && _isGrounded)
+                _state = playerMoveState.Idle;
+            
+            // If player presses jump button [Jump]:
+            if (Input.GetButtonDown("Jump") && _jumpTimer <= 0.0f){
                 _state = playerMoveState.Jump;
                 _jumpTimer = _jumpDelay;
                 _maxAirTimer = _maxAirTime;
             }
-
-            // Player is in air:
-            if (_state == playerMoveState.Jump){
-                _maxAirTimer -= Time.deltaTime;
-                if (_maxAirTimer < 0.0f){
-                    _state = playerMoveState.ReleaseJump;
-                }
+        }
+        private void WalkingMovement(){
+            
+            ApplyNormMovement(8.0f);
+        }
+        private void JumpInput(){
+            
+            _maxAirTimer -= Time.deltaTime;
+            
+            // If jump time expires [Air Control]:
+            if (_maxAirTimer < 0.0f){
+                _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _rigidbody2D.velocity.y / 2.0f);
+                _state = playerMoveState.AirControl;
             }
             
             // Player releases jump:
-            if (_jumpRelease && _state == playerMoveState.Jump)
-                _state = playerMoveState.ReleaseJump;
+            if (_jumpRelease){
+                _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _rigidbody2D.velocity.y / 2.0f);
+                _state = playerMoveState.AirControl;
+            }
+        }
+        private void JumpMovement(){
+            
+            // Apply force when jumping:
+            if (_isGrounded && _jumpPress)
+                _rigidbody2D.AddForce(new Vector2(_rigidbody2D.velocity.x, _jumpForce));
+            ApplyNormMovement(3.0f);
+        }
+        private void AirControlInput(){
+            
+            // If player touches the ground [Idle]:
+            if (_isGrounded && _rigidbody2D.velocity.x == 0.0f)
+                _state = playerMoveState.Idle;
+            
+            // If player touches the ground [Walking]:
+            if (_isGrounded && _rigidbody2D.velocity.x != 0.0f)
+                _state = playerMoveState.Walking;
+        }
+        private void AirControlMovement(){
+            
+            ApplyNormMovement(3.0f);
+        }
+        private void ProcessStateInput(){
+            switch(_state) {
+                case playerMoveState.Idle:
+                    IdleInput();
+                    break;
+                case playerMoveState.Walking:
+                    WalkingInput();
+                    break;
+                case playerMoveState.Jump:
+                    JumpInput();
+                    break;
+                case playerMoveState.AirControl:
+                    AirControlInput();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        private void ProcessStateMovement(){
+            switch(_state) {
+                case playerMoveState.Idle:
+                    IdleMovement();
+                    break;
+                case playerMoveState.Walking:
+                    WalkingMovement();
+                    break;
+                case playerMoveState.Jump:
+                    JumpMovement();
+                    break;
+                case playerMoveState.AirControl:
+                    AirControlMovement();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            ResetInput();
+        }
+        private void ApplyNormMovement(float movementSpeed){
+            
+            // Calculate direction:
+            float direction = _horizontalInput * Time.fixedDeltaTime;
+            
+            // Check if the player needs to be flipped depending on move direction:
+            if (direction > 0.0f && !_isFacingRight) // Flip Right
+                transform.localScale = UtilityFunctions.Flip(transform.localScale, ref _isFacingRight);
+            
+            else if (direction < 0.0f && _isFacingRight) // Flip Left
+                transform.localScale = UtilityFunctions.Flip(transform.localScale, ref _isFacingRight);
+            
+            // Move the character via target velocity:
+            Vector3 targetVelocity = new Vector2(direction * movementSpeed, _rigidbody2D.velocity.y);
+            
+            // Apply smoothing (different for acceleration and deceleration):
+            _rigidbody2D.velocity = Vector2.SmoothDamp(_rigidbody2D.velocity, targetVelocity,
+                ref _velocity, _accelerationSpeed);
         }
         
         // NOTE: This function is for debugging purposes:
@@ -175,6 +234,6 @@ namespace Resources.Scripts.Player
     }
 
     internal enum playerMoveState{
-        Idle, Walking, Running, Jump, ReleaseJump, AirControl 
+        Idle, Walking, Jump, AirControl 
     }
 }
