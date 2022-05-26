@@ -1,3 +1,4 @@
+using Resources.Scripts.General;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -19,13 +20,16 @@ namespace Resources.Scripts.Player
 
         private const float _groundedRadius = 0.2f;
         [SerializeField] private bool _isGrounded;
+        [SerializeField] private bool _isFacingRight = true;
         public UnityEvent OnLandEvent;
         private Vector3 _velocity = Vector3.zero;
 
         private void Awake(){
+            
             // Fetch components:
             _rigidbody2D = GetComponent<Rigidbody2D>();
 
+            // Set values:
             OnLandEvent ??= new UnityEvent();
         }
 
@@ -36,7 +40,6 @@ namespace Resources.Scripts.Player
 
             // Process keyboard input:
             _horizontalInput = Input.GetAxisRaw("Horizontal") * _runSpeed;
-
         }
 
         private void FixedUpdate(){
@@ -78,6 +81,14 @@ namespace Resources.Scripts.Player
                 move *= 1.2f;
             }
             
+            // Check if the player needs to be flipped depending on move direction:
+            if (move > 0.0f && !_isFacingRight){ // Flip Right
+                transform.localScale = UtilityFunctions.Flip(transform.localScale, ref _isFacingRight);
+            }
+            else if (move < 0.0f && _isFacingRight){ // Flip Left
+                transform.localScale = UtilityFunctions.Flip(transform.localScale, ref _isFacingRight);
+            }
+                
             // Move the character via target velocity:
             Vector3 targetVelocity = new Vector2(move * 10.0f, _rigidbody2D.velocity.y);
             // Apply smoothing:
@@ -91,7 +102,6 @@ namespace Resources.Scripts.Player
                 _state = playerMoveState.AirControl;
             }
         }
-
         private static void UpdateState(ref playerMoveState currentState, Rigidbody2D rb, bool grounded){
 
             if (currentState == playerMoveState.Jump){
@@ -117,7 +127,8 @@ namespace Resources.Scripts.Player
                     return;
             }
         }
-
+        
+        // NOTE: This function is for debugging purposes:
         public void Print(){
             
             Debug.Log("Landed");

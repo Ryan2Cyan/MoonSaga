@@ -6,8 +6,23 @@ using UnityEngine.UI;
 
 namespace Resources.Scripts.General
 {
-    public class Utility
+    public static class UtilityFunctions
     {
+        // Flip object:
+        public static Vector3 Flip(Vector3 localScaleArg, ref bool facingRight){
+            
+            // Inverse bool value:
+            facingRight = !facingRight;
+            
+            // Multiply x local scale by -1:
+            return new Vector3(localScaleArg.x * -1.0f, localScaleArg.y, localScaleArg.z);
+        }
+        public static Vector3 Flip(Vector3 localScaleArg){
+            
+            // Multiply x local scale by -1:
+            return new Vector3(localScaleArg.x * -1.0f, localScaleArg.y, localScaleArg.z);
+        }
+        
         // Set the base values for a slider:
         public static void SetSlider(ref Slider slider, int minVal, int maxVal, int startVal){
             slider.maxValue = maxVal;

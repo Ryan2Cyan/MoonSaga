@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Utility = Resources.Scripts.General.Utility;
+using UtilityFunctions = Resources.Scripts.General.UtilityFunctions;
 
 namespace Resources.Scripts.Player{
-    public class EnergyBar : MonoBehaviour{
+    public class ShadowMeter : MonoBehaviour{
         
         [SerializeField] private float _lightDetectionDistance = 90.0f;
         [SerializeField] private bool _inLightLOS;
@@ -24,7 +24,7 @@ namespace Resources.Scripts.Player{
             _sceneLights = GameObject.FindGameObjectsWithTag("Light");
             
             // Set values:
-            Utility.SetSlider(ref _shadowSlider, _minValue, _maxValue, _minValue);
+            UtilityFunctions.SetSlider(ref _shadowSlider, _minValue, _maxValue, _minValue);
         }
 
         private void Update(){
