@@ -152,7 +152,7 @@ namespace Resources.Scripts.Player
             // Apply force when jumping:
             if (_isGrounded && _jumpPress)
                 _rigidbody2D.AddForce(new Vector2(_rigidbody2D.velocity.x, _jumpForce));
-            ApplyNormMovement(3.0f);
+            ApplyNormMovement(7.0f);
         }
         private void AirControlInput(){
             
@@ -166,7 +166,7 @@ namespace Resources.Scripts.Player
         }
         private void AirControlMovement(){
             
-            ApplyNormMovement(3.0f);
+            ApplyNormMovement(7.0f);
         }
         private void ProcessStateInput(){
             switch(_state) {

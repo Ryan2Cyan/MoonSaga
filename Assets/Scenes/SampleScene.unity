@@ -476,7 +476,7 @@ MonoBehaviour:
   m_BlendStyleIndex: 1
   m_FalloffIntensity: 0.609
   m_Color: {r: 0.37019405, g: 0.46978277, b: 0.5566038, a: 1}
-  m_Intensity: 0.3
+  m_Intensity: 0.25
   m_LightVolumeIntensity: 1
   m_LightVolumeIntensityEnabled: 0
   m_ApplyToSortingLayers: 00000000
@@ -969,9 +969,10 @@ MonoBehaviour:
   _lightDetectionDistance: 90
   _inLightLOS: 0
   _inLightCollider: 0
-  _lineRenderer: {fileID: 542220378}
   _shadowSlider: {fileID: 90006418}
   _sceneLights: []
+  _incrementValue: 6
+  _decrementValue: 1
 --- !u!1 &780222565
 GameObject:
   m_ObjectHideFlags: 0
