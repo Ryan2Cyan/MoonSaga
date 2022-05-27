@@ -222,8 +222,9 @@ namespace Resources.Scripts.Player
             Vector3 targetVelocity = new Vector2(direction * movementSpeed, _rigidbody2D.velocity.y);
             
             // Apply smoothing (different for acceleration and deceleration):
-            _rigidbody2D.velocity = Vector2.SmoothDamp(_rigidbody2D.velocity, targetVelocity,
-                ref _velocity, _accelerationSpeed);
+            // _rigidbody2D.velocity = Vector2.SmoothDamp(_rigidbody2D.velocity, targetVelocity,
+            //     ref _velocity, _accelerationSpeed);
+            _rigidbody2D.velocity = targetVelocity;
         }
         
         // NOTE: This function is for debugging purposes:
