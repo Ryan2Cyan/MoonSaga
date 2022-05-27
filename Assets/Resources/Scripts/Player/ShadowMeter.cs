@@ -35,13 +35,13 @@ namespace Resources.Scripts.Player{
         }
 
         private void FixedUpdate(){
-            _inLightLOS = false;
+            // _inLightLOS = false;
             
-            // Cast a ray from player to in-range light source:
-            foreach (GameObject inRangeLightSource in FindLightsInRange()){
-                // Check if the player is in line-of-sight of this light source:
-                RayCastLightCheck(inRangeLightSource);
-            }
+            // // Cast a ray from player to in-range light source:
+            // foreach (GameObject inRangeLightSource in FindLightsInRange()){
+            //     // Check if the player is in line-of-sight of this light source:
+            //     RayCastLightCheck(inRangeLightSource);
+            // }
         }
         
         private IEnumerable<GameObject> FindLightsInRange(){
@@ -87,7 +87,7 @@ namespace Resources.Scripts.Player{
             _incrementTimer -= Time.deltaTime;
 
             // Player in light - decrease value:
-            if (_inLightLOS && _inLightCollider && _incrementTimer <= 0.0f){
+            if (_inLightCollider && _incrementTimer <= 0.0f){
                 _shadowSlider.value -= _decrementValue;
                 _incrementTimer = _incrementDelay;
             }
