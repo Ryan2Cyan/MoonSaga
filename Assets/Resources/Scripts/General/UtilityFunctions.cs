@@ -55,5 +55,51 @@ namespace Resources.Scripts.General
                 circleRenderer.SetPosition(currentStep, currentPosition);
             }
         }
+        
+        // Lerp between two colors over time:
+        public static Color TwoColorLerpOverTime(Color arg, Color original, Color target, float lerpSpeed,
+            ref bool lerpTarget, ref float timer, float lerpTime){
+
+            // If current color != target, lerp to target color:
+            if (lerpTarget){
+                arg = Color.Lerp(arg, target, lerpSpeed * Time.deltaTime);
+                timer -= Time.deltaTime;
+                if (arg == target || timer <= 0.0f){
+                    lerpTarget = false;
+                    timer = lerpTime;
+                }
+            }
+            
+            // If current color == target, lerp to original color:
+            if (!lerpTarget){
+                arg = Color.Lerp(arg, original, lerpSpeed * Time.deltaTime);
+                timer -= Time.deltaTime;
+                if (arg == original || timer <= 0.0f){
+                    lerpTarget = true;
+                    timer = lerpTime;
+                }
+            }
+
+            return arg;
+        }
+        public static Color TwoColorLerpOverTime(Color arg, Color original, Color target, float lerpSpeed,
+            ref bool lerpTarget){
+            
+            // If current color != target, lerp to target color:
+            if (lerpTarget){
+                arg = Color.Lerp(arg, target, lerpSpeed * Time.deltaTime);
+                if (arg == target)
+                    lerpTarget = false;
+            }
+            
+            // If current color == target, lerp to original color:
+            if (!lerpTarget){
+                arg = Color.Lerp(arg, original, lerpSpeed * Time.deltaTime);
+                if (arg == original)
+                    lerpTarget = true;
+            }
+
+            return arg;
+        }
     }
 }
