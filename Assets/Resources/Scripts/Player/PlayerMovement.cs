@@ -8,10 +8,9 @@ using UnityEngine.Events;
 namespace Resources.Scripts.Player
 {
     public class PlayerMovement : MonoBehaviour{
-        [SerializeField] private playerMoveState _state = playerMoveState.Idle;
+        
+        [SerializeField] internal playerMoveState _state = playerMoveState.Idle;
         [Range(0, 1000.0f)] [SerializeField] private float _jumpForce = 100f;
-        // [Range(0, 1.0f)] [SerializeField] private float _accelerationSpeed = 0.14f;
-        // [Range(0, 0.3f)] [SerializeField] private float _decelerationSpeed = 0.14f;
         [Range(0, 100f)] [SerializeField] private float _runSpeed = 37.5f;
         private Rigidbody2D _rigidbody2D;
         [SerializeField] private Transform _ceilingCheck;
@@ -30,7 +29,8 @@ namespace Resources.Scripts.Player
         [SerializeField] private bool _jumpPress;
         [SerializeField] private bool _jumpRelease;
         public UnityEvent OnLandEvent;
-        // private Vector2 _velocity = Vector2.zero;
+        
+        
 
 
         private void Awake(){
@@ -128,6 +128,7 @@ namespace Resources.Scripts.Player
         }
         private void WalkingMovement(){
             
+            // Calc movement from input:
             ApplyNormMovement(8.0f);
         }
         private void JumpInput(){
