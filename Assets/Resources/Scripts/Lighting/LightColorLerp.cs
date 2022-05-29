@@ -5,13 +5,13 @@ using UnityEngine.Experimental.Rendering.Universal;
 namespace Resources.Scripts.Lighting{
     public class LightColorLerp : MonoBehaviour{
 
+        [SerializeField] private float _lerpTime = 5.0f;
         [SerializeField] private float _lerpSpeed;
         [SerializeField] private Light2D _light;
         [SerializeField] private Color _targetColor;
         private Color _originalColor;
-        [SerializeField] private bool _lerpTarget = true;
-        [SerializeField] private float _lerpTimer;
-        [SerializeField] private float _lerpTime = 5.0f;
+        private bool _lerpTarget = true;
+        private float _lerpTimer;
 
         private void Awake(){
             _originalColor = _light.color;
