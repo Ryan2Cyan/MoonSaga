@@ -10,6 +10,8 @@ namespace Resources.Scripts.Player{
         
         // Property Indexes:
         private static readonly int Walk = Animator.StringToHash("Walk");
+        private static readonly int Jump = Animator.StringToHash("Jump");
+        private static readonly int Falling = Animator.StringToHash("Falling");
 
 
         private void Update(){
@@ -20,14 +22,26 @@ namespace Resources.Scripts.Player{
             ProcessStateAnimation();
         }
 
-        private void IdleAnimation(){
+        private void ResetAnimator(){
             _animator.SetBool(Walk, false);
+            _animator.SetBool(Jump, false);
+            _animator.SetBool(Falling, false);
+        }
+
+        private void IdleAnimation(){
         }
         private void WalkingAnimation(){
             _animator.SetBool(Walk, true);
         }
+        private void JumpAnimation(){
+            _animator.SetBool(Jump, true);
+        }
+        private void AirControlAnimation(){
+            _animator.SetBool(Falling, true);
+        }
         
         private void ProcessStateAnimation(){
+            ResetAnimator();
             switch(_state) {
                 case playerMoveState.Idle:
                     IdleAnimation();
@@ -36,10 +50,10 @@ namespace Resources.Scripts.Player{
                     WalkingAnimation();
                     break;
                 case playerMoveState.Jump:
-                    
+                    JumpAnimation();
                     break;
                 case playerMoveState.AirControl:
-                    
+                    AirControlAnimation();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
