@@ -12,6 +12,7 @@ namespace Resources.Scripts.Player{
         private static readonly int Walk = Animator.StringToHash("Walk");
         private static readonly int Jump = Animator.StringToHash("Jump");
         private static readonly int Falling = Animator.StringToHash("Falling");
+        private static readonly int Land = Animator.StringToHash("Land");
 
 
         private void Update(){
@@ -26,6 +27,7 @@ namespace Resources.Scripts.Player{
             _animator.SetBool(Walk, false);
             _animator.SetBool(Jump, false);
             _animator.SetBool(Falling, false);
+            _animator.SetBool(Land, false);
         }
 
         private void IdleAnimation(){
@@ -38,6 +40,9 @@ namespace Resources.Scripts.Player{
         }
         private void AirControlAnimation(){
             _animator.SetBool(Falling, true);
+        }
+        private void LandAnimation(){
+            _animator.SetBool(Land, true);
         }
         
         private void ProcessStateAnimation(){
@@ -54,6 +59,9 @@ namespace Resources.Scripts.Player{
                     break;
                 case playerMoveState.AirControl:
                     AirControlAnimation();
+                    break;
+                case playerMoveState.Land:
+                    LandAnimation();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
