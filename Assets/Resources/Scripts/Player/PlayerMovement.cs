@@ -15,19 +15,19 @@ namespace Resources.Scripts.Player
         private Rigidbody2D _rigidbody2D;
         [SerializeField] private Transform _ceilingCheck;
         [SerializeField] private Transform _groundCheck;
+        private const float _groundedRadius = 0.2f;
         [SerializeField] private LayerMask _groundLayerMask;
         [SerializeField] private float _horizontalInput;
 
 
         private const float _landDelay = 0.1f;
         private float _landTimer = _landDelay;
-        private const float _groundedRadius = 0.2f;
         private const float _jumpDelay = 0.05f;
         private const float _maxAirTime = 0.5f;
         private float _maxAirTimer;
-        [SerializeField] private float _jumpTimer;
+        private float _jumpTimer;
         [SerializeField] private bool _isGrounded;
-        [SerializeField] private bool _isFacingRight = true;
+        [SerializeField] internal bool _isFacingRight = true;
         [SerializeField] private bool _jumpPress;
         [SerializeField] private bool _jumpRelease;
         public UnityEvent OnLandEvent;
@@ -158,7 +158,6 @@ namespace Resources.Scripts.Player
             // If player touches the ground [Land]:
             if (_isGrounded){
                 _state = playerMoveState.Land;
-                Debug.Log("Spawn Leaves");
                 Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/PFX/Celestial_Grove/Land-Leaves"),
                     _groundCheck.position,
                     Quaternion.identity);
@@ -192,7 +191,6 @@ namespace Resources.Scripts.Player
                 _maxAirTimer = _maxAirTime;
             }
         }
-        
         private void ProcessStateInput(){
             switch(_state) {
                 case playerMoveState.Idle:
