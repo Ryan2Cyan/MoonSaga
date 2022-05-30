@@ -12,11 +12,11 @@ namespace Resources.Scripts.Player{
         [SerializeField] private Slider _shadowSlider;
         [SerializeField] private GameObject[] _sceneLights;
 
-        [SerializeField] private int _incrementValue = 1;
-        [SerializeField] private int _decrementValue = 1;
+        [SerializeField] private int _shadowValue = 1;
+        [SerializeField] private int _lightValue = 1;
         private const int _maxValue = 100;
         private const int _minValue = 0;
-        private const float _incrementDelay = 0.1f;
+        [SerializeField] private float _incrementDelay = 0.1f;
         private float _incrementTimer;
 
         private void Awake(){
@@ -86,14 +86,14 @@ namespace Resources.Scripts.Player{
             // Decrease timer:
             _incrementTimer -= Time.deltaTime;
 
-            // Player in light - decrease value:
+            // Player in light:
             if (_inLightCollider && _inLightLOS && _incrementTimer <= 0.0f){
-                _shadowSlider.value -= _decrementValue;
+                _shadowSlider.value += _lightValue;
                 _incrementTimer = _incrementDelay;
             }
-            // Player in shadow - increase value:
+            // Player in shadow:
             else if (_incrementTimer <= 0.0f){
-                _shadowSlider.value += _incrementValue;
+                _shadowSlider.value += _shadowValue;
                 _incrementTimer = _incrementDelay;
             }
         }

@@ -15,17 +15,19 @@ namespace Resources.Scripts.Player
         private Rigidbody2D _rigidbody2D;
         [SerializeField] private Transform _ceilingCheck;
         [SerializeField] private Transform _groundCheck;
+        private const float _groundedRadius = 0.2f;
         [SerializeField] private LayerMask _groundLayerMask;
         [SerializeField] private float _horizontalInput;
 
 
-        private const float _groundedRadius = 0.2f;
+        private const float _landDelay = 0.1f;
+        private float _landTimer = _landDelay;
         private const float _jumpDelay = 0.05f;
         private const float _maxAirTime = 0.5f;
         private float _maxAirTimer;
-        [SerializeField] private float _jumpTimer;
+        private float _jumpTimer;
         [SerializeField] private bool _isGrounded;
-        [SerializeField] private bool _isFacingRight = true;
+        [SerializeField] internal bool _isFacingRight = true;
         [SerializeField] private bool _jumpPress;
         [SerializeField] private bool _jumpRelease;
         public UnityEvent OnLandEvent;
@@ -37,9 +39,6 @@ namespace Resources.Scripts.Player
             
             // Fetch components:
             _rigidbody2D = GetComponent<Rigidbody2D>();
-
-            // Set values:
-            OnLandEvent ??= new UnityEvent();
         }
 
         private void Update(){
@@ -156,17 +155,41 @@ namespace Resources.Scripts.Player
         }
         private void AirControlInput(){
             
-            // If player touches the ground [Idle]:
-            if (_isGrounded && _rigidbody2D.velocity.x == 0.0f)
-                _state = playerMoveState.Idle;
-            
-            // If player touches the ground [Walking]:
-            if (_isGrounded && _rigidbody2D.velocity.x != 0.0f)
-                _state = playerMoveState.Walking;
+            // If player touches the ground [Land]:
+            if (_isGrounded){
+                _state = playerMoveState.Land;
+                Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/PFX/Celestial_Grove/Land-Leaves"),
+                    _groundCheck.position,
+                    Quaternion.identity);
+            }
         }
         private void AirControlMovement(){
             
             ApplyNormMovement(7.0f);
+        }
+        private void LandInput(){
+
+            _landTimer -= Time.deltaTime;
+
+            // Amount of time the player can be in the Land state is finished:
+            if (_landTimer <= 0.0f){
+                _state = playerMoveState.Idle;
+                _landTimer = _landDelay;
+            }
+
+                // Decrement time till player can jump again:
+            if(_isGrounded)
+                _jumpTimer -= Time.deltaTime;
+            
+            // If the player is moving [Walking]:
+            if (_horizontalInput < 0.0f || _horizontalInput > 0.0f && _isGrounded)
+                _state = playerMoveState.Walking;
+
+            // If player presses jump button [Jump]:
+            if (Input.GetButtonDown("Jump")){
+                _state = playerMoveState.Jump;
+                _maxAirTimer = _maxAirTime;
+            }
         }
         private void ProcessStateInput(){
             switch(_state) {
@@ -181,6 +204,9 @@ namespace Resources.Scripts.Player
                     break;
                 case playerMoveState.AirControl:
                     AirControlInput();
+                    break;
+                case playerMoveState.Land:
+                    LandInput();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -199,6 +225,8 @@ namespace Resources.Scripts.Player
                     break;
                 case playerMoveState.AirControl:
                     AirControlMovement();
+                    break;
+                case playerMoveState.Land:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -227,14 +255,9 @@ namespace Resources.Scripts.Player
             _rigidbody2D.velocity = targetVelocity;
         }
         
-        // NOTE: This function is for debugging purposes:
-        public void Print(){
-            
-            Debug.Log("Landed");
-        }
     }
 
     internal enum playerMoveState{
-        Idle, Walking, Jump, AirControl 
+        Idle, Walking, Jump, AirControl, Land
     }
 }

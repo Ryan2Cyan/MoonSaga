@@ -15,7 +15,7 @@ TagManager:
   - Ground
   - Light
   - MidGround
-  - 
+  - Background
   - 
   - 
   - 
@@ -39,6 +39,33 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Far-Background
+    uniqueID: 3945777407
+    locked: 0
+  - name: Mid-Background
+    uniqueID: 3370799769
+    locked: 0
+  - name: Close-Background
+    uniqueID: 1991236169
+    locked: 0
+  - name: Far-Midground
+    uniqueID: 68424529
+    locked: 0
+  - name: Mid-Midground
+    uniqueID: 2846520405
+    locked: 0
+  - name: Close-Midground
+    uniqueID: 2213347963
+    locked: 0
+  - name: Far-Foreground
+    uniqueID: 3390807799
+    locked: 0
+  - name: Mid-Foreground
+    uniqueID: 710396951
+    locked: 0
+  - name: Close-Foreground
+    uniqueID: 2108887989
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
