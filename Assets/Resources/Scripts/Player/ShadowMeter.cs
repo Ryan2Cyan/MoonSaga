@@ -7,8 +7,8 @@ namespace Resources.Scripts.Player{
     public class ShadowMeter : MonoBehaviour{
         
         [SerializeField] private float _lightDetectionDistance = 90.0f;
-        [SerializeField] private bool _inLightLOS;
-        [SerializeField] private bool _inLightCollider;
+        [SerializeField] internal bool _inLightLOS;
+        [SerializeField] internal bool _inLightCollider;
         [SerializeField] private Slider _shadowSlider;
         [SerializeField] private GameObject[] _sceneLights;
 

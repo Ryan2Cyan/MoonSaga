@@ -10,6 +10,7 @@ namespace Resources.Scripts.Player
     public class PlayerMovement : MonoBehaviour{
         
         [SerializeField] internal playerMoveState _state = playerMoveState.Idle;
+        [SerializeField] private ShadowMeter _shadowMeterScript;
         [Range(0, 1000.0f)] [SerializeField] private float _jumpForce = 100f;
         [Range(0, 100f)] [SerializeField] private float _runSpeed = 37.5f;
         private Rigidbody2D _rigidbody2D;
@@ -88,7 +89,6 @@ namespace Resources.Scripts.Player
             _jumpPress = false;
             _jumpRelease = false;
         }
-        
         private void IdleInput(){
             
             // Decrement time till player can jump again:
@@ -158,9 +158,20 @@ namespace Resources.Scripts.Player
             // If player touches the ground [Land]:
             if (_isGrounded){
                 _state = playerMoveState.Land;
-                Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/PFX/Celestial_Grove/Land-Leaves"),
-                    _groundCheck.position,
-                    Quaternion.identity);
+                // If player in light, spawn light leaves:
+                if (_shadowMeterScript._inLightCollider && _shadowMeterScript){
+                    Instantiate(UnityEngine.Resources.Load<GameObject>
+                            ("Prefabs/Environment/CelestialGrove/PFX/Land-Leaves-Light"),
+                        _groundCheck.position,
+                        Quaternion.identity);
+                }
+                // If player in light, spawn shadow leaves:
+                else{
+                    Instantiate(UnityEngine.Resources.Load<GameObject>
+                            ("Prefabs/Environment/CelestialGrove/PFX/Land-Leaves"),
+                        _groundCheck.position,
+                        Quaternion.identity);
+                }
             }
         }
         private void AirControlMovement(){
