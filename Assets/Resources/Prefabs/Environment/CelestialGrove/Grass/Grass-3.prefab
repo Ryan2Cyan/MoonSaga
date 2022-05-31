@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7816715544607021992}
   - component: {fileID: 7709342713261898024}
+  - component: {fileID: -5990987193983687649}
   - component: {fileID: 7816715544607021999}
   - component: {fileID: 7709342713261898021}
   - component: {fileID: 7709342713261898025}
@@ -50,6 +51,24 @@ MonoBehaviour:
   _lightMat: {fileID: 2100000, guid: 877a1454137ad4d40bb375d677d178a7, type: 2}
   _renderer: {fileID: 7816715544607021999}
   _inLight: 0
+  _lightDetectionScript: {fileID: -5990987193983687649}
+--- !u!114 &-5990987193983687649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7816715544607021998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f840dbb37ed86b6459f75092e2b39837, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _lightDetectionDistance: 90
+  _inLightLOS: 0
+  _inLightCollider: 0
+  _inLight: 0
+  _sceneLights: []
 --- !u!212 &7816715544607021999
 SpriteRenderer:
   m_ObjectHideFlags: 0

@@ -159,7 +159,7 @@ namespace Resources.Scripts.Player
             if (_isGrounded){
                 _state = playerMoveState.Land;
                 // If player in light, spawn light leaves:
-                if (_shadowMeterScript._inLightCollider && _shadowMeterScript){
+                if (_shadowMeterScript._lightDetectionScript._inLight){
                     Instantiate(UnityEngine.Resources.Load<GameObject>
                             ("Prefabs/Environment/CelestialGrove/PFX/Land-Leaves-Light"),
                         _groundCheck.position,
