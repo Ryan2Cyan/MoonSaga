@@ -13,6 +13,7 @@ namespace Resources.Scripts.Player{
         private static readonly int Jump = Animator.StringToHash("Jump");
         private static readonly int Falling = Animator.StringToHash("Falling");
         private static readonly int Land = Animator.StringToHash("Land");
+        private static readonly int Dash = Animator.StringToHash("Dash");
 
 
         private void Update(){
@@ -28,40 +29,29 @@ namespace Resources.Scripts.Player{
             _animator.SetBool(Jump, false);
             _animator.SetBool(Falling, false);
             _animator.SetBool(Land, false);
+            _animator.SetBool(Dash, false);
         }
-
-        private void IdleAnimation(){
-        }
-        private void WalkingAnimation(){
-            _animator.SetBool(Walk, true);
-        }
-        private void JumpAnimation(){
-            _animator.SetBool(Jump, true);
-        }
-        private void AirControlAnimation(){
-            _animator.SetBool(Falling, true);
-        }
-        private void LandAnimation(){
-            _animator.SetBool(Land, true);
-        }
+        
         
         private void ProcessStateAnimation(){
             ResetAnimator();
             switch(_state) {
                 case playerMoveState.Idle:
-                    IdleAnimation();
                     break;
                 case playerMoveState.Walking:
-                    WalkingAnimation();
+                    _animator.SetBool(Walk, true);
                     break;
                 case playerMoveState.Jump:
-                    JumpAnimation();
+                    _animator.SetBool(Jump, true);
                     break;
                 case playerMoveState.AirControl:
-                    AirControlAnimation();
+                    _animator.SetBool(Falling, true);
                     break;
                 case playerMoveState.Land:
-                    LandAnimation();
+                    _animator.SetBool(Land, true);
+                    break;
+                case playerMoveState.Dash:
+                    _animator.SetBool(Dash, true);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

@@ -12,6 +12,7 @@ namespace Resources.Scripts.Player
         [SerializeField] internal playerMoveState _state = playerMoveState.Idle;
         [SerializeField] private ShadowMeter _shadowMeterScript;
         [Range(0, 1000.0f)] [SerializeField] private float _jumpForce = 100f;
+        [Range(0, 100.0f)] [SerializeField] private float _dashSpeed = 100f;
         [Range(0, 100f)] [SerializeField] private float _runSpeed = 37.5f;
         private Rigidbody2D _rigidbody2D;
         [SerializeField] private Transform _ceilingCheck;
@@ -20,15 +21,26 @@ namespace Resources.Scripts.Player
         [SerializeField] private LayerMask _groundLayerMask;
         [SerializeField] private float _horizontalInput;
 
-
-        private const float _landDelay = 0.1f;
-        private float _landTimer = _landDelay;
-        private const float _maxAirTime = 0.5f;
-        private float _airTimer;
+        
+        // Orientation:
         [SerializeField] private bool _isGrounded;
         [SerializeField] internal bool _isFacingRight = true;
+        // Jump Values:
         [SerializeField] private bool _jumpPress;
         [SerializeField] private bool _jumpRelease;
+        // Air Control Values:
+        private const float _maxAirTime = 0.5f;
+        private float _airTimer;
+        // Land Values:
+        private const float _landDelay = 0.1f;
+        private float _landTimer = _landDelay;
+        // Dash Values:
+        [SerializeField] private float _dashDuration = 0.2f;
+        [SerializeField] private float _dashDelay = 0.1f;
+        [SerializeField] private float _dashTimer;
+        [SerializeField] private float _dashDelayTimer;
+        [SerializeField] private bool _dashPress;
+        [SerializeField] private bool _dashAvailable;
         public UnityEvent OnLandEvent;
 
         private ActionMap _actionMapScript;
@@ -37,6 +49,8 @@ namespace Resources.Scripts.Player
 
         private void Awake(){
             
+            // Set values:
+            _dashAvailable = true;
             // Fetch components:
             _rigidbody2D = GetComponent<Rigidbody2D>();
             // Generate action map:
@@ -80,49 +94,22 @@ namespace Resources.Scripts.Player
             ProcessStateMovement();
         }
         
-        private void ProcessInput(){
-            
-            // Inputs Variables:
-            _jumpPress = _actionMapScript.Player.JumpPress.triggered;
-            _jumpRelease = _actionMapScript.Player.JumpRelease.triggered;
-            if (_actionMapScript.Player.Movement.ReadValue<Vector2>().x > 0f)
-                _horizontalInput = 1f * _runSpeed;
-            
-            else if (_actionMapScript.Player.Movement.ReadValue<Vector2>().x < 0f)
-                _horizontalInput = -1f * _runSpeed;
-            else
-                _horizontalInput = 0f;
-        }
-        private void ResetInput(){
-            _jumpPress = false;
-            _jumpRelease = false;
-        }
+        
+        // State Functions:
         private void IdleInput(){
 
-            // If the player is moving [Walking]:
-            if (_horizontalInput < 0.0f || _horizontalInput > 0.0f && _isGrounded)
-                _state = playerMoveState.Walking;
-
-            // If player presses jump button [Jump]:
-            if (_jumpPress){
-                _state = playerMoveState.Jump;
-                _airTimer = _maxAirTime;
-            }
+            WalkCheck();
+            JumpCheck();
+            DashCheck();
         }
         private void IdleMovement(){
             ApplyNormMovement(8.0f);
         }
         private void WalkingInput(){
 
-            // If the player isn't moving [Idle]:
-            if (_horizontalInput == 0.0f && _isGrounded)
-                _state = playerMoveState.Idle;
-            
-            // If player presses jump button [Jump]:
-            if (_jumpPress){
-                _state = playerMoveState.Jump;
-                _airTimer = _maxAirTime;
-            }
+            IdleCheck();
+            JumpCheck();
+            DashCheck();
         }
         private void WalkingMovement(){
             
@@ -144,8 +131,11 @@ namespace Resources.Scripts.Player
                 _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _rigidbody2D.velocity.y / 2.0f);
                 _state = playerMoveState.AirControl;
             }
+
+            DashCheck();
         }
         private void JumpMovement(){
+            
             // Apply force when jumping:
             if(_isGrounded)
                 _rigidbody2D.AddForce(new Vector2(_rigidbody2D.velocity.x, _jumpForce));
@@ -171,6 +161,8 @@ namespace Resources.Scripts.Player
                         Quaternion.identity);
                 }
             }
+
+            DashCheck();
         }
         private void AirControlMovement(){
             ApplyNormMovement(7.0f);
@@ -184,16 +176,36 @@ namespace Resources.Scripts.Player
                 _landTimer = _landDelay;
             }
 
-            // If the player is moving [Walking]:
-            if (_horizontalInput < 0.0f || _horizontalInput > 0.0f && _isGrounded)
-                _state = playerMoveState.Walking;
+            _dashAvailable = true; // Make dash available when on ground
+            WalkCheck();
+            JumpCheck();
+        }
+        private void DashInput(){
 
-            // If player presses jump button [Jump]:
-            if (_jumpPress){
-                _state = playerMoveState.Jump;
-                _airTimer = _maxAirTime;
+            if (_dashTimer < 0f){
+                _state = _isGrounded switch{
+                    true => playerMoveState.Idle,
+                    false => playerMoveState.AirControl
+                };
             }
         }
+
+        private void DashMovement(){
+
+            _dashTimer -= Time.deltaTime;
+            
+            // Apply horizontal force depending on the player's facing direction:
+            switch (_isFacingRight){
+                case true: // Dash right
+                    _rigidbody2D.velocity = new Vector2(_dashSpeed, 0f);
+                    break;
+                case false: // Dash left
+                    _rigidbody2D.velocity = new Vector2(-_dashSpeed, 0f);
+                    break;
+            }
+        }
+        
+        // Process state functions:
         private void ProcessStateInput(){
             switch(_state) {
                 case playerMoveState.Idle:
@@ -210,6 +222,9 @@ namespace Resources.Scripts.Player
                     break;
                 case playerMoveState.Land:
                     LandInput();
+                    break;
+                case playerMoveState.Dash:
+                    DashInput();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -230,6 +245,9 @@ namespace Resources.Scripts.Player
                     AirControlMovement();
                     break;
                 case playerMoveState.Land:
+                    break;
+                case playerMoveState.Dash:
+                    DashMovement();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -257,10 +275,71 @@ namespace Resources.Scripts.Player
             //     ref _velocity, _accelerationSpeed);
             _rigidbody2D.velocity = targetVelocity;
         }
+        private void ProcessInput(){
+            
+            // Inputs Variables:
+            _jumpPress = _actionMapScript.Player.JumpPress.triggered;
+            _jumpRelease = _actionMapScript.Player.JumpRelease.triggered;
+            _dashPress = _actionMapScript.Player.Dash.triggered;
+            
+            // Process movement:
+            if (_actionMapScript.Player.Movement.ReadValue<Vector2>().x > 0f)
+                _horizontalInput = 1f * _runSpeed;
+            
+            else if (_actionMapScript.Player.Movement.ReadValue<Vector2>().x < 0f)
+                _horizontalInput = -1f * _runSpeed;
+            else
+                _horizontalInput = 0f;
+        }
+        private void ResetInput(){
+            _jumpPress = false;
+            _jumpRelease = false;
+            _dashPress = false;
+        }
+
+        // Input checks for switching state:
+        private void IdleCheck(){
+            
+            // Check if the player is moving on the x-axis [Walking]:
+            if (_horizontalInput == 0.0f && _isGrounded)
+                _state = playerMoveState.Idle;
+        }
+        private void WalkCheck(){
+            
+            // Check if the player is moving on the x-axis [Walking]:
+            if (_horizontalInput < 0.0f || _horizontalInput > 0.0f && _isGrounded)
+                _state = playerMoveState.Walking;
+        }
+        private void JumpCheck(){
+            // If player presses jump button [Jump]:
+            if (_jumpPress){
+                _state = playerMoveState.Jump;
+                _airTimer = _maxAirTime;
+            }
+        }
+        private void DashCheck(){
+            
+            // If player presses dash button [Dash]:
+            if (!_isGrounded){
+                if (_dashPress && _dashAvailable){
+                    _state = playerMoveState.Dash;
+                    _dashTimer = _dashDuration;
+                    _dashAvailable = false;
+                }
+            }
+            else if (_isGrounded){
+                _dashDelayTimer -= Time.deltaTime;
+                if (_dashPress && _dashDelayTimer < 0f){
+                    _state = playerMoveState.Dash;
+                    _dashTimer = _dashDuration;
+                    _dashDelayTimer = _dashDelay;
+                }
+            }
+        }
         
     }
 
     internal enum playerMoveState{
-        Idle, Walking, Jump, AirControl, Land
+        Idle, Walking, Jump, AirControl, Land, Dash
     }
 }
