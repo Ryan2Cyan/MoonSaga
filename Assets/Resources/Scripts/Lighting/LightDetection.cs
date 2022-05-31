@@ -69,10 +69,8 @@ namespace Resources.Scripts.Lighting{
                 }   
             }
             // If the object has not hit an obstacle, they are in the light:
-            if (!_hitObstacle){
-                Debug.Log("Hit Light");
+            if (!_hitObstacle)
                 _inLightLOS = true;
-            }
         }
 
         private void OnTriggerEnter2D(Collider2D other){

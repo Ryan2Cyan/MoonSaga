@@ -23,16 +23,15 @@ namespace Resources.Scripts.Player
 
         private const float _landDelay = 0.1f;
         private float _landTimer = _landDelay;
-        private const float _jumpDelay = 0.05f;
         private const float _maxAirTime = 0.5f;
-        private float _maxAirTimer;
-        private float _jumpTimer;
+        private float _airTimer;
         [SerializeField] private bool _isGrounded;
         [SerializeField] internal bool _isFacingRight = true;
         [SerializeField] private bool _jumpPress;
         [SerializeField] private bool _jumpRelease;
         public UnityEvent OnLandEvent;
-        
+
+        private ActionMap _actionMapScript;
         
 
 
@@ -40,6 +39,9 @@ namespace Resources.Scripts.Player
             
             // Fetch components:
             _rigidbody2D = GetComponent<Rigidbody2D>();
+            // Generate action map:
+            _actionMapScript = new ActionMap();
+            _actionMapScript.Enable();
         }
 
         private void Update(){
@@ -81,48 +83,45 @@ namespace Resources.Scripts.Player
         private void ProcessInput(){
             
             // Inputs Variables:
-            _jumpPress = Input.GetButtonDown("Jump") || _jumpPress;
-            _jumpRelease = Input.GetButtonUp("Jump") || _jumpRelease;
-            _horizontalInput = Input.GetAxisRaw("Horizontal") * _runSpeed;
+            _jumpPress = _actionMapScript.Player.JumpPress.triggered;
+            _jumpRelease = _actionMapScript.Player.JumpRelease.triggered;
+            if (_actionMapScript.Player.Movement.ReadValue<Vector2>().x > 0f)
+                _horizontalInput = 1f * _runSpeed;
+            
+            else if (_actionMapScript.Player.Movement.ReadValue<Vector2>().x < 0f)
+                _horizontalInput = -1f * _runSpeed;
+            else
+                _horizontalInput = 0f;
         }
         private void ResetInput(){
             _jumpPress = false;
             _jumpRelease = false;
         }
         private void IdleInput(){
-            
-            // Decrement time till player can jump again:
-            if(_isGrounded)
-                _jumpTimer -= Time.deltaTime;
-            
+
             // If the player is moving [Walking]:
             if (_horizontalInput < 0.0f || _horizontalInput > 0.0f && _isGrounded)
                 _state = playerMoveState.Walking;
 
             // If player presses jump button [Jump]:
-            if (Input.GetButtonDown("Jump")){
+            if (_jumpPress){
                 _state = playerMoveState.Jump;
-                _maxAirTimer = _maxAirTime;
+                _airTimer = _maxAirTime;
             }
         }
         private void IdleMovement(){
             ApplyNormMovement(8.0f);
         }
         private void WalkingInput(){
-            
-            // Decrement time till player can jump again:
-            if(_isGrounded)
-                _jumpTimer -= Time.deltaTime;
-            
+
             // If the player isn't moving [Idle]:
             if (_horizontalInput == 0.0f && _isGrounded)
                 _state = playerMoveState.Idle;
             
             // If player presses jump button [Jump]:
-            if (Input.GetButtonDown("Jump") && _jumpTimer <= 0.0f){
+            if (_jumpPress){
                 _state = playerMoveState.Jump;
-                _jumpTimer = _jumpDelay;
-                _maxAirTimer = _maxAirTime;
+                _airTimer = _maxAirTime;
             }
         }
         private void WalkingMovement(){
@@ -132,24 +131,23 @@ namespace Resources.Scripts.Player
         }
         private void JumpInput(){
             
-            _maxAirTimer -= Time.deltaTime;
+            _airTimer -= Time.deltaTime;
             
             // If jump time expires [Air Control]:
-            if (_maxAirTimer < 0.0f){
+            if (_airTimer < 0.0f){
                 _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _rigidbody2D.velocity.y / 2.0f);
                 _state = playerMoveState.AirControl;
             }
             
             // Player releases jump:
-            if (_jumpRelease){
+            if (_jumpRelease && !_isGrounded){
                 _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _rigidbody2D.velocity.y / 2.0f);
                 _state = playerMoveState.AirControl;
             }
         }
         private void JumpMovement(){
-            
             // Apply force when jumping:
-            if (_isGrounded && _jumpPress)
+            if(_isGrounded)
                 _rigidbody2D.AddForce(new Vector2(_rigidbody2D.velocity.x, _jumpForce));
             ApplyNormMovement(7.0f);
         }
@@ -175,11 +173,9 @@ namespace Resources.Scripts.Player
             }
         }
         private void AirControlMovement(){
-            
             ApplyNormMovement(7.0f);
         }
         private void LandInput(){
-
             _landTimer -= Time.deltaTime;
 
             // Amount of time the player can be in the Land state is finished:
@@ -188,18 +184,14 @@ namespace Resources.Scripts.Player
                 _landTimer = _landDelay;
             }
 
-                // Decrement time till player can jump again:
-            if(_isGrounded)
-                _jumpTimer -= Time.deltaTime;
-            
             // If the player is moving [Walking]:
             if (_horizontalInput < 0.0f || _horizontalInput > 0.0f && _isGrounded)
                 _state = playerMoveState.Walking;
 
             // If player presses jump button [Jump]:
-            if (Input.GetButtonDown("Jump")){
+            if (_jumpPress){
                 _state = playerMoveState.Jump;
-                _maxAirTimer = _maxAirTime;
+                _airTimer = _maxAirTime;
             }
         }
         private void ProcessStateInput(){
