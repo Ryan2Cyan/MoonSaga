@@ -20,6 +20,7 @@ namespace Resources.Scripts.Player
         
         // Movement Values
         [Range(0, 1000.0f)] [SerializeField] private float _jumpForce = 100f;
+        [Range(0, 1000.0f)] [SerializeField] private float _doubleJumpForce = 100f;
         [Range(0, 100.0f)] [SerializeField] private float _dashSpeed = 100f;
         [Range(0, 100f)] [SerializeField] private float _runSpeed = 37.5f;
         [Range(0, 30.0f)] [SerializeField] private float _knockBackX = 15f;
@@ -27,9 +28,12 @@ namespace Resources.Scripts.Player
         [SerializeField] private float _dashDuration = 0.2f;
         [SerializeField] private float _dashDelay = 0.1f;
         [SerializeField] private float _knockBackDelay = 0.1f;
-
+        [Range(0, 1.0f)][SerializeField] private float _maxAirTime = 0.5f;
+        [Range(0, 1.0f)][SerializeField] private float _doubleJumpDelay = 0.15f;
+        
         // Attack costs:
         [Range(0, 100)] [SerializeField] private int _dashCost = 20;
+        [Range(0, 100)] [SerializeField] private int _doubleJumpCost = 10;
         
         // Orientation:
         [SerializeField] internal bool _isFacingRight = true;
@@ -39,18 +43,19 @@ namespace Resources.Scripts.Player
         private bool _jumpRelease;
         private bool _dashPress;
         
-        // Air Control Values:
-        private const float _maxAirTime = 0.5f;
+        // Air control values:
         private float _airTimer;
-        // Land Values:
+        // Land values:
         private const float _landDelay = 0.1f;
         private float _landTimer = _landDelay;
-        // Dash Values:
+        // Dash values:
         [SerializeField] private bool _dashAvailable;
         private float _dashTimer;
         private float _dashDelayTimer;
         // Knock back values:
         private float _knockBackTimer;
+        // Double jump values:
+        [SerializeField] private bool _doubleJumpAvailable;
         
         public UnityEvent OnLandEvent;
 
@@ -61,6 +66,7 @@ namespace Resources.Scripts.Player
             
             // Set values:
             _dashAvailable = true;
+            _doubleJumpAvailable = true;
             // Fetch components:
             _rigidbody2D = GetComponent<Rigidbody2D>();
             // Generate action map:
@@ -146,6 +152,7 @@ namespace Resources.Scripts.Player
                 }
             }
 
+            DoubleJumpCheck(); 
             DashCheck();
         }
         private void AirControlMovement(){
@@ -160,7 +167,9 @@ namespace Resources.Scripts.Player
                 _landTimer = _landDelay;
             }
 
-            _dashAvailable = true; // Make dash available when on ground
+            // Make double jump & dash available when on the ground:
+            _doubleJumpAvailable = true; 
+            _dashAvailable = true; 
             WalkCheck();
             JumpCheck();
         }
@@ -191,7 +200,8 @@ namespace Resources.Scripts.Player
         }
         private void DashHitInput(){
             
-            // On hit, the player can dash again:
+            // On hit, the player can dash & double jump again:
+            _doubleJumpAvailable = true;
             _dashAvailable = true;
             
             // Knock back timer:
@@ -204,6 +214,22 @@ namespace Resources.Scripts.Player
             _rigidbody2D.velocity = 
                 _isFacingRight ? new Vector2(-_knockBackX, _knockBackY) : new Vector2(_knockBackX, _knockBackY);
             
+        }
+        private void DoubleJumpInput(){
+            
+            _airTimer -= Time.deltaTime;
+            
+            // If jump time expires [Air Control]:
+            if (_airTimer < 0f){
+                _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _rigidbody2D.velocity.y / 2.0f);
+                _state = playerMoveState.AirControl;
+            }
+        }
+        private void DoubleJumpMovement(){
+            
+            // Apply force when jumping:
+            _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _doubleJumpForce);
+            ApplyNormMovement(7.0f);
         }
         
         // Process state functions:
@@ -232,6 +258,9 @@ namespace Resources.Scripts.Player
                     break;
                 case playerMoveState.Damaged:
                     break;
+                case playerMoveState.DoubleJump:
+                    DoubleJumpInput();
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -259,6 +288,9 @@ namespace Resources.Scripts.Player
                     DashHitMovement();
                     break;
                 case playerMoveState.Damaged:
+                    break;
+                case playerMoveState.DoubleJump:
+                    DoubleJumpMovement();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -336,6 +368,7 @@ namespace Resources.Scripts.Player
         }
         private void DashCheck(){
 
+            // Check if the player has enough shadow meter:
             if (_shadowMeterScript._shadowMeter >= _dashCost){
                 switch (_playerCollisionScript._isGrounded){
                     // Dash while in-air:
@@ -364,10 +397,23 @@ namespace Resources.Scripts.Player
                 }
             }
         }
+        private void DoubleJumpCheck(){
+
+            // Check if the player has enough shadow meter:
+            if (_shadowMeterScript._shadowMeter >= _doubleJumpCost){
+                // Check if player presses jump input:
+                if (_jumpPress && _doubleJumpAvailable){
+                    _state = playerMoveState.DoubleJump;
+                    _shadowMeterScript.DecrementShadowMeter(_doubleJumpCost);
+                    _doubleJumpAvailable = false;
+                    _airTimer = _doubleJumpDelay;
+                }
+            }
+        }
         
     }
 
     internal enum playerMoveState{
-        Idle, Walking, Jump, AirControl, Land, Dash, DashHit, Damaged
+        Idle, Walking, Jump, DoubleJump, AirControl, Land, Dash, DashHit, Damaged
     }
 }

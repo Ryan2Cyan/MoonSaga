@@ -56,6 +56,9 @@ namespace Resources.Scripts.Player{
                     break;
                 case playerMoveState.Damaged:
                     break;
+                case playerMoveState.DoubleJump:
+                    _animator.SetBool(Jump, true);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
