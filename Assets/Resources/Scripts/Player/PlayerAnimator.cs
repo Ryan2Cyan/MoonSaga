@@ -51,6 +51,11 @@ namespace Resources.Scripts.Player{
                 case playerMoveState.Dash:
                     _animator.SetBool(Dash, true);
                     break;
+                case playerMoveState.DashHit:
+                    _animator.SetBool(Falling, true);
+                    break;
+                case playerMoveState.Damaged:
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

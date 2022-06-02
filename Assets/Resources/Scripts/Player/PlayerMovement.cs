@@ -10,24 +10,31 @@ namespace Resources.Scripts.Player
     public class PlayerMovement : MonoBehaviour{
         
         [SerializeField] internal playerMoveState _state = playerMoveState.Idle;
+        private Rigidbody2D _rigidbody2D;
+        
+        // Scripts:
         [SerializeField] private ShadowMeter _shadowMeterScript;
+        [SerializeField] private PlayerCollision _playerCollisionScript;
+        private ActionMap _actionMapScript;
+        
+        // Movement Values
         [Range(0, 1000.0f)] [SerializeField] private float _jumpForce = 100f;
         [Range(0, 100.0f)] [SerializeField] private float _dashSpeed = 100f;
         [Range(0, 100f)] [SerializeField] private float _runSpeed = 37.5f;
-        private Rigidbody2D _rigidbody2D;
-        [SerializeField] private Transform _ceilingCheck;
-        [SerializeField] private Transform _groundCheck;
-        private const float _groundedRadius = 0.2f;
-        [SerializeField] private LayerMask _groundLayerMask;
-        [SerializeField] private float _horizontalInput;
+        [Range(0, 30.0f)] [SerializeField] private float _knockBackX = 15f;
+        [Range(0, 30.0f)] [SerializeField] private float _knockBackY = 15f;
+        [SerializeField] private float _dashDuration = 0.2f;
+        [SerializeField] private float _dashDelay = 0.1f;
+        [SerializeField] private float _knockBackDelay = 0.1f;
 
-        
         // Orientation:
-        [SerializeField] private bool _isGrounded;
         [SerializeField] internal bool _isFacingRight = true;
-        // Jump Values:
-        [SerializeField] private bool _jumpPress;
-        [SerializeField] private bool _jumpRelease;
+        // Inputs:
+        private float _horizontalInput;
+        private bool _jumpPress;
+        private bool _jumpRelease;
+        private bool _dashPress;
+        
         // Air Control Values:
         private const float _maxAirTime = 0.5f;
         private float _airTimer;
@@ -35,15 +42,14 @@ namespace Resources.Scripts.Player
         private const float _landDelay = 0.1f;
         private float _landTimer = _landDelay;
         // Dash Values:
-        [SerializeField] private float _dashDuration = 0.2f;
-        [SerializeField] private float _dashDelay = 0.1f;
-        [SerializeField] private float _dashTimer;
-        [SerializeField] private float _dashDelayTimer;
-        [SerializeField] private bool _dashPress;
         [SerializeField] private bool _dashAvailable;
+        private float _dashTimer;
+        private float _dashDelayTimer;
+        // Knock back values:
+        private float _knockBackTimer;
+        
         public UnityEvent OnLandEvent;
 
-        private ActionMap _actionMapScript;
         
 
 
@@ -65,32 +71,6 @@ namespace Resources.Scripts.Player
         }
 
         private void FixedUpdate(){
-            
-            bool wasGrounded = _isGrounded;
-            _isGrounded = false;
-            
-            // Store all colliders within ground-check's radius, on the ground layer:
-            Collider2D[] collider2Ds = Physics2D.OverlapCircleAll(
-                _groundCheck.position,
-                _groundedRadius,
-                _groundLayerMask
-            );
-            
-            // Check if no ground is detected:
-            if (collider2Ds.Length != 0){
-                // Check all detected colliders for the ground:
-                foreach (Collider2D colliderArg in collider2Ds){
-                    if (colliderArg.gameObject != gameObject){
-                        _isGrounded = true;
-                    }
-            
-                    if (!wasGrounded){
-                        // If the player has landed, call OnLand event:
-                        OnLandEvent.Invoke();
-                    }
-                }
-            }
-            
             ProcessStateMovement();
         }
         
@@ -127,7 +107,7 @@ namespace Resources.Scripts.Player
             }
             
             // Player releases jump:
-            if (_jumpRelease && !_isGrounded){
+            if (_jumpRelease && !_playerCollisionScript._isGrounded){
                 _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _rigidbody2D.velocity.y / 2.0f);
                 _state = playerMoveState.AirControl;
             }
@@ -137,27 +117,27 @@ namespace Resources.Scripts.Player
         private void JumpMovement(){
             
             // Apply force when jumping:
-            if(_isGrounded)
+            if(_playerCollisionScript._isGrounded)
                 _rigidbody2D.AddForce(new Vector2(_rigidbody2D.velocity.x, _jumpForce));
             ApplyNormMovement(7.0f);
         }
         private void AirControlInput(){
             
             // If player touches the ground [Land]:
-            if (_isGrounded){
+            if (_playerCollisionScript._isGrounded){
                 _state = playerMoveState.Land;
                 // If player in light, spawn light leaves:
                 if (_shadowMeterScript._lightDetectionScript._inLight){
                     Instantiate(UnityEngine.Resources.Load<GameObject>
                             ("Prefabs/Environment/CelestialGrove/PFX/Land-Leaves-Light"),
-                        _groundCheck.position,
+                        _playerCollisionScript._groundCheck.position,
                         Quaternion.identity);
                 }
                 // If player in light, spawn shadow leaves:
                 else{
                     Instantiate(UnityEngine.Resources.Load<GameObject>
                             ("Prefabs/Environment/CelestialGrove/PFX/Land-Leaves"),
-                        _groundCheck.position,
+                        _playerCollisionScript._groundCheck.position,
                         Quaternion.identity);
                 }
             }
@@ -182,27 +162,43 @@ namespace Resources.Scripts.Player
         }
         private void DashInput(){
 
-            if (_dashTimer < 0f){
-                _state = _isGrounded switch{
-                    true => playerMoveState.Idle,
-                    false => playerMoveState.AirControl
-                };
+            // Check if the dash has ended:
+            if (_dashTimer < 0f)
+                SetDefaultState();
+            
+            // Check if the player hit an enemy:
+            if (_playerCollisionScript._enemyCollision){
+                _knockBackTimer = _knockBackDelay;
+                _state = playerMoveState.DashHit;
             }
+
         }
-
         private void DashMovement(){
-
             _dashTimer -= Time.deltaTime;
             
             // Apply horizontal force depending on the player's facing direction:
-            switch (_isFacingRight){
-                case true: // Dash right
-                    _rigidbody2D.velocity = new Vector2(_dashSpeed, 0f);
-                    break;
-                case false: // Dash left
-                    _rigidbody2D.velocity = new Vector2(-_dashSpeed, 0f);
-                    break;
-            }
+            _rigidbody2D.velocity = _isFacingRight switch{
+                true => // Dash right
+                    new Vector2(_dashSpeed, 0f),
+                false => // Dash left
+                    new Vector2(-_dashSpeed, 0f)
+            };
+        }
+        private void DashHitInput(){
+            
+            // On hit, the player can dash again:
+            _dashAvailable = true;
+            
+            // Knock back timer:
+            _knockBackTimer -= Time.deltaTime;
+            if(_knockBackTimer <= 0f)
+                SetDefaultState();
+        }
+        private void DashHitMovement(){
+            // Knock back the player:
+            _rigidbody2D.velocity = 
+                _isFacingRight ? new Vector2(-_knockBackX, _knockBackY) : new Vector2(_knockBackX, _knockBackY);
+            
         }
         
         // Process state functions:
@@ -225,6 +221,11 @@ namespace Resources.Scripts.Player
                     break;
                 case playerMoveState.Dash:
                     DashInput();
+                    break;
+                case playerMoveState.DashHit:
+                    DashHitInput();
+                    break;
+                case playerMoveState.Damaged:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -249,6 +250,11 @@ namespace Resources.Scripts.Player
                 case playerMoveState.Dash:
                     DashMovement();
                     break;
+                case playerMoveState.DashHit:
+                    DashHitMovement();
+                    break;
+                case playerMoveState.Damaged:
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -268,12 +274,32 @@ namespace Resources.Scripts.Player
                 transform.localScale = UtilityFunctions.Flip(transform.localScale, ref _isFacingRight);
             
             // Move the character via target velocity:
-            Vector3 targetVelocity = new Vector2(direction * movementSpeed, _rigidbody2D.velocity.y);
+            Vector2 targetVelocity = new Vector2(direction * movementSpeed, _rigidbody2D.velocity.y);
             
             // Apply smoothing (different for acceleration and deceleration):
             // _rigidbody2D.velocity = Vector2.SmoothDamp(_rigidbody2D.velocity, targetVelocity,
             //     ref _velocity, _accelerationSpeed);
             _rigidbody2D.velocity = targetVelocity;
+        }
+        private void ApplyRecoverMovement(float movementSpeed){
+            
+            // Calculate direction:
+            float direction = _horizontalInput * Time.fixedDeltaTime;
+            
+            // Check if the player needs to be flipped depending on move direction:
+            if (direction > 0.0f && !_isFacingRight) // Flip Right
+                transform.localScale = UtilityFunctions.Flip(transform.localScale, ref _isFacingRight);
+            
+            else if (direction < 0.0f && _isFacingRight) // Flip Left
+                transform.localScale = UtilityFunctions.Flip(transform.localScale, ref _isFacingRight);
+            
+            // Move the character via target velocity:
+            Vector2 targetVelocity = new Vector2(direction * movementSpeed, _rigidbody2D.velocity.y);
+            
+            // Apply smoothing (different for acceleration and deceleration):
+            // _rigidbody2D.velocity = Vector2.SmoothDamp(_rigidbody2D.velocity, targetVelocity,
+            //     ref _velocity, _accelerationSpeed);
+            _rigidbody2D.velocity += targetVelocity;
         }
         private void ProcessInput(){
             
@@ -298,16 +324,22 @@ namespace Resources.Scripts.Player
         }
 
         // Input checks for switching state:
+        private void SetDefaultState(){
+            _state = _playerCollisionScript._isGrounded switch{
+                true => playerMoveState.Idle,
+                false => playerMoveState.AirControl
+            };
+        }
         private void IdleCheck(){
             
             // Check if the player is moving on the x-axis [Walking]:
-            if (_horizontalInput == 0.0f && _isGrounded)
+            if (_horizontalInput == 0.0f && _playerCollisionScript._isGrounded)
                 _state = playerMoveState.Idle;
         }
         private void WalkCheck(){
             
             // Check if the player is moving on the x-axis [Walking]:
-            if (_horizontalInput < 0.0f || _horizontalInput > 0.0f && _isGrounded)
+            if (_horizontalInput < 0.0f || _horizontalInput > 0.0f && _playerCollisionScript._isGrounded)
                 _state = playerMoveState.Walking;
         }
         private void JumpCheck(){
@@ -320,14 +352,14 @@ namespace Resources.Scripts.Player
         private void DashCheck(){
             
             // If player presses dash button [Dash]:
-            if (!_isGrounded){
+            if (!_playerCollisionScript._isGrounded){
                 if (_dashPress && _dashAvailable){
                     _state = playerMoveState.Dash;
                     _dashTimer = _dashDuration;
                     _dashAvailable = false;
                 }
             }
-            else if (_isGrounded){
+            else if (_playerCollisionScript._isGrounded){
                 _dashDelayTimer -= Time.deltaTime;
                 if (_dashPress && _dashDelayTimer < 0f){
                     _state = playerMoveState.Dash;

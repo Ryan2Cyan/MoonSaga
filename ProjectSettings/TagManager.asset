@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Light
   - Obstacle
+  - Enemy
   layers:
   - Default
   - TransparentFX

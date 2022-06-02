@@ -911,40 +911,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _state: 0
   _shadowMeterScript: {fileID: 542220384}
+  _playerCollisionScript: {fileID: 542220385}
   _jumpForce: 913
   _dashSpeed: 30
   _runSpeed: 65
-  _ceilingCheck: {fileID: 1435981563}
-  _groundCheck: {fileID: 1056509081}
-  _groundLayerMask:
-    serializedVersion: 2
-    m_Bits: 64
-  _horizontalInput: 0
-  _isGrounded: 1
-  _isFacingRight: 1
-  _jumpPress: 0
-  _jumpRelease: 0
+  _knockBackX: 11
+  _knockBackY: 8
   _dashDuration: 0.2
   _dashDelay: 0.4
-  _dashTimer: 0
-  _dashDelayTimer: 0
-  _dashPress: 0
+  _knockBackDelay: 0.15
+  _isFacingRight: 1
   _dashAvailable: 0
   OnLandEvent:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 542220380}
-        m_TargetAssemblyTypeName: Resources.Scripts.Player.PlayerMovement, Assembly-CSharp
-        m_MethodName: Print
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!58 &542220381
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -968,7 +948,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 542220377}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 1
@@ -1038,7 +1018,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _boxCollider: {fileID: 542220382}
-  _dashRecovery: 0
+  _enemyCollision: 0
+  _isGrounded: 0
+  _groundCheck: {fileID: 1056509081}
+  _groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 64
+  _ceilingCheck: {fileID: 1435981563}
 --- !u!4 &632902915 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7816715544607021992, guid: a4f6a731176159d4cae60743cb6961ab,
@@ -4131,7 +4117,7 @@ GameObject:
   - component: {fileID: 2095361635}
   m_Layer: 0
   m_Name: Temp-Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4182,7 +4168,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 1
-  m_Constraints: 4
+  m_Constraints: 6
 --- !u!212 &2095361637
 SpriteRenderer:
   m_ObjectHideFlags: 0
