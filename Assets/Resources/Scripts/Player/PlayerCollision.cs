@@ -1,3 +1,4 @@
+using Resources.Scripts.General;
 using UnityEngine;
 
 // Code within this class is responsible (only) for collisions the player
@@ -38,14 +39,14 @@ namespace Resources.Scripts.Player{
         private void GroundCheck(){
             bool wasGrounded = _isGrounded;
             _isGrounded = false;
-            
+
             // Store all colliders within ground-check's radius, on the ground layer:
             Collider2D[] collider2Ds = Physics2D.OverlapCircleAll(
                 _groundCheck.position,
                 _groundedRadius,
                 _groundLayerMask
             );
-            
+
             // Check if no ground is detected:
             if (collider2Ds.Length != 0){
                 // Check all detected colliders for the ground:
@@ -53,11 +54,8 @@ namespace Resources.Scripts.Player{
                     if (colliderArg.gameObject != gameObject){
                         _isGrounded = true;
                     }
-            
-                    if (!wasGrounded){
-                        // If the player has landed, call OnLand event:
-                    }
                 }
+
             }
         }
     }
