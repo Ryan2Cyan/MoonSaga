@@ -31,8 +31,6 @@ namespace Resources.Scripts.Player{
             _animator.SetBool(Land, false);
             _animator.SetBool(Dash, false);
         }
-        
-        
         private void ProcessStateAnimation(){
             ResetAnimator();
             switch(_state) {

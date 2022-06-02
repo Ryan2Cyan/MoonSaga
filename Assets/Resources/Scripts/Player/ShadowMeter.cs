@@ -29,7 +29,6 @@ namespace Resources.Scripts.Player{
             // Update shadow meter:
             UpdateShadowMeter();
         }
-
         private void UpdateShadowMeter(){
 
             // Decrease timer:

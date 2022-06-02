@@ -340,6 +340,6 @@ namespace Resources.Scripts.Player
     }
 
     internal enum playerMoveState{
-        Idle, Walking, Jump, AirControl, Land, Dash
+        Idle, Walking, Jump, AirControl, Land, Dash, DashHit, Damaged
     }
 }
