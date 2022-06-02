@@ -1,6 +1,5 @@
 // Utility is used to house functions that can be called by any class. These
 // functions are general in application, and non-specific.
-
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -101,5 +100,6 @@ namespace Resources.Scripts.General
 
             return arg;
         }
+        
     }
 }

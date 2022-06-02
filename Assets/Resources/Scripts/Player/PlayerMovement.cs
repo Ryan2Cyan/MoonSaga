@@ -15,6 +15,7 @@ namespace Resources.Scripts.Player
         // Scripts:
         [SerializeField] private ShadowMeter _shadowMeterScript;
         [SerializeField] private PlayerCollision _playerCollisionScript;
+        [SerializeField] private MonoBehaviourUtility _monoBehaviourUtilityScript;
         private ActionMap _actionMapScript;
         
         // Movement Values
@@ -27,6 +28,9 @@ namespace Resources.Scripts.Player
         [SerializeField] private float _dashDelay = 0.1f;
         [SerializeField] private float _knockBackDelay = 0.1f;
 
+        // Attack costs:
+        [Range(0, 100)] [SerializeField] private int _dashCost = 20;
+        
         // Orientation:
         [SerializeField] internal bool _isFacingRight = true;
         // Inputs:
@@ -170,6 +174,7 @@ namespace Resources.Scripts.Player
             if (_playerCollisionScript._enemyCollision){
                 _knockBackTimer = _knockBackDelay;
                 _state = playerMoveState.DashHit;
+                _monoBehaviourUtilityScript.StartSleep(0.05f);
             }
 
         }
@@ -281,26 +286,6 @@ namespace Resources.Scripts.Player
             //     ref _velocity, _accelerationSpeed);
             _rigidbody2D.velocity = targetVelocity;
         }
-        private void ApplyRecoverMovement(float movementSpeed){
-            
-            // Calculate direction:
-            float direction = _horizontalInput * Time.fixedDeltaTime;
-            
-            // Check if the player needs to be flipped depending on move direction:
-            if (direction > 0.0f && !_isFacingRight) // Flip Right
-                transform.localScale = UtilityFunctions.Flip(transform.localScale, ref _isFacingRight);
-            
-            else if (direction < 0.0f && _isFacingRight) // Flip Left
-                transform.localScale = UtilityFunctions.Flip(transform.localScale, ref _isFacingRight);
-            
-            // Move the character via target velocity:
-            Vector2 targetVelocity = new Vector2(direction * movementSpeed, _rigidbody2D.velocity.y);
-            
-            // Apply smoothing (different for acceleration and deceleration):
-            // _rigidbody2D.velocity = Vector2.SmoothDamp(_rigidbody2D.velocity, targetVelocity,
-            //     ref _velocity, _accelerationSpeed);
-            _rigidbody2D.velocity += targetVelocity;
-        }
         private void ProcessInput(){
             
             // Inputs Variables:
@@ -350,21 +335,32 @@ namespace Resources.Scripts.Player
             }
         }
         private void DashCheck(){
-            
-            // If player presses dash button [Dash]:
-            if (!_playerCollisionScript._isGrounded){
-                if (_dashPress && _dashAvailable){
-                    _state = playerMoveState.Dash;
-                    _dashTimer = _dashDuration;
-                    _dashAvailable = false;
-                }
-            }
-            else if (_playerCollisionScript._isGrounded){
-                _dashDelayTimer -= Time.deltaTime;
-                if (_dashPress && _dashDelayTimer < 0f){
-                    _state = playerMoveState.Dash;
-                    _dashTimer = _dashDuration;
-                    _dashDelayTimer = _dashDelay;
+
+            if (_shadowMeterScript._shadowMeter >= _dashCost){
+                switch (_playerCollisionScript._isGrounded){
+                    // Dash while in-air:
+                    case false:{
+                        if (_dashPress && _dashAvailable){
+                            _state = playerMoveState.Dash;
+                            _dashTimer = _dashDuration;
+                            _dashAvailable = false;
+                            _shadowMeterScript.DecrementShadowMeter(_dashCost);
+                        }
+
+                        break;
+                    }
+                    case true:{
+                        // Dash while grounded:
+                        _dashDelayTimer -= Time.deltaTime;
+                        if (_dashPress && _dashDelayTimer < 0f){
+                            _state = playerMoveState.Dash;
+                            _dashTimer = _dashDuration;
+                            _dashDelayTimer = _dashDelay;
+                            _shadowMeterScript.DecrementShadowMeter(_dashCost);
+                        }
+
+                        break;
+                    }
                 }
             }
         }

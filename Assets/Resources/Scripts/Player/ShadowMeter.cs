@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using Resources.Scripts.Lighting;
-using Resources.Scripts.VFX;
 using UnityEngine;
 using UnityEngine.UI;
 using UtilityFunctions = Resources.Scripts.General.UtilityFunctions;
@@ -11,6 +9,7 @@ namespace Resources.Scripts.Player{
         [SerializeField] internal LightDetection _lightDetectionScript; 
         [SerializeField] private Slider _shadowSlider;
 
+        [SerializeField] internal int _shadowMeter;
         [SerializeField] private int _shadowValue = 1;
         [SerializeField] private int _lightValue = 1;
         private const int _maxValue = 100;
@@ -27,23 +26,36 @@ namespace Resources.Scripts.Player{
         private void Update(){
             
             // Update shadow meter:
-            UpdateShadowMeter();
+            IncrementShadowMeter();
         }
-        private void UpdateShadowMeter(){
+        private void IncrementShadowMeter(){
 
             // Decrease timer:
             _incrementTimer -= Time.deltaTime;
 
-            // Player in light:
-            if (_lightDetectionScript._inLight && _incrementTimer <= 0.0f){
-                _shadowSlider.value += _lightValue;
-                _incrementTimer = _incrementDelay;
+            if (_shadowMeter >= 0 && _shadowMeter < 100){
+                // Player in light:
+                if (_lightDetectionScript._inLight && _incrementTimer <= 0.0f){
+                    _shadowMeter += _lightValue;
+                    _incrementTimer = _incrementDelay;
+                }
+                // Player in shadow:
+                else if (_incrementTimer <= 0.0f){
+                    _shadowMeter += _shadowValue;
+                    _incrementTimer = _incrementDelay;
+                }
+
+                // Clamp shadow value:
+                if (_shadowMeter > 100)
+                    _shadowMeter = 100;
+
+                _shadowSlider.value = _shadowMeter;
             }
-            // Player in shadow:
-            else if (_incrementTimer <= 0.0f){
-                _shadowSlider.value += _shadowValue;
-                _incrementTimer = _incrementDelay;
-            }
+        }
+
+        internal void DecrementShadowMeter(int value){
+            _shadowMeter -= value;
+            _shadowSlider.value -= value;
         }
     }
 }
