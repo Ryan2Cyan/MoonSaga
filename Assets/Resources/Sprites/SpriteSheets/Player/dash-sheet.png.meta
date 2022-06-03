@@ -11,6 +11,15 @@ TextureImporter:
   - first:
       213: -8985390123382417584
     second: dash-sheet_2
+  - first:
+      213: 4680054858564836064
+    second: dash-sheet_3
+  - first:
+      213: -4071489531193686675
+    second: dash-sheet_4
+  - first:
+      213: -223167189145199103
+    second: dash-sheet_5
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
@@ -117,8 +126,8 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 57
-        height: 51
+        width: 73
+        height: 73
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -136,10 +145,10 @@ TextureImporter:
       name: dash-sheet_1
       rect:
         serializedVersion: 2
-        x: 57
+        x: 73
         y: 0
-        width: 57
-        height: 51
+        width: 73
+        height: 73
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -157,10 +166,10 @@ TextureImporter:
       name: dash-sheet_2
       rect:
         serializedVersion: 2
-        x: 114
+        x: 146
         y: 0
-        width: 57
-        height: 51
+        width: 73
+        height: 73
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -170,6 +179,69 @@ TextureImporter:
       bones: []
       spriteID: 057dc771a4b7d4380800000000000000
       internalID: -8985390123382417584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dash-sheet_3
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 0
+        width: 73
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0ea191e0915e2f040800000000000000
+      internalID: 4680054858564836064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dash-sheet_4
+      rect:
+        serializedVersion: 2
+        x: 292
+        y: 0
+        width: 73
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d658a72d7d92f77c0800000000000000
+      internalID: -4071489531193686675
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: dash-sheet_5
+      rect:
+        serializedVersion: 2
+        x: 365
+        y: 0
+        width: 73
+        height: 73
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 10e5a75bf9627ecf0800000000000000
+      internalID: -223167189145199103
       vertices: []
       indices: 
       edges: []

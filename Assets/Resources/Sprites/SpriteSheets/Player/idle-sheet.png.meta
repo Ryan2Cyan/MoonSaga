@@ -123,8 +123,8 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 57
-        height: 51
+        width: 73
+        height: 73
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -142,10 +142,10 @@ TextureImporter:
       name: idle-sheet_1
       rect:
         serializedVersion: 2
-        x: 57
+        x: 73
         y: 0
-        width: 57
-        height: 51
+        width: 73
+        height: 73
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -163,10 +163,10 @@ TextureImporter:
       name: idle-sheet_2
       rect:
         serializedVersion: 2
-        x: 114
+        x: 146
         y: 0
-        width: 57
-        height: 51
+        width: 73
+        height: 73
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -184,10 +184,10 @@ TextureImporter:
       name: idle-sheet_3
       rect:
         serializedVersion: 2
-        x: 171
+        x: 219
         y: 0
-        width: 57
-        height: 51
+        width: 73
+        height: 73
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -205,10 +205,10 @@ TextureImporter:
       name: idle-sheet_4
       rect:
         serializedVersion: 2
-        x: 228
+        x: 292
         y: 0
-        width: 57
-        height: 51
+        width: 73
+        height: 73
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
