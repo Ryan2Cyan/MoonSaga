@@ -1,3 +1,4 @@
+using Resources.Scripts.General;
 using UnityEngine;
 
 namespace Resources.Scripts.Enemies.General{
@@ -19,10 +20,10 @@ namespace Resources.Scripts.Enemies.General{
         }
 
         private void OnCollisionEnter2D(Collision2D other){
-            if (other.gameObject.CompareTag("PlatformEdge")){
-                _enemyMovementScript._isFacingRight = !_enemyMovementScript._isFacingRight;
-                Debug.Log("Hit Edge");
-            }
+            // Turn the enemy around if they reach an edge:
+            if (other.gameObject.CompareTag("PlatformEdge"))
+                transform.localScale = UtilityFunctions.Flip(transform.localScale, 
+                    ref _enemyMovementScript._isFacingRight);
         }
     }
 }
