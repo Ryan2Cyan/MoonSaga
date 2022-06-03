@@ -410,6 +410,16 @@ namespace Resources.Scripts.Player
                             _dashTimer = _dashDuration;
                             _dashAvailable = false;
                             _shadowMeterScript.DecrementShadowMeter(_dashCost);
+                            // Spawn pfx:
+                            Instantiate(UnityEngine.Resources.Load<GameObject>
+                                    ("Prefabs/PFX/Player/Dash-Shadow"),
+                                _isFacingRight
+                                    ? new Vector3(transform.position.x - 4f, transform.position.y - 2f,
+                                        transform.position.z)
+                                    : new Vector3(transform.position.x + 1f, transform.position.y - 2f,
+                                        transform.position.z),
+                                Quaternion.identity,
+                                transform);
                         }
 
                         break;
@@ -422,6 +432,16 @@ namespace Resources.Scripts.Player
                             _dashTimer = _dashDuration;
                             _dashDelayTimer = _dashDelay;
                             _shadowMeterScript.DecrementShadowMeter(_dashCost);
+                            // Spawn pfx:
+                            Instantiate(UnityEngine.Resources.Load<GameObject>
+                                    ("Prefabs/PFX/Player/Dash-Shadow"),
+                                _isFacingRight
+                                    ? new Vector3(transform.position.x - 4f, transform.position.y - 2f,
+                                        transform.position.z)
+                                    : new Vector3(transform.position.x + 1f, transform.position.y - 2f,
+                                        transform.position.z),
+                                Quaternion.identity,
+                                transform);
                         }
 
                         break;

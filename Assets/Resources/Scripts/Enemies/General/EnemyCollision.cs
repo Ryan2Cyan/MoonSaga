@@ -15,7 +15,7 @@ namespace Resources.Scripts.Enemies.General{
         [SerializeField] internal bool _wasAtEdge;
         [SerializeField] internal Transform _groundCheck;
         [SerializeField] private LayerMask _groundLayerMask;
-        private const float _edgeCheckDelay = 0.05f;
+        private const float _edgeCheckDelay = 0.02f;
         private float _edgeCheckTimer;
 
         private void Awake(){
@@ -37,7 +37,6 @@ namespace Resources.Scripts.Enemies.General{
             GroundCheck();
             // Check if enemy is at an edge, flip if true:
             if (_edgeCheckTimer <= 0f){
-                Debug.Log("Check");
                 _atEdge = EdgeCheck();
                 if (_atEdge)
                     _enemyMovementScript._isFacingRight = !_enemyMovementScript._isFacingRight;
