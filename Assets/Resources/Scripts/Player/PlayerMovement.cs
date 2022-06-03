@@ -242,7 +242,8 @@ namespace Resources.Scripts.Player
         private void DoubleJumpMovement(){
 
             // Apply force when jumping:
-            _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _doubleJumpForce);
+            if(_airTimer <= 0.1f)
+                _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _doubleJumpForce);
             ApplyNormMovement(7.0f);
         }
 
@@ -410,6 +411,32 @@ namespace Resources.Scripts.Player
                             _dashTimer = _dashDuration;
                             _dashAvailable = false;
                             _shadowMeterScript.DecrementShadowMeter(_dashCost);
+                            // Spawn pfx:
+                            Instantiate(UnityEngine.Resources.Load<GameObject>
+                                    ("Prefabs/PFX/Player/Dash-Shadow"),
+                                _isFacingRight
+                                    ? new Vector3(transform.position.x - 4f, transform.position.y - 2f,
+                                        transform.position.z)
+                                    : new Vector3(transform.position.x + 1f, transform.position.y - 2f,
+                                        transform.position.z),
+                                Quaternion.identity,
+                                transform);
+                            if (_isFacingRight){
+                                Instantiate(UnityEngine.Resources.Load<GameObject>
+                                        ("Prefabs/PFX/Player/Dash-Burst-Right"),
+                                    new Vector3(transform.position.x - 2f, transform.position.y - 2f, 
+                                        transform.position.z),
+                                    Quaternion.identity,
+                                    transform);
+                            }
+                            else{
+                                Instantiate(UnityEngine.Resources.Load<GameObject>
+                                        ("Prefabs/PFX/Player/Dash-Burst-Left"),
+                                    new Vector3(transform.position.x + 2f, transform.position.y - 2f, 
+                                        transform.position.z),
+                                    Quaternion.identity,
+                                    transform);
+                            }
                         }
 
                         break;
@@ -422,6 +449,32 @@ namespace Resources.Scripts.Player
                             _dashTimer = _dashDuration;
                             _dashDelayTimer = _dashDelay;
                             _shadowMeterScript.DecrementShadowMeter(_dashCost);
+                            // Spawn pfx:
+                            Instantiate(UnityEngine.Resources.Load<GameObject>
+                                    ("Prefabs/PFX/Player/Dash-Shadow"),
+                                _isFacingRight
+                                    ? new Vector3(transform.position.x - 4f, transform.position.y - 2f,
+                                        transform.position.z)
+                                    : new Vector3(transform.position.x + 1f, transform.position.y - 2f,
+                                        transform.position.z),
+                                Quaternion.identity,
+                                transform);
+                            if (_isFacingRight){
+                                Instantiate(UnityEngine.Resources.Load<GameObject>
+                                        ("Prefabs/PFX/Player/Dash-Burst-Right"),
+                                    new Vector3(transform.position.x - 2f, transform.position.y - 2f, 
+                                        transform.position.z),
+                                    Quaternion.identity,
+                                    transform);
+                            }
+                            else{
+                                Instantiate(UnityEngine.Resources.Load<GameObject>
+                                        ("Prefabs/PFX/Player/Dash-Burst-Left"),
+                                    new Vector3(transform.position.x + 2f, transform.position.y - 2f, 
+                                        transform.position.z),
+                                    Quaternion.identity,
+                                    transform);
+                            }
                         }
 
                         break;
@@ -439,6 +492,20 @@ namespace Resources.Scripts.Player
                     _shadowMeterScript.DecrementShadowMeter(_doubleJumpCost);
                     _doubleJumpAvailable = false;
                     _airTimer = _doubleJumpDelay;
+                    
+                    // Spawn pfx:
+                    Instantiate(UnityEngine.Resources.Load<GameObject>
+                            ("Prefabs/PFX/Player/Double-Jump-0"), 
+                        new Vector3(transform.position.x - 1f, transform.position.y - 2f,
+                                transform.position.z),
+                        Quaternion.identity,
+                        transform);
+                    Instantiate(UnityEngine.Resources.Load<GameObject>
+                            ("Prefabs/PFX/Player/Double-Jump-1"), 
+                        new Vector3(transform.position.x + 1f, transform.position.y - 2f,
+                            transform.position.z),
+                        Quaternion.identity,
+                        transform);
                 }
             }
         }

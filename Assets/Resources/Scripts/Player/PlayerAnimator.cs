@@ -14,6 +14,7 @@ namespace Resources.Scripts.Player{
         private static readonly int Falling = Animator.StringToHash("Falling");
         private static readonly int Land = Animator.StringToHash("Land");
         private static readonly int Dash = Animator.StringToHash("Dash");
+        private static readonly int DoubleJump = Animator.StringToHash("DoubleJump");
 
 
         private void Update(){
@@ -30,6 +31,7 @@ namespace Resources.Scripts.Player{
             _animator.SetBool(Falling, false);
             _animator.SetBool(Land, false);
             _animator.SetBool(Dash, false);
+            _animator.SetBool(DoubleJump, false);
         }
         private void ProcessStateAnimation(){
             ResetAnimator();
@@ -57,7 +59,7 @@ namespace Resources.Scripts.Player{
                 case playerMoveState.Damaged:
                     break;
                 case playerMoveState.DoubleJump:
-                    _animator.SetBool(Jump, true);
+                    _animator.SetBool(DoubleJump, true);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
