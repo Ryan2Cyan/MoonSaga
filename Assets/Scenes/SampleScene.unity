@@ -879,7 +879,9 @@ GameObject:
   - component: {fileID: 542220380}
   - component: {fileID: 542220384}
   - component: {fileID: 542220385}
+  - component: {fileID: 542220386}
   - component: {fileID: 542220378}
+  - component: {fileID: 542220387}
   - component: {fileID: 542220383}
   - component: {fileID: 542220382}
   - component: {fileID: 542220381}
@@ -943,8 +945,10 @@ MonoBehaviour:
   _shadowMeterScript: {fileID: 542220384}
   _playerCollisionScript: {fileID: 542220385}
   _monoBehaviourUtilityScript: {fileID: 1652220349}
+  _playerPfxSpawnerScript: {fileID: 542220386}
+  _groundCheckScript: {fileID: 542220387}
   _jumpForce: 214
-  _doubleJumpForce: 15
+  _doubleJumpForce: 18
   _dashSpeed: 30
   _runSpeed: 65
   _dashKnockBackX: 10
@@ -952,7 +956,7 @@ MonoBehaviour:
   _damagedKnockBackX: 10
   _damagedKnockBackY: 10
   _dashDuration: 0.2
-  _dashDelay: 0.4
+  _dashDelay: 0
   _dashKnockBackDelay: 0.15
   _damagedKnockBackDelay: 0.15
   _maxAirTime: 0.5
@@ -1060,12 +1064,44 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _boxCollider: {fileID: 542220382}
   _enemyCollision: 0
+--- !u!114 &542220386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542220377}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cfcee707821d67429402c0730dbde10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerMovementScript: {fileID: 542220380}
+  _lightDetectionScript: {fileID: 542220378}
+  _groundCheckScript: {fileID: 542220387}
+  _pfxParent: {fileID: 1786553935}
+  _dashOffsetX: 0
+  _dashOffsetY: 2
+  _doubleJumpOffsetX: 1
+  _doubleJumpOffsetY: 2
+--- !u!114 &542220387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542220377}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7444388f310ad804ab299e244fffd5eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _groundCollider: {fileID: 542220381}
   _isGrounded: 0
   _groundCheck: {fileID: 1056509081}
   _groundLayerMask:
     serializedVersion: 2
     m_Bits: 64
-  _ceilingCheck: {fileID: 1435981563}
 --- !u!4 &632902915 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7816715544607021992, guid: a4f6a731176159d4cae60743cb6961ab,
@@ -1476,7 +1512,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &872845063
 Transform:
   m_ObjectHideFlags: 0
@@ -4207,6 +4243,7 @@ GameObject:
   - component: {fileID: 2095361638}
   - component: {fileID: 2095361641}
   - component: {fileID: 2095361639}
+  - component: {fileID: 2095361640}
   - component: {fileID: 2095361637}
   - component: {fileID: 2095361636}
   - component: {fileID: 2095361635}
@@ -4343,11 +4380,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70c61dfe624200f4da63b16ef7ce9864, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enemyMovementScript: {fileID: 2095361641}
   _boxCollider: {fileID: 2095361635}
+--- !u!114 &2095361640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2095361634}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7444388f310ad804ab299e244fffd5eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _groundCollider: {fileID: 2095361635}
   _isGrounded: 0
-  _atEdge: 0
-  _wasAtEdge: 0
   _groundCheck: {fileID: 437193198}
   _groundLayerMask:
     serializedVersion: 2
@@ -4366,6 +4413,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _state: 0
   _enemyColliderScript: {fileID: 2095361639}
+  _groundCheckScript: {fileID: 2095361640}
   _runSpeed: 2.4
   _damagedKnockBackX: 15
   _damagedKnockBackY: 15

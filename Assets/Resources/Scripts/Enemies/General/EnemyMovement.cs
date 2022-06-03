@@ -1,4 +1,5 @@
 using System;
+using Resources.Scripts.General;
 using UnityEngine;
 
 namespace Resources.Scripts.Enemies.General{
@@ -10,6 +11,7 @@ namespace Resources.Scripts.Enemies.General{
         [SerializeField] private enemyMoveState _state;
         // Scripts:
         [SerializeField] private EnemyCollision _enemyColliderScript;
+        [SerializeField] private GroundCheck _groundCheckScript;
         // Movement Values:
         [Range(0, 100f)] [SerializeField] private float _runSpeed = 37.5f;
         [Range(0, 30.0f)] [SerializeField] private float _damagedKnockBackX = 15f;
@@ -44,7 +46,7 @@ namespace Resources.Scripts.Enemies.General{
         private void WalkingMovement(){
             
             // Move enemy left or right depending on direction:
-            if(_enemyColliderScript._isGrounded)
+            if(_groundCheckScript._isGrounded)
                 _rigidbody2D.velocity = _isFacingRight ? new Vector2(_runSpeed, 
                     _rigidbody2D.velocity.y) : new Vector2(-_runSpeed, _rigidbody2D.velocity.y);
             

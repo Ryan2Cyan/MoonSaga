@@ -17,6 +17,7 @@ namespace Resources.Scripts.Player
         [SerializeField] private PlayerCollision _playerCollisionScript;
         [SerializeField] private MonoBehaviourUtility _monoBehaviourUtilityScript;
         [SerializeField] private PlayerPFXSpawner _playerPfxSpawnerScript;
+        [SerializeField] private GroundCheck _groundCheckScript;
         private ActionMap _actionMapScript;
 
         // Movement Values
@@ -129,7 +130,7 @@ namespace Resources.Scripts.Player
             }
 
             // Player releases jump:
-            if (_jumpRelease && !_playerCollisionScript._isGrounded){
+            if (_jumpRelease && !_groundCheckScript._isGrounded){
                 _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _rigidbody2D.velocity.y / 2.0f);
                 _state = playerMoveState.AirControl;
             }
@@ -140,29 +141,18 @@ namespace Resources.Scripts.Player
         private void JumpMovement(){
 
             // Apply force when jumping:
-            if (_playerCollisionScript._isGrounded)
+            if (_groundCheckScript._isGrounded)
                 _rigidbody2D.AddForce(new Vector2(_rigidbody2D.velocity.x, _jumpForce));
             ApplyNormMovement(7.0f);
         }
         private void AirControlInput(){
 
             // If player touches the ground [Land]:
-            if (_playerCollisionScript._isGrounded){
+            if (_groundCheckScript._isGrounded){
                 _state = playerMoveState.Land;
-                // If player in light, spawn light leaves:
-                if (_shadowMeterScript._lightDetectionScript._inLight){
-                    Instantiate(UnityEngine.Resources.Load<GameObject>
-                            ("Prefabs/Environment/CelestialGrove/PFX/Land-Leaves-Light"),
-                        _playerCollisionScript._groundCheck.position,
-                        Quaternion.identity);
-                }
-                // If player in light, spawn shadow leaves:
-                else{
-                    Instantiate(UnityEngine.Resources.Load<GameObject>
-                            ("Prefabs/Environment/CelestialGrove/PFX/Land-Leaves"),
-                        _playerCollisionScript._groundCheck.position,
-                        Quaternion.identity);
-                }
+                
+                // Spawn pfx:
+                _playerPfxSpawnerScript.SpawnLandPfx();
             }
 
             DoubleJumpCheck();
@@ -376,7 +366,7 @@ namespace Resources.Scripts.Player
 
         // Input checks for switching state:
         private void SetDefaultState(){
-            _state = _playerCollisionScript._isGrounded switch{
+            _state = _groundCheckScript._isGrounded switch{
                 true => playerMoveState.Idle,
                 false => playerMoveState.AirControl
             };
@@ -384,13 +374,13 @@ namespace Resources.Scripts.Player
         private void IdleCheck(){
 
             // Check if the player is moving on the x-axis [Walking]:
-            if (_horizontalInput == 0.0f && _playerCollisionScript._isGrounded)
+            if (_horizontalInput == 0.0f && _groundCheckScript._isGrounded)
                 _state = playerMoveState.Idle;
         }
         private void WalkCheck(){
 
             // Check if the player is moving on the x-axis [Walking]:
-            if (_horizontalInput < 0.0f || _horizontalInput > 0.0f && _playerCollisionScript._isGrounded)
+            if (_horizontalInput < 0.0f || _horizontalInput > 0.0f && _groundCheckScript._isGrounded)
                 _state = playerMoveState.Walking;
         }
         private void JumpCheck(){
@@ -404,7 +394,7 @@ namespace Resources.Scripts.Player
 
             // Check if the player has enough shadow meter:
             if (_shadowMeterScript._shadowMeter >= _dashCost){
-                switch (_playerCollisionScript._isGrounded){
+                switch (_groundCheckScript._isGrounded){
                     // Dash while in-air:
                     case false:{
                         if (_dashPress && _dashAvailable){
