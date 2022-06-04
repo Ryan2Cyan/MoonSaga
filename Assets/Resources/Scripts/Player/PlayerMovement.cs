@@ -71,7 +71,6 @@ namespace Resources.Scripts.Player
         
         // Bounce dive values:
         [SerializeField] private bool _hasBounced;
-        [SerializeField] private float _bounceDelay;
         [SerializeField] private float _bounceAirTimer;
         [SerializeField] private float _bounceAirTime;
 
@@ -257,23 +256,23 @@ namespace Resources.Scripts.Player
         }
         private void BounceDiveInput(){
 
+            _playerCollisionScript._boxCollider.enabled = true;
             // If the player hits the ground [Land]:
             if (_groundCheckScript._isGrounded)
                 _state = playerMoveState.Land;
             
 
             // Reset velocity after certain period after bounce:
-            _bounceAirTimer -= Time.deltaTime;
-            if (_bounceAirTimer < 0.0f && _hasBounced){
-                _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _rigidbody2D.velocity.y / 2.0f);
-                _hasBounced = false;
-            }
+            // _bounceAirTimer -= Time.deltaTime;
+            // if (_bounceAirTimer < 0.0f && _hasBounced){
+            //     _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _rigidbody2D.velocity.y / 2.0f);
+            //     _hasBounced = false;
+            // }
             
             // If player collides with enemy [BounceDiveHit]:
             if (_playerCollisionScript._enemyCollision){
                 _state = playerMoveState.BounceDiveHit;
                 _rigidbody2D.velocity = new Vector2(0f, 0f);
-                _bounceAirTimer = _bounceDelay;
             }
 
             DoubleJumpCheck();
@@ -290,13 +289,19 @@ namespace Resources.Scripts.Player
         private void BounceDiveHitInput(){
             
             // Once bounce force has been applied [BounceDive]:
-            if (_bounceAirTimer <= 0.0f){
-                _state = playerMoveState.BounceDive;
-                _bounceAirTimer = _bounceAirTime;
-                _hasBounced = true;
-                _doubleJumpAvailable = true;
-                _dashAvailable = true;
-            }
+            // if (_bounceAirTimer <= 0.0f){
+            //     _state = playerMoveState.BounceDive;
+            //     _bounceAirTimer = _bounceAirTime;
+            //     _hasBounced = true;
+            //     _doubleJumpAvailable = true;
+            //     _dashAvailable = true;
+            // }
+           
+            _state = playerMoveState.BounceDive;
+            _bounceAirTimer = _bounceAirTime;
+            _hasBounced = true;
+            _doubleJumpAvailable = true;
+            _dashAvailable = true;
 
             _bounceAirTimer -= Time.deltaTime;
         }
@@ -304,8 +309,9 @@ namespace Resources.Scripts.Player
         private void BounceDiveHitMovement(){
             
             // Apply bounce force:
-            if (_bounceAirTimer < 0.0f)
-                _rigidbody2D.AddForce(new Vector2(_rigidbody2D.velocity.x, _jumpForce * 7f));
+            
+            _rigidbody2D.AddForce(new Vector2(_rigidbody2D.velocity.x, _jumpForce * 4f));
+            _playerCollisionScript._boxCollider.enabled = false;
             
             ApplyNormMovement(8.0f);
         }
@@ -528,6 +534,7 @@ namespace Resources.Scripts.Player
                 _knockBackTimer = _damagedKnockBackDelay;
                 _state = playerMoveState.Damaged;
                 _monoBehaviourUtilityScript.StartSleep(0.2f);
+                Debug.Log("Damage");
             }
         }
         private void BounceDiveCheck(){
