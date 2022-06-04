@@ -756,7 +756,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 437193197}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.068, z: 0}
+  m_LocalPosition: {x: -0.022, y: -0.111, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 2095361638}
@@ -978,9 +978,7 @@ MonoBehaviour:
   _isFacingRight: 1
   _dashAvailable: 0
   _doubleJumpAvailable: 0
-  OnLandEvent:
-    m_PersistentCalls:
-      m_Calls: []
+  _bounceDiveAvailable: 0
 --- !u!58 &542220381
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1074,6 +1072,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4704847312f93a439348f4e3daaa09a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _groundCheckScript: {fileID: 542220387}
+  _playerMovementScript: {fileID: 542220380}
   _boxCollider: {fileID: 542220382}
   _enemyCollision: 0
 --- !u!114 &542220386
@@ -4439,6 +4439,8 @@ GameObject:
   - component: {fileID: 2095361637}
   - component: {fileID: 2095361636}
   - component: {fileID: 2095361635}
+  - component: {fileID: 2095361643}
+  - component: {fileID: 2095361642}
   m_Layer: 0
   m_Name: Temp-Enemy
   m_TagString: Enemy
@@ -4456,21 +4458,21 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.0014521442, y: -0.0029043555}
+  m_Offset: {x: -0.019610636, y: 0.013221074}
   m_SpriteTilingProperty:
-    border: {x: 0.049999997, y: 0.049999997, z: 0.049999997, w: 0.049999997}
+    border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.16, y: 0.16}
+    oldSize: {x: 0.73, y: 0.73}
     newSize: {x: 0.16, y: 0.16}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.14547822, y: 0.15419129}
+  m_Size: {x: 0.23021786, y: 0.12194043}
   m_EdgeRadius: 0
 --- !u!50 &2095361636
 Rigidbody2D:
@@ -4534,7 +4536,8 @@ SpriteRenderer:
   m_SortingLayerID: -1448446891
   m_SortingLayer: -5
   m_SortingOrder: 0
-  m_Sprite: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: -4231205330561720506, guid: 081fa8bafe7500d44b268f755c140a91,
+    type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -4553,8 +4556,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2095361634}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 37.09, y: -2, z: 0}
-  m_LocalScale: {x: 9.2667, y: 9.2667, z: 9.2667}
+  m_LocalPosition: {x: -31.51, y: -5.23, z: 0}
+  m_LocalScale: {x: -10, y: 10, z: 1}
   m_Children:
   - {fileID: 437193198}
   m_Father: {fileID: 0}
@@ -4586,7 +4589,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7444388f310ad804ab299e244fffd5eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _groundCollider: {fileID: 2095361635}
+  _groundCollider: {fileID: 2095361643}
   _isGrounded: 0
   _groundCheck: {fileID: 437193198}
   _groundLayerMask:
@@ -4612,6 +4615,41 @@ MonoBehaviour:
   _damagedKnockBackY: 15
   _damagedKnockBackDelay: 0.1
   _isFacingRight: 1
+--- !u!95 &2095361642
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2095361634}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: aa9c50af40a37c04fa11e62b4acfc4c3, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!58 &2095361643
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2095361634}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.018896902, y: -0.05802549}
+  serializedVersion: 2
+  m_Radius: 0.06913773
 --- !u!1 &2099517092
 GameObject:
   m_ObjectHideFlags: 0

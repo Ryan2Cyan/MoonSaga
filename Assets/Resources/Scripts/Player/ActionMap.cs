@@ -49,6 +49,14 @@ public class @ActionMap : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""DiveBounce"",
+                    ""type"": ""Button"",
+                    ""id"": ""1fb01794-f4ee-4403-8d46-5d8527888e3c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -139,6 +147,17 @@ public class @ActionMap : IInputActionCollection, IDisposable
                     ""action"": ""Dash"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a490bcf6-7e12-47df-b9e9-7f1c04656f7e"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": ""Press(pressPoint=0.1)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DiveBounce"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -151,6 +170,7 @@ public class @ActionMap : IInputActionCollection, IDisposable
         m_Player_JumpRelease = m_Player.FindAction("JumpRelease", throwIfNotFound: true);
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
+        m_Player_DiveBounce = m_Player.FindAction("DiveBounce", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -204,6 +224,7 @@ public class @ActionMap : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_JumpRelease;
     private readonly InputAction m_Player_Movement;
     private readonly InputAction m_Player_Dash;
+    private readonly InputAction m_Player_DiveBounce;
     public struct PlayerActions
     {
         private @ActionMap m_Wrapper;
@@ -212,6 +233,7 @@ public class @ActionMap : IInputActionCollection, IDisposable
         public InputAction @JumpRelease => m_Wrapper.m_Player_JumpRelease;
         public InputAction @Movement => m_Wrapper.m_Player_Movement;
         public InputAction @Dash => m_Wrapper.m_Player_Dash;
+        public InputAction @DiveBounce => m_Wrapper.m_Player_DiveBounce;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -233,6 +255,9 @@ public class @ActionMap : IInputActionCollection, IDisposable
                 @Dash.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
                 @Dash.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
                 @Dash.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
+                @DiveBounce.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDiveBounce;
+                @DiveBounce.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDiveBounce;
+                @DiveBounce.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDiveBounce;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -249,6 +274,9 @@ public class @ActionMap : IInputActionCollection, IDisposable
                 @Dash.started += instance.OnDash;
                 @Dash.performed += instance.OnDash;
                 @Dash.canceled += instance.OnDash;
+                @DiveBounce.started += instance.OnDiveBounce;
+                @DiveBounce.performed += instance.OnDiveBounce;
+                @DiveBounce.canceled += instance.OnDiveBounce;
             }
         }
     }
@@ -259,5 +287,6 @@ public class @ActionMap : IInputActionCollection, IDisposable
         void OnJumpRelease(InputAction.CallbackContext context);
         void OnMovement(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
+        void OnDiveBounce(InputAction.CallbackContext context);
     }
 }

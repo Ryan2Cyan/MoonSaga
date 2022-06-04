@@ -1,7 +1,6 @@
 using System;
 using Resources.Scripts.General;
 using UnityEngine;
-using UnityEngine.Events;
 
 // Code within this class is responsible (only) for the movement of the 
 // player character.
@@ -48,6 +47,7 @@ namespace Resources.Scripts.Player
         private bool _jumpPress;
         private bool _jumpRelease;
         private bool _dashPress;
+        private bool _diveBouncePress;
 
         // Air control values:
         private float _airTimer;
@@ -68,9 +68,12 @@ namespace Resources.Scripts.Player
 
         // Double jump values:
         [SerializeField] private bool _doubleJumpAvailable;
-
-        public UnityEvent OnLandEvent;
-
+        
+        // Bounce dive values:
+        [SerializeField] private bool _hasBounced;
+        [SerializeField] private float _bounceDelay;
+        [SerializeField] private float _bounceAirTimer;
+        [SerializeField] private float _bounceAirTime;
 
 
 
@@ -137,6 +140,7 @@ namespace Resources.Scripts.Player
 
             DashCheck();
             DamagedCheck();
+            BounceDiveCheck();
         }
         private void JumpMovement(){
 
@@ -158,6 +162,7 @@ namespace Resources.Scripts.Player
             DoubleJumpCheck();
             DashCheck();
             DamagedCheck();
+            BounceDiveCheck();
         }
         private void AirControlMovement(){
             ApplyNormMovement(7.0f);
@@ -237,7 +242,6 @@ namespace Resources.Scripts.Player
                 _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _doubleJumpForce);
             ApplyNormMovement(7.0f);
         }
-
         private void DamagedInput(){
             
             // Knock back timer:
@@ -245,12 +249,65 @@ namespace Resources.Scripts.Player
             if (_knockBackTimer <= 0f)
                 SetDefaultState();
         }
-
         private void DamagedMovement(){
             // Knock back the player:
             _rigidbody2D.velocity =
                 _isFacingRight ? new Vector2(-_dashKnockBackX, _dashKnockBackY) : 
                     new Vector2(_damagedKnockBackX, _damagedKnockBackY);
+        }
+        private void BounceDiveInput(){
+
+            // If the player hits the ground [Land]:
+            if (_groundCheckScript._isGrounded)
+                _state = playerMoveState.Land;
+            
+
+            // Reset velocity after certain period after bounce:
+            _bounceAirTimer -= Time.deltaTime;
+            if (_bounceAirTimer < 0.0f && _hasBounced){
+                _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _rigidbody2D.velocity.y / 2.0f);
+                _hasBounced = false;
+            }
+            
+            // If player collides with enemy [BounceDiveHit]:
+            if (_playerCollisionScript._enemyCollision){
+                _state = playerMoveState.BounceDiveHit;
+                _rigidbody2D.velocity = new Vector2(0f, 0f);
+                _bounceAirTimer = _bounceDelay;
+            }
+
+            DoubleJumpCheck();
+        }
+        private void BounceDiveMovement(){
+            
+            // Clamp velocity to prevent high upward force:
+            if (_rigidbody2D.velocity.y >= 30f){
+                _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, 30f);
+            }
+
+            ApplyNormMovement(8.0f);
+        }
+        private void BounceDiveHitInput(){
+            
+            // Once bounce force has been applied [BounceDive]:
+            if (_bounceAirTimer <= 0.0f){
+                _state = playerMoveState.BounceDive;
+                _bounceAirTimer = _bounceAirTime;
+                _hasBounced = true;
+                _doubleJumpAvailable = true;
+                _dashAvailable = true;
+            }
+
+            _bounceAirTimer -= Time.deltaTime;
+        }
+
+        private void BounceDiveHitMovement(){
+            
+            // Apply bounce force:
+            if (_bounceAirTimer < 0.0f)
+                _rigidbody2D.AddForce(new Vector2(_rigidbody2D.velocity.x, _jumpForce * 7f));
+            
+            ApplyNormMovement(8.0f);
         }
 
         // Process state functions:
@@ -282,6 +339,12 @@ namespace Resources.Scripts.Player
                     break;
                 case playerMoveState.DoubleJump:
                     DoubleJumpInput();
+                    break;
+                case playerMoveState.BounceDive:
+                    BounceDiveInput();
+                    break;
+                case playerMoveState.BounceDiveHit:
+                    BounceDiveHitInput();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -316,6 +379,12 @@ namespace Resources.Scripts.Player
                 case playerMoveState.DoubleJump:
                     DoubleJumpMovement();
                     break;
+                case playerMoveState.BounceDive:
+                    BounceDiveMovement();
+                    break;
+                case playerMoveState.BounceDiveHit:
+                    BounceDiveHitMovement();
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -347,6 +416,7 @@ namespace Resources.Scripts.Player
             _jumpPress = _actionMapScript.Player.JumpPress.triggered;
             _jumpRelease = _actionMapScript.Player.JumpRelease.triggered;
             _dashPress = _actionMapScript.Player.Dash.triggered;
+            _diveBouncePress = _actionMapScript.Player.DiveBounce.triggered;
 
             // Process movement:
             if (_actionMapScript.Player.Movement.ReadValue<Vector2>().x > 0f)
@@ -362,6 +432,7 @@ namespace Resources.Scripts.Player
             _jumpPress = false;
             _jumpRelease = false;
             _dashPress = false;
+            _diveBouncePress = false;
         }
 
         // Input checks for switching state:
@@ -459,9 +530,16 @@ namespace Resources.Scripts.Player
                 _monoBehaviourUtilityScript.StartSleep(0.2f);
             }
         }
+        private void BounceDiveCheck(){
+            // Check if the player hit an enemy:
+            if (_diveBouncePress){
+                _bounceAirTimer = _bounceAirTime;
+                _state = playerMoveState.BounceDive;
+            }
+        }
     }
 
     internal enum playerMoveState{
-        Idle, Walking, Jump, DoubleJump, AirControl, Land, Dash, DashHit, Damaged
+        Idle, Walking, Jump, DoubleJump, AirControl, Land, Dash, DashHit, Damaged, BounceDive, BounceDiveHit
     }
 }

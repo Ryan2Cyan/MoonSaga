@@ -36,6 +36,14 @@
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
+                },
+                {
+                    "name": "DiveBounce",
+                    "type": "Button",
+                    "id": "1fb01794-f4ee-4403-8d46-5d8527888e3c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
                 }
             ],
             "bindings": [
@@ -124,6 +132,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Dash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a490bcf6-7e12-47df-b9e9-7f1c04656f7e",
+                    "path": "<Keyboard>/e",
+                    "interactions": "Press(pressPoint=0.1)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DiveBounce",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -1,4 +1,3 @@
-using System;
 using Resources.Scripts.General;
 using UnityEngine;
 
@@ -10,6 +9,7 @@ namespace Resources.Scripts.Player{
         // Scripts:
         [SerializeField] private GroundCheck _groundCheckScript;
         [SerializeField] private PlayerMovement _playerMovementScript;
+        [SerializeField] private GameObject[] _sceneEnemies;
         
         // Trigger collider:
         [SerializeField] internal Collider2D _boxCollider;
@@ -20,6 +20,12 @@ namespace Resources.Scripts.Player{
 
         private void Awake(){
             _rigidbody = GetComponent<Rigidbody2D>();
+            
+            // Ignore collision with enemy ground collider:
+            _sceneEnemies = GameObject.FindGameObjectsWithTag("Enemy");
+            foreach (GameObject enemy in _sceneEnemies){
+                Physics2D.IgnoreCollision(enemy.GetComponent<CircleCollider2D>(), GetComponent<CircleCollider2D>());
+            }
         }
 
         private void OnTriggerEnter2D(Collider2D other){
