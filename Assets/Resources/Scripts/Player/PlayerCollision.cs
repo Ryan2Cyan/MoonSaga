@@ -27,7 +27,6 @@ namespace Resources.Scripts.Player{
                 Physics2D.IgnoreCollision(enemy.GetComponent<CircleCollider2D>(), GetComponent<CircleCollider2D>());
             }
         }
-
         private void OnTriggerEnter2D(Collider2D other){
 
             if (other.gameObject.CompareTag("Enemy"))
@@ -37,7 +36,6 @@ namespace Resources.Scripts.Player{
                 _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, _rigidbody.velocity.y);
             }
         }
-
         private void OnTriggerExit2D(Collider2D other){
             
             if (other.gameObject.CompareTag("Enemy"))

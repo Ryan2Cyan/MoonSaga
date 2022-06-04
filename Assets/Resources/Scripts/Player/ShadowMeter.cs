@@ -8,9 +8,6 @@ namespace Resources.Scripts.Player{
         
         [SerializeField] internal LightDetection _lightDetectionScript; 
         [SerializeField] private Slider _shadowSlider;
-        [SerializeField] private GameObject _hoodUpSprite;
-        [SerializeField] private GameObject _hoodDownSprite;
-        [SerializeField] private Animator _animator;
 
         [SerializeField] internal int _shadowMeter;
         [SerializeField] private int _shadowValue = 1;
@@ -25,14 +22,10 @@ namespace Resources.Scripts.Player{
             // Set values:
             UtilityFunctions.SetSlider(ref _shadowSlider, _minValue, _maxValue, _minValue);
         }
-
         private void Update(){
             
             // Update shadow meter:
             IncrementShadowMeter();
-            
-            // Update player sprite:
-            UpdateSprite();
         }
         private void IncrementShadowMeter(){
 
@@ -58,23 +51,9 @@ namespace Resources.Scripts.Player{
                 _shadowSlider.value = _shadowMeter;
             }
         }
-
         internal void DecrementShadowMeter(int value){
             _shadowMeter -= value;
             _shadowSlider.value -= value;
-        }
-
-        private void UpdateSprite(){
-            switch (_lightDetectionScript._inLight){
-                case true:
-                    _hoodUpSprite.SetActive(true);
-                    _hoodDownSprite.SetActive(false);
-                    break;
-                case false:
-                    _hoodUpSprite.SetActive(false);
-                    _hoodDownSprite.SetActive(true);
-                    break;
-            }
         }
     }
 }

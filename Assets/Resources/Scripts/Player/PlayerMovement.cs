@@ -70,7 +70,6 @@ namespace Resources.Scripts.Player
         [SerializeField] private bool _doubleJumpAvailable;
         
         // Bounce dive values:
-        [SerializeField] private bool _hasBounced;
         [SerializeField] private float _bounceAirTimer;
         [SerializeField] private float _bounceAirTime;
 
@@ -261,13 +260,6 @@ namespace Resources.Scripts.Player
             if (_groundCheckScript._isGrounded)
                 _state = playerMoveState.Land;
             
-
-            // Reset velocity after certain period after bounce:
-            // _bounceAirTimer -= Time.deltaTime;
-            // if (_bounceAirTimer < 0.0f && _hasBounced){
-            //     _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _rigidbody2D.velocity.y / 2.0f);
-            //     _hasBounced = false;
-            // }
             
             // If player collides with enemy [BounceDiveHit]:
             if (_playerCollisionScript._enemyCollision){
@@ -287,25 +279,14 @@ namespace Resources.Scripts.Player
             ApplyNormMovement(8.0f);
         }
         private void BounceDiveHitInput(){
-            
-            // Once bounce force has been applied [BounceDive]:
-            // if (_bounceAirTimer <= 0.0f){
-            //     _state = playerMoveState.BounceDive;
-            //     _bounceAirTimer = _bounceAirTime;
-            //     _hasBounced = true;
-            //     _doubleJumpAvailable = true;
-            //     _dashAvailable = true;
-            // }
-           
+
             _state = playerMoveState.BounceDive;
             _bounceAirTimer = _bounceAirTime;
-            _hasBounced = true;
             _doubleJumpAvailable = true;
             _dashAvailable = true;
 
             _bounceAirTimer -= Time.deltaTime;
         }
-
         private void BounceDiveHitMovement(){
             
             // Apply bounce force:
@@ -394,7 +375,6 @@ namespace Resources.Scripts.Player
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
             ResetInput();
         }
 
