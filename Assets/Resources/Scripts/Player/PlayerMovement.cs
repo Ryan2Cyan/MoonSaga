@@ -18,7 +18,7 @@ namespace Resources.Scripts.Player
         [SerializeField] private MonoBehaviourUtility _monoBehaviourUtilityScript;
         [SerializeField] private PlayerPFXSpawner _playerPfxSpawnerScript;
         [SerializeField] private GroundCheck _groundCheckScript;
-        [SerializeField] private GameData _gameDataScript;
+        [SerializeField] private PlayerUIHandler _playerUIHandler;
         private ActionMap _actionMapScript;
 
         // Movement Values
@@ -517,7 +517,7 @@ namespace Resources.Scripts.Player
                 _knockBackTimer = _damagedKnockBackDelay;
                 _state = playerMoveState.Damaged;
                 _monoBehaviourUtilityScript.StartSleep(0.2f);
-                _gameDataScript.hitPoints -= 1;
+                _playerUIHandler.ReduceHitPoint();
             }
         }
         private void BounceDiveCheck(){

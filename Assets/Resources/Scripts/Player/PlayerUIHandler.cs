@@ -24,6 +24,8 @@ namespace Resources.Scripts.Player{
         // Hit points:
         [SerializeField] private GameObject _hitPointsParent;
         [SerializeField] private List<Image> _hitPointUI;
+        [SerializeField] private float _hitPointSubtractDelay = 0.1f;
+        private float _hitPointSubtractTimer;
 
 
         private void Awake(){
@@ -39,7 +41,8 @@ namespace Resources.Scripts.Player{
         }
 
         private void Update(){
-            
+
+            _hitPointSubtractTimer -= Time.deltaTime;
             // Update shadow slider:
             _shadowSlider.value = _shadowMeterScript._shadowMeter;
             // Update subtract slider:
@@ -67,12 +70,26 @@ namespace Resources.Scripts.Player{
                     _subtractSlider.value += 1;
             }
         }
-
+        public void ReduceHitPoint(){
+            _gameDataScript.hitPoints--;
+            _hitPointSubtractTimer = _hitPointSubtractDelay;
+        }
         private void UpdateHitPoints(){
             for (int i = 0; i < _gameDataScript.maxPoints; i++){
-                _hitPointUI[i].sprite = UnityEngine.Resources.Load<Sprite>(i < _gameDataScript.hitPoints ? 
-                    "Sprites/UI/Hitpoints/hitpoint-full" : "Sprites/UI/Hitpoints/hitpoint-empty");
+                // Full hit points:
+                if (i < _gameDataScript.hitPoints){
+                    _hitPointUI[i].sprite = UnityEngine.Resources.Load<Sprite>("Sprites/UI/Hitpoints/hitpoint-full");
+                }
+                // Hit point the player just lost:
+                else if (i == _gameDataScript.hitPoints && _hitPointSubtractTimer > 0f){
+                    _hitPointUI[i].sprite = UnityEngine.Resources.Load<Sprite>("Sprites/UI/Hitpoints/hitpoint-subtract");
+                }
+                // Empty hit points:
+                else{
+                    _hitPointUI[i].sprite = UnityEngine.Resources.Load<Sprite>("Sprites/UI/Hitpoints/hitpoint-empty");
+                }
             }
         }
     }
 }
+
