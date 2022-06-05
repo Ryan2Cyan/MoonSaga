@@ -1,5 +1,6 @@
 using System;
 using Resources.Scripts.General;
+using Resources.Scripts.Managers;
 using UnityEngine;
 
 // Code within this class is responsible (only) for the movement of the 
@@ -17,6 +18,7 @@ namespace Resources.Scripts.Player
         [SerializeField] private MonoBehaviourUtility _monoBehaviourUtilityScript;
         [SerializeField] private PlayerPFXSpawner _playerPfxSpawnerScript;
         [SerializeField] private GroundCheck _groundCheckScript;
+        [SerializeField] private GameData _gameDataScript;
         private ActionMap _actionMapScript;
 
         // Movement Values
@@ -34,10 +36,6 @@ namespace Resources.Scripts.Player
         [SerializeField] private float _damagedKnockBackDelay = 0.1f;
         [Range(0, 1.0f)] [SerializeField] private float _maxAirTime = 0.5f;
         [Range(0, 1.0f)] [SerializeField] private float _doubleJumpDelay = 0.15f;
-
-        // Attack costs:
-        [Range(0, 100)] [SerializeField] private int _dashCost = 20;
-        [Range(0, 100)] [SerializeField] private int _doubleJumpCost = 10;
 
         // Orientation:
         [SerializeField] internal bool _isFacingRight = true;
@@ -72,6 +70,11 @@ namespace Resources.Scripts.Player
         // Bounce dive values:
         [SerializeField] private float _bounceAirTimer;
         [SerializeField] private float _bounceAirTime;
+        
+        // Attack costs:
+        [Range(0, 100)] [SerializeField] private int _dashCost = 20;
+        [Range(0, 100)] [SerializeField] private int _doubleJumpCost = 10;
+        [Range(0, 100)] [SerializeField] private int _diveCost = 40;
 
 
 
@@ -514,14 +517,15 @@ namespace Resources.Scripts.Player
                 _knockBackTimer = _damagedKnockBackDelay;
                 _state = playerMoveState.Damaged;
                 _monoBehaviourUtilityScript.StartSleep(0.2f);
-                Debug.Log("Damage");
+                _gameDataScript.hitPoints -= 1;
             }
         }
         private void BounceDiveCheck(){
             // Check if the player hit an enemy:
-            if (_diveBouncePress){
+            if (_diveBouncePress && _shadowMeterScript._shadowMeter >= _diveCost){
                 _bounceAirTimer = _bounceAirTime;
                 _state = playerMoveState.BounceDive;
+                _shadowMeterScript.DecrementShadowMeter(_diveCost);
             }
         }
     }
