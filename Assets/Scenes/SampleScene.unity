@@ -412,7 +412,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &96665911
 Transform:
   m_ObjectHideFlags: 0
@@ -514,6 +514,10 @@ MonoBehaviour:
   _playerMovementScript: {fileID: 542220380}
   _state: 0
   _animator: {fileID: 96665912}
+  _spriteRenderer: {fileID: 96665913}
+  _iFrameColor: {r: 0.3490566, g: 0.3490566, b: 0.3490566, a: 1}
+  _lerpTime: 0.05
+  _lerpSpeed: 25
 --- !u!1 &156712805
 GameObject:
   m_ObjectHideFlags: 0
@@ -605,6 +609,125 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1465442590}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &393551224
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 240664199051298241, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 240664199051298241, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -5.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 240664199051298241, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.20985352
+      objectReference: {fileID: 0}
+    - target: {fileID: 240664199051298241, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -1.4785264
+      objectReference: {fileID: 0}
+    - target: {fileID: 240664199051298241, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 240664199051298241, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 240664199051298241, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 240664199051298241, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 240664199051298241, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 240664199051298241, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 240664199051298241, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 449016842774004773, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: looping
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 449016842774004773, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: ShapeModule.angle
+      value: 0.95
+      objectReference: {fileID: 0}
+    - target: {fileID: 449016842774004773, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: ShapeModule.radius.value
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 449016842774004773, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 449016842774004773, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 449016842774004773, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 449016842774004773, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 449016842774004773, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: SizeModule.curve.maxCurve.m_Curve.Array.data[1].value
+      value: 0.47273254
+      objectReference: {fileID: 0}
+    - target: {fileID: 449016842774004773, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: EmissionModule.m_Bursts.Array.data[0].countCurve.scalar
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2819249993032881892, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: m_Name
+      value: Double-Jump-Shadow-0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2819249993032881892, guid: 1e6d1ee304b256f4b93f8135d87a424f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 1e6d1ee304b256f4b93f8135d87a424f, type: 3}
 --- !u!4 &401924511 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6034168422677770765, guid: 8a63c46da8e368541b2e42e8eb655bc1,
@@ -1167,6 +1290,8 @@ MonoBehaviour:
   _dashCost: 40
   _doubleJumpCost: 25
   _diveCost: 40
+  _damageIFrames: 3
+  _inIFrames: 0
 --- !u!58 &542220381
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -4857,7 +4982,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.73, y: 0.73}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -4897,6 +5022,10 @@ MonoBehaviour:
   _playerMovementScript: {fileID: 542220380}
   _state: 0
   _animator: {fileID: 1939667212}
+  _spriteRenderer: {fileID: 1939667211}
+  _iFrameColor: {r: 0.34901962, g: 0.34901962, b: 0.34901962, a: 1}
+  _lerpTime: 0.05
+  _lerpSpeed: 25
 --- !u!1001 &1960163271
 PrefabInstance:
   m_ObjectHideFlags: 0

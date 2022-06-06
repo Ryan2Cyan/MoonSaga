@@ -1,4 +1,5 @@
 using System;
+using Resources.Scripts.General;
 using UnityEngine;
 
 namespace Resources.Scripts.Player{
@@ -7,6 +8,13 @@ namespace Resources.Scripts.Player{
         [SerializeField] private PlayerMovement _playerMovementScript;
         [SerializeField] private playerMoveState _state;
         [SerializeField] private Animator _animator;
+        [SerializeField] private SpriteRenderer _spriteRenderer;
+        
+        [SerializeField] private Color _iFrameColor;
+        private bool _lerpTarget;
+        [SerializeField] private float _lerpTime = 0.1f;
+        [SerializeField] private float _lerpSpeed = 0.1f;
+        private float _lerpTimer;
         
         // Property Indexes:
         private static readonly int Walk = Animator.StringToHash("Walk");
@@ -15,7 +23,7 @@ namespace Resources.Scripts.Player{
         private static readonly int Land = Animator.StringToHash("Land");
         private static readonly int Dash = Animator.StringToHash("Dash");
         private static readonly int DoubleJump = Animator.StringToHash("DoubleJump");
-
+        private static readonly int Damaged = Animator.StringToHash("Damaged");
 
         private void Update(){
             // Assign player's current state:
@@ -23,6 +31,10 @@ namespace Resources.Scripts.Player{
             
             // Change animation based on player's current state:
             ProcessStateAnimation();
+            
+            // Flash when in i frames:
+            _lerpTimer = _lerpTime;
+            IFramesFlash();
         }
 
         private void ResetAnimator(){
@@ -32,6 +44,7 @@ namespace Resources.Scripts.Player{
             _animator.SetBool(Land, false);
             _animator.SetBool(Dash, false);
             _animator.SetBool(DoubleJump, false);
+            _animator.SetBool(Damaged, false);
         }
         private void ProcessStateAnimation(){
             ResetAnimator();
@@ -57,6 +70,7 @@ namespace Resources.Scripts.Player{
                     _animator.SetBool(Falling, true);
                     break;
                 case playerMoveState.Damaged:
+                    _animator.SetBool(Damaged, true);
                     break;
                 case playerMoveState.DoubleJump:
                     _animator.SetBool(DoubleJump, true);
@@ -70,6 +84,25 @@ namespace Resources.Scripts.Player{
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private void IFramesFlash(){
+            // If player is in i frames, flash black:
+            if (_playerMovementScript._inIFrames){
+                _spriteRenderer.color = UtilityFunctions.TwoColorLerpOverTime(
+                        _spriteRenderer.color,
+                        Color.white,
+                        _iFrameColor,
+                        _lerpSpeed,
+                        ref _lerpTarget,
+                        ref _lerpTimer,
+                        _lerpTime
+                        );
+            }
+            // If player is not in i frames, stay normal color:
+            else if(_spriteRenderer.color != Color.white)
+                _spriteRenderer.color = Color.Lerp(_spriteRenderer.color, Color.white, _lerpSpeed);
+            
         }
     }
 }
