@@ -44,5 +44,5 @@ Material:
     m_Floats:
     - _InLight: 0
     m_Colors:
-    - _Color: {r: 4.214756, g: 5.3403134, b: 0, a: 0}
+    - _Color: {r: 4.621482, g: 5.17915, b: 2.5162852, a: 0}
   m_BuildTextureStacks: []
