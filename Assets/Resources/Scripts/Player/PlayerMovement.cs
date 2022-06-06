@@ -1,6 +1,5 @@
 using System;
 using Resources.Scripts.General;
-using Resources.Scripts.Managers;
 using UnityEngine;
 
 // Code within this class is responsible (only) for the movement of the 
@@ -75,7 +74,11 @@ namespace Resources.Scripts.Player
         [Range(0, 100)] [SerializeField] private int _dashCost = 20;
         [Range(0, 100)] [SerializeField] private int _doubleJumpCost = 10;
         [Range(0, 100)] [SerializeField] private int _diveCost = 40;
-
+        
+        // Damage values:
+        [SerializeField] private float _damageIFrames = 0.5f;
+        [SerializeField] internal bool _inIFrames;
+        private float _damageIFramesTimer;
 
 
         private void Awake(){
@@ -513,12 +516,19 @@ namespace Resources.Scripts.Player
         }
         private void DamagedCheck(){
             // Check if the player hit an enemy:
-            if (_playerCollisionScript._enemyCollision){
+            if (_playerCollisionScript._enemyCollision && !_inIFrames){
                 _knockBackTimer = _damagedKnockBackDelay;
                 _state = playerMoveState.Damaged;
                 _monoBehaviourUtilityScript.StartSleep(0.2f);
                 _playerUIHandler.ReduceHitPoint();
+                _damageIFramesTimer = _damageIFrames;
+                _inIFrames = true;
             }
+            
+            // Check for i frames:
+            _damageIFramesTimer -= Time.deltaTime;
+            if (_damageIFramesTimer <= 0f)
+                _inIFrames = false;
         }
         private void BounceDiveCheck(){
             // Check if the player hit an enemy:

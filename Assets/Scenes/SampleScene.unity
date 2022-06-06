@@ -412,7 +412,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &96665911
 Transform:
   m_ObjectHideFlags: 0
@@ -514,6 +514,10 @@ MonoBehaviour:
   _playerMovementScript: {fileID: 542220380}
   _state: 0
   _animator: {fileID: 96665912}
+  _spriteRenderer: {fileID: 96665913}
+  _iFrameColor: {r: 0.3490566, g: 0.3490566, b: 0.3490566, a: 1}
+  _lerpTime: 0.05
+  _lerpSpeed: 25
 --- !u!1 &156712805
 GameObject:
   m_ObjectHideFlags: 0
@@ -1167,6 +1171,8 @@ MonoBehaviour:
   _dashCost: 40
   _doubleJumpCost: 25
   _diveCost: 40
+  _damageIFrames: 3
+  _inIFrames: 0
 --- !u!58 &542220381
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -4897,6 +4903,10 @@ MonoBehaviour:
   _playerMovementScript: {fileID: 542220380}
   _state: 0
   _animator: {fileID: 1939667212}
+  _spriteRenderer: {fileID: 1939667211}
+  _iFrameColor: {r: 0.34901962, g: 0.34901962, b: 0.34901962, a: 1}
+  _lerpTime: 0.05
+  _lerpSpeed: 25
 --- !u!1001 &1960163271
 PrefabInstance:
   m_ObjectHideFlags: 0
