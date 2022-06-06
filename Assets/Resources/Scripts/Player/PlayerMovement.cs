@@ -66,10 +66,6 @@ namespace Resources.Scripts.Player
         // Double jump values:
         [SerializeField] private bool _doubleJumpAvailable;
         
-        // Bounce dive values:
-        [SerializeField] private float _bounceAirTimer;
-        [SerializeField] private float _bounceAirTime;
-        
         // Attack costs:
         [Range(0, 100)] [SerializeField] private int _dashCost = 20;
         [Range(0, 100)] [SerializeField] private int _doubleJumpCost = 10;
@@ -79,6 +75,9 @@ namespace Resources.Scripts.Player
         [SerializeField] private float _damageIFrames = 0.5f;
         [SerializeField] internal bool _inIFrames;
         private float _damageIFramesTimer;
+        
+        // Dive values:
+        [SerializeField] private float _diveForce = 214f;
 
 
         private void Awake(){
@@ -196,6 +195,7 @@ namespace Resources.Scripts.Player
 
             // Check if the player hit an enemy:
             DashHitCheck();
+            IFramesCheck();
 
         }
         private void DashMovement(){
@@ -262,6 +262,8 @@ namespace Resources.Scripts.Player
         private void BounceDiveInput(){
 
             _playerCollisionScript._boxCollider.enabled = true;
+
+            // Apply initial force:
             // If the player hits the ground [Land]:
             if (_groundCheckScript._isGrounded)
                 _state = playerMoveState.Land;
@@ -273,31 +275,28 @@ namespace Resources.Scripts.Player
                 _rigidbody2D.velocity = new Vector2(0f, 0f);
             }
 
+            IFramesCheck();
             DoubleJumpCheck();
         }
         private void BounceDiveMovement(){
             
             // Clamp velocity to prevent high upward force:
-            if (_rigidbody2D.velocity.y >= 30f){
+            if (_rigidbody2D.velocity.y >= 30f)
                 _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, 30f);
-            }
-
+            
             ApplyNormMovement(8.0f);
         }
         private void BounceDiveHitInput(){
 
             _state = playerMoveState.BounceDive;
-            _bounceAirTimer = _bounceAirTime;
             _doubleJumpAvailable = true;
             _dashAvailable = true;
-
-            _bounceAirTimer -= Time.deltaTime;
         }
         private void BounceDiveHitMovement(){
             
             // Apply bounce force:
             
-            _rigidbody2D.AddForce(new Vector2(_rigidbody2D.velocity.x, _jumpForce * 4f));
+            _rigidbody2D.AddForce(new Vector2(_rigidbody2D.velocity.x, _diveForce * 4f));
             _playerCollisionScript._boxCollider.enabled = false;
             
             ApplyNormMovement(8.0f);
@@ -527,6 +526,12 @@ namespace Resources.Scripts.Player
             }
             
             // Check for i frames:
+            IFramesCheck();
+        }
+
+        private void IFramesCheck(){
+            
+            // Check for i frames:
             _damageIFramesTimer -= Time.deltaTime;
             if (_damageIFramesTimer <= 0f)
                 _inIFrames = false;
@@ -534,7 +539,6 @@ namespace Resources.Scripts.Player
         private void BounceDiveCheck(){
             // Check if the player hit an enemy:
             if (_diveBouncePress && _shadowMeterScript._shadowMeter >= _diveCost){
-                _bounceAirTimer = _bounceAirTime;
                 _state = playerMoveState.BounceDive;
                 _shadowMeterScript.DecrementShadowMeter(_diveCost);
             }
