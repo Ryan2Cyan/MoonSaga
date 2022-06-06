@@ -67,7 +67,6 @@ namespace Resources.Scripts.Player{
                 }
             }
         }
-
         internal void SpawnDoubleJumpPfx(){
             // Spawn more shadow particles when player is in light:
             if (_lightDetectionScript._inLight){
@@ -95,6 +94,15 @@ namespace Resources.Scripts.Player{
                     new Vector3(transform.position.x + _doubleJumpOffsetX, transform.position.y - _doubleJumpOffsetY,
                         transform.position.z), Quaternion.identity, _pfxParent);
             }
+        }
+        internal void SpawnDamagedPfx(){
+          
+        Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/VFX/Player/Player-Damaged-VFX"), new 
+            Vector3(transform.position.x, transform.position.y - 2f, transform.position.z), Quaternion.identity, 
+            _pfxParent);
+        Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/PFX/Player/Damaged"), new 
+                Vector3(transform.position.x, transform.position.y - 2f, transform.position.z), Quaternion.identity, 
+            _pfxParent);
         }
     }
 }

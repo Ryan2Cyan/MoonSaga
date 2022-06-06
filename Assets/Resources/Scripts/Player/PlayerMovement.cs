@@ -523,6 +523,7 @@ namespace Resources.Scripts.Player
                 _playerUIHandler.ReduceHitPoint();
                 _damageIFramesTimer = _damageIFrames;
                 _inIFrames = true;
+                _playerPfxSpawnerScript.SpawnDamagedPfx();
             }
             
             // Check for i frames:

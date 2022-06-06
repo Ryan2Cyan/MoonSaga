@@ -23,7 +23,7 @@ namespace Resources.Scripts.Player{
         private static readonly int Land = Animator.StringToHash("Land");
         private static readonly int Dash = Animator.StringToHash("Dash");
         private static readonly int DoubleJump = Animator.StringToHash("DoubleJump");
-
+        private static readonly int Damaged = Animator.StringToHash("Damaged");
 
         private void Update(){
             // Assign player's current state:
@@ -44,6 +44,7 @@ namespace Resources.Scripts.Player{
             _animator.SetBool(Land, false);
             _animator.SetBool(Dash, false);
             _animator.SetBool(DoubleJump, false);
+            _animator.SetBool(Damaged, false);
         }
         private void ProcessStateAnimation(){
             ResetAnimator();
@@ -69,6 +70,7 @@ namespace Resources.Scripts.Player{
                     _animator.SetBool(Falling, true);
                     break;
                 case playerMoveState.Damaged:
+                    _animator.SetBool(Damaged, true);
                     break;
                 case playerMoveState.DoubleJump:
                     _animator.SetBool(DoubleJump, true);
