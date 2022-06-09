@@ -46,10 +46,16 @@ namespace Resources.Scripts.Enemies.General{
         private void WalkingMovement(){
             
             // Move enemy left or right depending on direction:
-            if(_groundCheckScript._isGrounded)
+            if (_enemyColliderScript._collidingWithPlayer){
+                _enemyColliderScript._collidingWithPlayer = false;
+                _rigidbody2D.velocity = new Vector2(0f, 0f);
+                return;
+            }
+            
+            if(_groundCheckScript._isGrounded && !_enemyColliderScript._collidingWithPlayer)
                 _rigidbody2D.velocity = _isFacingRight ? new Vector2(_runSpeed, 
                     _rigidbody2D.velocity.y) : new Vector2(-_runSpeed, _rigidbody2D.velocity.y);
-            
+
         }
         private void DamagedMovement(){
             

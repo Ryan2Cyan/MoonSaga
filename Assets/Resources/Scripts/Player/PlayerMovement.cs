@@ -1,4 +1,5 @@
 using System;
+using Resources.Scripts.Enemies.General;
 using Resources.Scripts.General;
 using UnityEngine;
 
@@ -32,6 +33,7 @@ namespace Resources.Scripts.Player
         [SerializeField] private float _dashDuration = 0.2f;
         [SerializeField] private float _dashDelay = 0.1f;
         [SerializeField] private float _dashKnockBackDelay = 0.1f;
+        [SerializeField] private float _dashShadowDecrement = 0.1f;
         [SerializeField] private float _damagedKnockBackDelay = 0.1f;
         [Range(0, 1.0f)] [SerializeField] private float _maxAirTime = 0.5f;
         [Range(0, 1.0f)] [SerializeField] private float _doubleJumpDelay = 0.15f;
@@ -44,6 +46,7 @@ namespace Resources.Scripts.Player
         private bool _jumpPress;
         private bool _jumpRelease;
         private bool _dashPress;
+        private bool _dashRelease;
         private bool _diveBouncePress;
 
         // Air control values:
@@ -61,7 +64,7 @@ namespace Resources.Scripts.Player
         private float _dashDelayTimer;
 
         // Knock back values:
-        private float _knockBackTimer;
+        [SerializeField] private float _knockBackTimer;
 
         // Double jump values:
         [SerializeField] private bool _doubleJumpAvailable;
@@ -189,8 +192,11 @@ namespace Resources.Scripts.Player
         }
         private void DashInput(){
 
+            // Reduce shadow meter:
+            _shadowMeterScript.DecrementShadowMeter(_dashShadowDecrement);
+            
             // Check if the dash has ended:
-            if (_dashTimer < 0f)
+            if (_shadowMeterScript._shadowMeter < 0f || _dashRelease)
                 SetDefaultState();
 
             // Check if the player hit an enemy:
@@ -211,22 +217,40 @@ namespace Resources.Scripts.Player
         }
         private void DashHitInput(){
 
+            // Reduce shadow meter:
+            _shadowMeterScript.DecrementShadowMeter(_dashShadowDecrement);
+            
             // On hit, the player can dash & double jump again:
             _doubleJumpAvailable = true;
             _dashAvailable = true;
-
-            // Knock back timer:
-            _knockBackTimer -= Time.deltaTime;
-            if (_knockBackTimer <= 0f)
-                SetDefaultState();
+            
+            // Check for end of dash hit:
+            if (_dashRelease || _shadowMeterScript._shadowMeter <= 0f){
+                _state = playerMoveState.DashRecover;
+                _knockBackTimer = _dashKnockBackDelay;
+                _playerCollisionScript._collidedEnemy.GetComponent<Animator>().SetBool("Damaged", false);
+            }
         }
         private void DashHitMovement(){
-            // Knock back the player:
-            _rigidbody2D.velocity =
-                _isFacingRight ? new Vector2(-_dashKnockBackX, _dashKnockBackY) : 
-                    new Vector2(_dashKnockBackX, _dashKnockBackY);
-
+            // Keep the player in place:
+            _rigidbody2D.velocity = new Vector2(0f, 0f);
+            
         }
+        
+        private void DashRecoverInput(){
+            _knockBackTimer -= Time.deltaTime;
+        }
+        private void DashRecoverMovement(){
+            
+                // Knock back the player:
+                _rigidbody2D.velocity =
+                    _isFacingRight
+                        ? new Vector2(-_dashKnockBackX, _dashKnockBackY)
+                        : new Vector2(_dashKnockBackX, _dashKnockBackY);
+                if (_knockBackTimer <= 0f)
+                    SetDefaultState();
+        }
+        
         private void DoubleJumpInput(){
 
             _airTimer -= Time.deltaTime;
@@ -338,11 +362,13 @@ namespace Resources.Scripts.Player
                 case playerMoveState.BounceDiveHit:
                     BounceDiveHitInput();
                     break;
+                case playerMoveState.DashRecover:
+                    DashRecoverInput();
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
-
         private void ProcessStateMovement(){
             switch (_state){
                 case playerMoveState.Idle:
@@ -377,6 +403,9 @@ namespace Resources.Scripts.Player
                 case playerMoveState.BounceDiveHit:
                     BounceDiveHitMovement();
                     break;
+                case playerMoveState.DashRecover:
+                    DashRecoverMovement();
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -406,7 +435,8 @@ namespace Resources.Scripts.Player
             // Inputs Variables:
             _jumpPress = _actionMapScript.Player.JumpPress.triggered;
             _jumpRelease = _actionMapScript.Player.JumpRelease.triggered;
-            _dashPress = _actionMapScript.Player.Dash.triggered;
+            _dashPress = _actionMapScript.Player.DashPress.triggered;
+            _dashRelease = _actionMapScript.Player.DashRelease.triggered;
             _diveBouncePress = _actionMapScript.Player.DiveBounce.triggered;
 
             // Process movement:
@@ -423,6 +453,7 @@ namespace Resources.Scripts.Player
             _jumpPress = false;
             _jumpRelease = false;
             _dashPress = false;
+            _dashRelease = false;
             _diveBouncePress = false;
         }
 
@@ -463,7 +494,6 @@ namespace Resources.Scripts.Player
                             _state = playerMoveState.Dash;
                             _dashTimer = _dashDuration;
                             _dashAvailable = false;
-                            _shadowMeterScript.DecrementShadowMeter(_dashCost);
                             
                             // Spawn pfx:
                             _playerPfxSpawnerScript.SpawnDashPfx();
@@ -478,7 +508,6 @@ namespace Resources.Scripts.Player
                             _state = playerMoveState.Dash;
                             _dashTimer = _dashDuration;
                             _dashDelayTimer = _dashDelay;
-                            _shadowMeterScript.DecrementShadowMeter(_dashCost);
                             
                             // Spawn pfx:
                             _playerPfxSpawnerScript.SpawnDashPfx();
@@ -508,9 +537,10 @@ namespace Resources.Scripts.Player
         private void DashHitCheck(){
             // Check if the player hit an enemy:
             if (_playerCollisionScript._enemyCollision){
-                _knockBackTimer = _dashKnockBackDelay;
                 _state = playerMoveState.DashHit;
+                _knockBackTimer = _dashKnockBackDelay;
                 _monoBehaviourUtilityScript.StartSleep(0.05f);
+                _playerCollisionScript._collidedEnemy.GetComponent<Animator>().SetBool("Damaged", true);
             }
         }
         private void DamagedCheck(){
@@ -528,7 +558,6 @@ namespace Resources.Scripts.Player
             // Check for i frames:
             IFramesCheck();
         }
-
         private void IFramesCheck(){
             
             // Check for i frames:
@@ -546,6 +575,6 @@ namespace Resources.Scripts.Player
     }
 
     internal enum playerMoveState{
-        Idle, Walking, Jump, DoubleJump, AirControl, Land, Dash, DashHit, Damaged, BounceDive, BounceDiveHit
+        Idle, Walking, Jump, DoubleJump, AirControl, Land, Dash, DashHit, DashRecover, Damaged, BounceDive, BounceDiveHit
     }
 }

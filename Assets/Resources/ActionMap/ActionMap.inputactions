@@ -30,12 +30,20 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Dash",
+                    "name": "DashPress",
                     "type": "Button",
                     "id": "34ffe674-74b8-4de4-af0d-0f7c7eeb5447",
                     "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "Press(pressPoint=0.1)"
+                },
+                {
+                    "name": "DashRelease",
+                    "type": "Button",
+                    "id": "c3c9af74-998f-4924-87d7-f7d686bfa73e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "Press(pressPoint=0.1,behavior=1)"
                 },
                 {
                     "name": "DiveBounce",
@@ -128,10 +136,10 @@
                     "name": "",
                     "id": "efd7a264-919f-4ade-bda2-d80914c3d2bb",
                     "path": "<Keyboard>/leftShift",
-                    "interactions": "Press(pressPoint=0.1)",
+                    "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Dash",
+                    "action": "DashPress",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -143,6 +151,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "DiveBounce",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f4a7385d-ae01-4da9-a60a-242ff3cf2202",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DashRelease",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

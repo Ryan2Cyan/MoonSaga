@@ -67,7 +67,7 @@ namespace Resources.Scripts.Player{
                     _animator.SetBool(Dash, true);
                     break;
                 case playerMoveState.DashHit:
-                    _animator.SetBool(Falling, true);
+                    _animator.SetBool(Dash, true);
                     break;
                 case playerMoveState.Damaged:
                     _animator.SetBool(Damaged, true);
@@ -80,6 +80,9 @@ namespace Resources.Scripts.Player{
                     break;
                 case playerMoveState.BounceDiveHit:
                     _animator.SetBool(Falling, true);
+                    break;
+                case playerMoveState.DashRecover:
+                    _animator.SetBool(Damaged, true);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

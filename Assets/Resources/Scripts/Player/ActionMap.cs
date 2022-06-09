@@ -43,12 +43,20 @@ public class @ActionMap : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""Dash"",
+                    ""name"": ""DashPress"",
                     ""type"": ""Button"",
                     ""id"": ""34ffe674-74b8-4de4-af0d-0f7c7eeb5447"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """"
+                    ""interactions"": ""Press(pressPoint=0.1)""
+                },
+                {
+                    ""name"": ""DashRelease"",
+                    ""type"": ""Button"",
+                    ""id"": ""c3c9af74-998f-4924-87d7-f7d686bfa73e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press(pressPoint=0.1,behavior=1)""
                 },
                 {
                     ""name"": ""DiveBounce"",
@@ -141,10 +149,10 @@ public class @ActionMap : IInputActionCollection, IDisposable
                     ""name"": """",
                     ""id"": ""efd7a264-919f-4ade-bda2-d80914c3d2bb"",
                     ""path"": ""<Keyboard>/leftShift"",
-                    ""interactions"": ""Press(pressPoint=0.1)"",
+                    ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Dash"",
+                    ""action"": ""DashPress"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -158,6 +166,17 @@ public class @ActionMap : IInputActionCollection, IDisposable
                     ""action"": ""DiveBounce"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f4a7385d-ae01-4da9-a60a-242ff3cf2202"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DashRelease"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -169,7 +188,8 @@ public class @ActionMap : IInputActionCollection, IDisposable
         m_Player_JumpPress = m_Player.FindAction("JumpPress", throwIfNotFound: true);
         m_Player_JumpRelease = m_Player.FindAction("JumpRelease", throwIfNotFound: true);
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
-        m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
+        m_Player_DashPress = m_Player.FindAction("DashPress", throwIfNotFound: true);
+        m_Player_DashRelease = m_Player.FindAction("DashRelease", throwIfNotFound: true);
         m_Player_DiveBounce = m_Player.FindAction("DiveBounce", throwIfNotFound: true);
     }
 
@@ -223,7 +243,8 @@ public class @ActionMap : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_JumpPress;
     private readonly InputAction m_Player_JumpRelease;
     private readonly InputAction m_Player_Movement;
-    private readonly InputAction m_Player_Dash;
+    private readonly InputAction m_Player_DashPress;
+    private readonly InputAction m_Player_DashRelease;
     private readonly InputAction m_Player_DiveBounce;
     public struct PlayerActions
     {
@@ -232,7 +253,8 @@ public class @ActionMap : IInputActionCollection, IDisposable
         public InputAction @JumpPress => m_Wrapper.m_Player_JumpPress;
         public InputAction @JumpRelease => m_Wrapper.m_Player_JumpRelease;
         public InputAction @Movement => m_Wrapper.m_Player_Movement;
-        public InputAction @Dash => m_Wrapper.m_Player_Dash;
+        public InputAction @DashPress => m_Wrapper.m_Player_DashPress;
+        public InputAction @DashRelease => m_Wrapper.m_Player_DashRelease;
         public InputAction @DiveBounce => m_Wrapper.m_Player_DiveBounce;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
@@ -252,9 +274,12 @@ public class @ActionMap : IInputActionCollection, IDisposable
                 @Movement.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMovement;
                 @Movement.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMovement;
                 @Movement.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMovement;
-                @Dash.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
-                @Dash.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
-                @Dash.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDash;
+                @DashPress.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDashPress;
+                @DashPress.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDashPress;
+                @DashPress.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDashPress;
+                @DashRelease.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDashRelease;
+                @DashRelease.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDashRelease;
+                @DashRelease.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDashRelease;
                 @DiveBounce.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDiveBounce;
                 @DiveBounce.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDiveBounce;
                 @DiveBounce.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDiveBounce;
@@ -271,9 +296,12 @@ public class @ActionMap : IInputActionCollection, IDisposable
                 @Movement.started += instance.OnMovement;
                 @Movement.performed += instance.OnMovement;
                 @Movement.canceled += instance.OnMovement;
-                @Dash.started += instance.OnDash;
-                @Dash.performed += instance.OnDash;
-                @Dash.canceled += instance.OnDash;
+                @DashPress.started += instance.OnDashPress;
+                @DashPress.performed += instance.OnDashPress;
+                @DashPress.canceled += instance.OnDashPress;
+                @DashRelease.started += instance.OnDashRelease;
+                @DashRelease.performed += instance.OnDashRelease;
+                @DashRelease.canceled += instance.OnDashRelease;
                 @DiveBounce.started += instance.OnDiveBounce;
                 @DiveBounce.performed += instance.OnDiveBounce;
                 @DiveBounce.canceled += instance.OnDiveBounce;
@@ -286,7 +314,8 @@ public class @ActionMap : IInputActionCollection, IDisposable
         void OnJumpPress(InputAction.CallbackContext context);
         void OnJumpRelease(InputAction.CallbackContext context);
         void OnMovement(InputAction.CallbackContext context);
-        void OnDash(InputAction.CallbackContext context);
+        void OnDashPress(InputAction.CallbackContext context);
+        void OnDashRelease(InputAction.CallbackContext context);
         void OnDiveBounce(InputAction.CallbackContext context);
     }
 }

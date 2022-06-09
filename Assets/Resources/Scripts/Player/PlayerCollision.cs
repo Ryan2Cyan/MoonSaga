@@ -1,3 +1,5 @@
+using System;
+using Resources.Scripts.Enemies.General;
 using Resources.Scripts.General;
 using UnityEngine;
 
@@ -8,8 +10,8 @@ namespace Resources.Scripts.Player{
         
         // Scripts:
         [SerializeField] private GroundCheck _groundCheckScript;
-        [SerializeField] private PlayerMovement _playerMovementScript;
         [SerializeField] private GameObject[] _sceneEnemies;
+        [SerializeField] internal GameObject _collidedEnemy;
         
         // Trigger collider:
         [SerializeField] internal Collider2D _boxCollider;
@@ -29,17 +31,33 @@ namespace Resources.Scripts.Player{
         }
         private void OnTriggerEnter2D(Collider2D other){
 
-            if (other.gameObject.CompareTag("Enemy"))
+            if (other.gameObject.CompareTag("Enemy")){
                 _enemyCollision = true;
+                _collidedEnemy = other.gameObject;
+                _collidedEnemy.GetComponent<EnemyCollision>()._collidingWithPlayer = true;
+            }
+
             // If player collides with platform, but is not on top of it, make sure they slide off:
             if (other.gameObject.layer == 6 && !_groundCheckScript._isGrounded){
                 _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, _rigidbody.velocity.y);
             }
         }
+
+        private void OnTriggerStay2D(Collider2D other){
+            if (other.gameObject.CompareTag("Enemy")){
+                _enemyCollision = true;
+                _collidedEnemy = other.gameObject;
+                _collidedEnemy.GetComponent<EnemyCollision>()._collidingWithPlayer = true;
+            }
+        }
+
         private void OnTriggerExit2D(Collider2D other){
-            
-            if (other.gameObject.CompareTag("Enemy"))
+
+            if (other.gameObject.CompareTag("Enemy")){
+                _collidedEnemy = null;
                 _enemyCollision = false;
+            }
+            
         }
     }
 }

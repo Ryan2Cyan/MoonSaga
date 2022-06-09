@@ -10,6 +10,7 @@ namespace Resources.Scripts.Enemies.General{
         [SerializeField] internal Collider2D _boxCollider;
 
         // Values:
+        [SerializeField] internal bool _collidingWithPlayer;
 
         private void Awake(){
             // Fetch values:

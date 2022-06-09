@@ -51,7 +51,7 @@ namespace Resources.Scripts.Player{
             UpdateHitPoints();
         }
 
-        public void DecrementShadowSlider(int value){
+        public void DecrementShadowSlider(float value){
             _shadowSlider.value -= value;
         }
         private void UpdateSubtractSlider(){

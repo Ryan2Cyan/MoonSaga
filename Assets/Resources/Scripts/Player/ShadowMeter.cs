@@ -9,18 +9,27 @@ namespace Resources.Scripts.Player{
         // Scripts:
         [SerializeField] internal LightDetection _lightDetectionScript;
         [SerializeField] private PlayerUIHandler _playerUIHandlerScript;
-        [SerializeField] internal int _shadowMeter;
+        [SerializeField] internal float _shadowMeter;
         [SerializeField] private float _incrementDelayShadow = 0.1f;
         [SerializeField] private float _incrementDelayLight = 0.5f;
         private float _incrementTimer;
         [SerializeField] private int _shadowValue = 1;
         [SerializeField] private int _lightValue = 1;
-        private bool _delay;
+        [SerializeField] private bool _isDecrement;
 
         private void Update(){
             
             // Update shadow meter:
-            IncrementShadowMeter();
+            if(!_isDecrement)
+                IncrementShadowMeter();
+            
+            // Clamp shadow value:
+            if (_shadowMeter > 100)
+                _shadowMeter = 100;
+            if (_shadowMeter < 0)
+                _shadowMeter = 0;
+
+            _isDecrement = false;
         }
         private void IncrementShadowMeter(){
 
@@ -38,16 +47,13 @@ namespace Resources.Scripts.Player{
                     _shadowMeter += _shadowValue;
                     _incrementTimer = _incrementDelayShadow;
                 }
-
-                // Clamp shadow value:
-                if (_shadowMeter > 100)
-                    _shadowMeter = 100;
             }
         }
-        internal void DecrementShadowMeter(int value){
+        internal void DecrementShadowMeter(float value){
             _shadowMeter -= value;
             _playerUIHandlerScript.DecrementShadowSlider(value);
             _playerUIHandlerScript._delay = true;
+            _isDecrement = true;
         }
     }
 }
