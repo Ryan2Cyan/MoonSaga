@@ -13,7 +13,7 @@ namespace Resources.Scripts.Player
 
         // Scripts:
         private ShadowMeter _shadowMeterScript;
-        private PlayerCollision _playerCollisionScript;
+        [SerializeField] private PlayerCollision _playerCollisionScript;
         private PlayerPFXSpawner _playerPfxSpawnerScript;
         private GroundCheck _groundCheckScript;
         private PlayerUIHandler _playerUIHandler;
@@ -79,7 +79,7 @@ namespace Resources.Scripts.Player
             // Fetch components:
             _rigidbody2D = GetComponent<Rigidbody2D>();
             _shadowMeterScript = GetComponent<ShadowMeter>();
-            _playerCollisionScript = GetComponent<PlayerCollision>();
+            // _playerCollisionScript = GetComponent<PlayerCollision>();
             _playerPfxSpawnerScript = GetComponent<PlayerPFXSpawner>();
             _groundCheckScript = GetComponent<GroundCheck>();
             _playerUIHandler = GetComponent<PlayerUIHandler>();

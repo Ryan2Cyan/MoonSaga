@@ -8,6 +8,7 @@ namespace Resources.Scripts.Managers{
         
         [SerializeField] internal int hitPoints = 5;
         [SerializeField] internal int maxPoints = 5;
+        [SerializeField] internal int shadowSapphires = 0;
 
         private void Awake(){
             DontDestroyOnLoad(_dataManager);
