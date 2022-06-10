@@ -88,11 +88,8 @@ namespace Resources.Scripts.Player{
                 case playerMoveState.DoubleJump:
                     _animator.SetBool(DoubleJump, true);
                     break;
-                case playerMoveState.BounceDive:
-                    _animator.SetBool(Falling, true);
-                    break;
-                case playerMoveState.BounceDiveHit:
-                    _animator.SetBool(Falling, true);
+                case playerMoveState.DashDown:
+                    _animator.SetBool(Dash, true);
                     break;
                 case playerMoveState.DashRecover:
                     _animator.SetBool(Damaged, true);

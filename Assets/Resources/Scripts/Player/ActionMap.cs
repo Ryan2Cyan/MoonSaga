@@ -59,12 +59,20 @@ public class @ActionMap : IInputActionCollection, IDisposable
                     ""interactions"": ""Press(pressPoint=0.1,behavior=1)""
                 },
                 {
-                    ""name"": ""DiveBounce"",
+                    ""name"": ""DashDown"",
                     ""type"": ""Button"",
                     ""id"": ""1fb01794-f4ee-4403-8d46-5d8527888e3c"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """"
+                    ""interactions"": ""Press(pressPoint=0.1)""
+                },
+                {
+                    ""name"": ""DashDownRelease"",
+                    ""type"": ""Button"",
+                    ""id"": ""9e6e5a03-2473-41fc-9028-246916e8cdaa"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Press(pressPoint=0.1,behavior=1)""
                 }
             ],
             ""bindings"": [
@@ -158,23 +166,34 @@ public class @ActionMap : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""a490bcf6-7e12-47df-b9e9-7f1c04656f7e"",
-                    ""path"": ""<Keyboard>/e"",
-                    ""interactions"": ""Press(pressPoint=0.1)"",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""DiveBounce"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""f4a7385d-ae01-4da9-a60a-242ff3cf2202"",
                     ""path"": ""<Keyboard>/leftShift"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""DashRelease"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ce58ee7a-5922-4345-a223-d7414daeff75"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DashDownRelease"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a490bcf6-7e12-47df-b9e9-7f1c04656f7e"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""DashDown"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -190,7 +209,8 @@ public class @ActionMap : IInputActionCollection, IDisposable
         m_Player_Movement = m_Player.FindAction("Movement", throwIfNotFound: true);
         m_Player_DashPress = m_Player.FindAction("DashPress", throwIfNotFound: true);
         m_Player_DashRelease = m_Player.FindAction("DashRelease", throwIfNotFound: true);
-        m_Player_DiveBounce = m_Player.FindAction("DiveBounce", throwIfNotFound: true);
+        m_Player_DashDown = m_Player.FindAction("DashDown", throwIfNotFound: true);
+        m_Player_DashDownRelease = m_Player.FindAction("DashDownRelease", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -245,7 +265,8 @@ public class @ActionMap : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Movement;
     private readonly InputAction m_Player_DashPress;
     private readonly InputAction m_Player_DashRelease;
-    private readonly InputAction m_Player_DiveBounce;
+    private readonly InputAction m_Player_DashDown;
+    private readonly InputAction m_Player_DashDownRelease;
     public struct PlayerActions
     {
         private @ActionMap m_Wrapper;
@@ -255,7 +276,8 @@ public class @ActionMap : IInputActionCollection, IDisposable
         public InputAction @Movement => m_Wrapper.m_Player_Movement;
         public InputAction @DashPress => m_Wrapper.m_Player_DashPress;
         public InputAction @DashRelease => m_Wrapper.m_Player_DashRelease;
-        public InputAction @DiveBounce => m_Wrapper.m_Player_DiveBounce;
+        public InputAction @DashDown => m_Wrapper.m_Player_DashDown;
+        public InputAction @DashDownRelease => m_Wrapper.m_Player_DashDownRelease;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -280,9 +302,12 @@ public class @ActionMap : IInputActionCollection, IDisposable
                 @DashRelease.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDashRelease;
                 @DashRelease.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDashRelease;
                 @DashRelease.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDashRelease;
-                @DiveBounce.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDiveBounce;
-                @DiveBounce.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDiveBounce;
-                @DiveBounce.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDiveBounce;
+                @DashDown.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDashDown;
+                @DashDown.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDashDown;
+                @DashDown.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDashDown;
+                @DashDownRelease.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDashDownRelease;
+                @DashDownRelease.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDashDownRelease;
+                @DashDownRelease.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDashDownRelease;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -302,9 +327,12 @@ public class @ActionMap : IInputActionCollection, IDisposable
                 @DashRelease.started += instance.OnDashRelease;
                 @DashRelease.performed += instance.OnDashRelease;
                 @DashRelease.canceled += instance.OnDashRelease;
-                @DiveBounce.started += instance.OnDiveBounce;
-                @DiveBounce.performed += instance.OnDiveBounce;
-                @DiveBounce.canceled += instance.OnDiveBounce;
+                @DashDown.started += instance.OnDashDown;
+                @DashDown.performed += instance.OnDashDown;
+                @DashDown.canceled += instance.OnDashDown;
+                @DashDownRelease.started += instance.OnDashDownRelease;
+                @DashDownRelease.performed += instance.OnDashDownRelease;
+                @DashDownRelease.canceled += instance.OnDashDownRelease;
             }
         }
     }
@@ -316,6 +344,7 @@ public class @ActionMap : IInputActionCollection, IDisposable
         void OnMovement(InputAction.CallbackContext context);
         void OnDashPress(InputAction.CallbackContext context);
         void OnDashRelease(InputAction.CallbackContext context);
-        void OnDiveBounce(InputAction.CallbackContext context);
+        void OnDashDown(InputAction.CallbackContext context);
+        void OnDashDownRelease(InputAction.CallbackContext context);
     }
 }

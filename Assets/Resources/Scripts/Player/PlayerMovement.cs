@@ -37,10 +37,12 @@ namespace Resources.Scripts.Player
         
         // Dash:
         [Range(0, 100.0f)] [SerializeField] private float _dashSpeed = 100f;
+        [Range(0, 100.0f)] [SerializeField] private float _dashDownSpeed = 100f;
         [Range(0, 30.0f)] [SerializeField] private float _dashKnockBackX = 15f;
         [Range(0, 30.0f)] [SerializeField] private float _dashKnockBackY = 15f;
         [SerializeField] private float _dashKnockBackDelay = 0.1f;
         [SerializeField] private float _dashShadowDecrement = 0.1f;
+        [Range(0f, 10f)] [SerializeField] private float _dashMod = 5f;
         
         // Land:
         private const float _landDelay = 0.1f;
@@ -54,17 +56,11 @@ namespace Resources.Scripts.Player
 
         // Orientation:
         [SerializeField] internal bool _isFacingRight = true;
-        
-        // Attack costs:
-        [Range(0, 100)] [SerializeField] private int _diveCost = 40;
-        
+
         // Damage values:
         [SerializeField] private float _damageIFrames = 0.5f;
         [SerializeField] internal bool _inIFrames;
         private float _damageIFramesTimer;
-        
-        // Dive values:
-        [SerializeField] private float _diveForce = 214f;
 
         // Inputs:
         private float _horizontalInput;
@@ -72,7 +68,8 @@ namespace Resources.Scripts.Player
         private bool _jumpRelease;
         private bool _dashPress;
         private bool _dashRelease;
-        private bool _diveBouncePress;
+        private bool _dashDownPress;
+        private bool _dashDownRelease;
 
         private void Awake(){
             
@@ -153,7 +150,6 @@ namespace Resources.Scripts.Player
 
             DashCheck();
             DamagedCheck();
-            BounceDiveCheck();
         }
         private void JumpMovement(){
 
@@ -176,7 +172,6 @@ namespace Resources.Scripts.Player
             DoubleJumpCheck();
             DashCheck();
             DamagedCheck();
-            BounceDiveCheck();
         }
         private void AirControlMovement(){
             
@@ -213,7 +208,7 @@ namespace Resources.Scripts.Player
         private void DashMovement(){
 
             // Reduce shadow meter:
-            _shadowMeterScript.DecrementShadowMeter(_dashShadowDecrement);
+            _shadowMeterScript.DecrementShadowMeter(_dashShadowDecrement * _dashMod);
             
             // Apply horizontal force depending on the player's facing direction:
             _rigidbody2D.velocity = _isFacingRight switch{
@@ -223,13 +218,31 @@ namespace Resources.Scripts.Player
                     new Vector2(-_dashSpeed, 0f)
             };
         }
+        private void DashDownInput(){
+            
+            // Check if the dash has ended:
+            if (_shadowMeterScript._shadowMeter < 0f || _dashRelease || _groundCheckScript._isGrounded)
+                SetDefaultState();
+
+            // Check if the player hit an enemy:
+            DashHitCheck();
+            IFramesCheck();
+        }
+        private void DashDownMovement(){
+            
+            // Reduce shadow meter:
+            _shadowMeterScript.DecrementShadowMeter(_dashShadowDecrement * _dashMod);
+
+            // Apply force:
+            _rigidbody2D.velocity = new Vector2(0f, -_dashDownSpeed);
+        }
         private void DashHitInput(){
             
             // On hit, the player can dash & double jump again:
             _doubleJumpAvailable = true;
             
             // Check for end of dash hit:
-            if (_dashRelease || _shadowMeterScript._shadowMeter <= 0f){
+            if (_dashRelease || _dashDownRelease || _shadowMeterScript._shadowMeter <= 0f){
                 _state = playerMoveState.DashRecover;
                 _knockBackTimer = _dashKnockBackDelay;
                 _playerCollisionScript._collidedEnemy.GetComponent<Animator>().SetBool("Damaged", false);
@@ -238,6 +251,7 @@ namespace Resources.Scripts.Player
         private void DashHitMovement(){
             // Keep the player in place:
             _rigidbody2D.velocity = new Vector2(0f, 0f);
+            transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
             
             // Reduce shadow meter:
             _shadowMeterScript.DecrementShadowMeter(_dashShadowDecrement);
@@ -289,47 +303,7 @@ namespace Resources.Scripts.Player
                 _isFacingRight ? new Vector2(-_dashKnockBackX, _dashKnockBackY) : 
                     new Vector2(_damagedKnockBackX, _damagedKnockBackY);
         }
-        private void BounceDiveInput(){
-
-            _playerCollisionScript._boxCollider.enabled = true;
-            
-            // If the player hits the ground [Land]:
-            if (_groundCheckScript._isGrounded)
-                _state = playerMoveState.Land;
-            
-            
-            // If player collides with enemy [BounceDiveHit]:
-            if (_playerCollisionScript._enemyCollision){
-                _state = playerMoveState.BounceDiveHit;
-                _rigidbody2D.velocity = new Vector2(0f, 0f);
-            }
-
-            IFramesCheck();
-            DoubleJumpCheck();
-        }
-        private void BounceDiveMovement(){
-            
-            // Clamp velocity to prevent high upward force:
-            if (_rigidbody2D.velocity.y >= 30f)
-                _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, 30f);
-            
-            ApplyNormMovement(8.0f);
-        }
-        private void BounceDiveHitInput(){
-
-            _state = playerMoveState.BounceDive;
-            _doubleJumpAvailable = true;
-        }
-        private void BounceDiveHitMovement(){
-            
-            // Apply bounce force:
-            
-            _rigidbody2D.AddForce(new Vector2(_rigidbody2D.velocity.x, _diveForce * 4f));
-            _playerCollisionScript._boxCollider.enabled = false;
-            
-            ApplyNormMovement(8.0f);
-        }
-
+        
         // Process state functions:
         private void ProcessStateInput(){
             switch (_state){
@@ -360,11 +334,8 @@ namespace Resources.Scripts.Player
                 case playerMoveState.DoubleJump:
                     DoubleJumpInput();
                     break;
-                case playerMoveState.BounceDive:
-                    BounceDiveInput();
-                    break;
-                case playerMoveState.BounceDiveHit:
-                    BounceDiveHitInput();
+                case playerMoveState.DashDown:
+                    DashDownInput();
                     break;
                 case playerMoveState.DashRecover:
                     DashRecoverInput();
@@ -401,11 +372,8 @@ namespace Resources.Scripts.Player
                 case playerMoveState.DoubleJump:
                     DoubleJumpMovement();
                     break;
-                case playerMoveState.BounceDive:
-                    BounceDiveMovement();
-                    break;
-                case playerMoveState.BounceDiveHit:
-                    BounceDiveHitMovement();
+                case playerMoveState.DashDown:
+                    DashDownMovement();
                     break;
                 case playerMoveState.DashRecover:
                     DashRecoverMovement();
@@ -441,9 +409,10 @@ namespace Resources.Scripts.Player
             _jumpRelease = _actionMapScript.Player.JumpRelease.triggered;
             _dashPress = _actionMapScript.Player.DashPress.triggered;
             _dashRelease = _actionMapScript.Player.DashRelease.triggered;
-            _diveBouncePress = _actionMapScript.Player.DiveBounce.triggered;
-
-            // Process movement:
+            _dashDownPress = _actionMapScript.Player.DashDown.triggered;
+            _dashDownRelease = _actionMapScript.Player.DashDownRelease.triggered;
+            
+            // Process horizontal input:
             if (_actionMapScript.Player.Movement.ReadValue<Vector2>().x > 0f)
                 _horizontalInput = 1f * _walkSpeed;
 
@@ -458,7 +427,8 @@ namespace Resources.Scripts.Player
             _jumpRelease = false;
             _dashPress = false;
             _dashRelease = false;
-            _diveBouncePress = false;
+            _dashDownPress = false;
+            _dashDownRelease = false;
         }
 
         // Input checks for switching state:
@@ -495,6 +465,10 @@ namespace Resources.Scripts.Player
                         
                 // Spawn pfx:
                 _playerPfxSpawnerScript.SpawnDashPfx();
+            }
+
+            if (_dashDownPress && _shadowMeterScript._shadowMeter > 0f){
+                _state = playerMoveState.DashDown;
             }
         }
         private void DoubleJumpCheck(){
@@ -544,17 +518,10 @@ namespace Resources.Scripts.Player
             if (_damageIFramesTimer <= 0f)
                 _inIFrames = false;
         }
-        private void BounceDiveCheck(){
-            // Check if the player hit an enemy:
-            if (_diveBouncePress && _shadowMeterScript._shadowMeter >= _diveCost){
-                _state = playerMoveState.BounceDive;
-                _shadowMeterScript.DecrementShadowMeter(_diveCost);
-            }
-        }
-    }
+}
 
     internal enum playerMoveState{
-        Idle, Walking, Jump, DoubleJump, AirControl, Land, Dash, DashHit, DashRecover, Damaged, BounceDive, BounceDiveHit
+        Idle, Walking, Jump, DoubleJump, AirControl, Land, Dash, DashHit, DashRecover, Damaged, DashDown
     }
 }
 
