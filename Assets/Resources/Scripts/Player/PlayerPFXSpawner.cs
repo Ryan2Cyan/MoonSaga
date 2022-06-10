@@ -39,33 +39,20 @@ namespace Resources.Scripts.Player{
         internal void SpawnDashPfx(){
             
             // Spawn more shadow particles when player is in light:
-            if (_lightDetectionScript._inLight){
-                if (_playerMovementScript._isFacingRight){
-                    // Player facing right, spawn pfx to go left:
-                    Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/PFX/Player/Dash-Burst-Right"),
-                        new Vector3(transform.position.x - _dashOffsetX, transform.position.y - _dashOffsetY,
-                            transform.position.z), Quaternion.identity, _pfxParent);
-                }
-                else{
-                    // Player facing right, spawn pfx to go right:
-                    Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/PFX/Player/Dash-Burst-Left"),
-                        new Vector3(transform.position.x + _dashOffsetX, transform.position.y - _dashOffsetY,
-                            transform.position.z), Quaternion.identity, _pfxParent);
-                }
+           
+            if (_playerMovementScript._isFacingRight){
+                // Player facing right, spawn pfx to go left:
+                Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/PFX/Player/Dash-Burst-Right"),
+                    new Vector3(transform.position.x - _dashOffsetX, transform.position.y - _dashOffsetY,
+                        transform.position.z), Quaternion.identity, _pfxParent);
             }
-            // Spawn less shadow particles when player is in light:
             else{
-                if (_playerMovementScript._isFacingRight){
-                    Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/PFX/Player/Dash-Shadow"),
-                        new Vector3(transform.position.x + _dashOffsetX, transform.position.y - _dashOffsetY,
-                            transform.position.z), Quaternion.identity, _pfxParent);
-                }
-                else{
-                    Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/PFX/Player/Dash-Shadow"),
-                        new Vector3(transform.position.x - 5f, transform.position.y - _dashOffsetY,
-                            transform.position.z), Quaternion.identity, _pfxParent);
-                }
+                // Player facing right, spawn pfx to go right:
+                Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/PFX/Player/Dash-Burst-Left"),
+                    new Vector3(transform.position.x + _dashOffsetX, transform.position.y - _dashOffsetY,
+                        transform.position.z), Quaternion.identity, _pfxParent);
             }
+            
         }
         internal void SpawnDoubleJumpPfx(){
             // Spawn more shadow particles when player is in light:

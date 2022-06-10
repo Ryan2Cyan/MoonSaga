@@ -1,5 +1,4 @@
 using System;
-using Resources.Scripts.Enemies.General;
 using Resources.Scripts.General;
 using UnityEngine;
 
@@ -13,65 +12,50 @@ namespace Resources.Scripts.Player
         private Rigidbody2D _rigidbody2D;
 
         // Scripts:
-        [SerializeField] private ShadowMeter _shadowMeterScript;
-        [SerializeField] private PlayerCollision _playerCollisionScript;
-        [SerializeField] private MonoBehaviourUtility _monoBehaviourUtilityScript;
-        [SerializeField] private PlayerPFXSpawner _playerPfxSpawnerScript;
-        [SerializeField] private GroundCheck _groundCheckScript;
-        [SerializeField] private PlayerUIHandler _playerUIHandler;
+        private ShadowMeter _shadowMeterScript;
+        private PlayerCollision _playerCollisionScript;
+        private PlayerPFXSpawner _playerPfxSpawnerScript;
+        private GroundCheck _groundCheckScript;
+        private PlayerUIHandler _playerUIHandler;
         private ActionMap _actionMapScript;
+        private MonoBehaviourUtility _monoBehaviourUtilityScript;
 
-        // Movement Values
+        // Walking:
+        [Range(0, 100f)] [SerializeField] protected float _walkSpeed = 37.5f;
+        
+        // Jump:
         [Range(0, 1000.0f)] [SerializeField] private float _jumpForce = 100f;
+        [Range(0, 1.0f)] [SerializeField] private float _maxAirTime = 0.5f;
+        private float _airTimer;
+        private bool _inJump;
+        
+        // Double Jump:
+        [SerializeField] private bool _doubleJumpAvailable = true;
+        [Range(0, 100)] [SerializeField] private int _doubleJumpCost = 10;
         [Range(0, 1000.0f)] [SerializeField] private float _doubleJumpForce = 100f;
+        [Range(0, 1.0f)] [SerializeField] private float _doubleJumpDelay = 0.15f;
+        
+        // Dash:
         [Range(0, 100.0f)] [SerializeField] private float _dashSpeed = 100f;
-        [Range(0, 100f)] [SerializeField] private float _runSpeed = 37.5f;
         [Range(0, 30.0f)] [SerializeField] private float _dashKnockBackX = 15f;
         [Range(0, 30.0f)] [SerializeField] private float _dashKnockBackY = 15f;
-        [Range(0, 30.0f)] [SerializeField] private float _damagedKnockBackX = 15f;
-        [Range(0, 30.0f)] [SerializeField] private float _damagedKnockBackY = 15f;
-        [SerializeField] private float _dashDuration = 0.2f;
-        [SerializeField] private float _dashDelay = 0.1f;
         [SerializeField] private float _dashKnockBackDelay = 0.1f;
         [SerializeField] private float _dashShadowDecrement = 0.1f;
+        
+        // Land:
+        private const float _landDelay = 0.1f;
+        private float _landTimer = _landDelay;
+        
+        // Damaged:
+        [Range(0, 30.0f)] [SerializeField] private float _damagedKnockBackX = 15f;
+        [Range(0, 30.0f)] [SerializeField] private float _damagedKnockBackY = 15f;
         [SerializeField] private float _damagedKnockBackDelay = 0.1f;
-        [Range(0, 1.0f)] [SerializeField] private float _maxAirTime = 0.5f;
-        [Range(0, 1.0f)] [SerializeField] private float _doubleJumpDelay = 0.15f;
+        private float _knockBackTimer;
 
         // Orientation:
         [SerializeField] internal bool _isFacingRight = true;
-
-        // Inputs:
-        private float _horizontalInput;
-        private bool _jumpPress;
-        private bool _jumpRelease;
-        private bool _dashPress;
-        private bool _dashRelease;
-        private bool _diveBouncePress;
-
-        // Air control values:
-        private float _airTimer;
-
-        // Land values:
-        private const float _landDelay = 0.1f;
-
-        private float _landTimer = _landDelay;
-
-        // Dash values:
-        [SerializeField] private bool _dashAvailable;
-        private float _dashTimer;
-
-        private float _dashDelayTimer;
-
-        // Knock back values:
-        [SerializeField] private float _knockBackTimer;
-
-        // Double jump values:
-        [SerializeField] private bool _doubleJumpAvailable;
         
         // Attack costs:
-        [Range(0, 100)] [SerializeField] private int _dashCost = 20;
-        [Range(0, 100)] [SerializeField] private int _doubleJumpCost = 10;
         [Range(0, 100)] [SerializeField] private int _diveCost = 40;
         
         // Damage values:
@@ -82,14 +66,28 @@ namespace Resources.Scripts.Player
         // Dive values:
         [SerializeField] private float _diveForce = 214f;
 
+        // Inputs:
+        private float _horizontalInput;
+        private bool _jumpPress;
+        private bool _jumpRelease;
+        private bool _dashPress;
+        private bool _dashRelease;
+        private bool _diveBouncePress;
 
         private void Awake(){
-
+            
             // Set values:
-            _dashAvailable = true;
             _doubleJumpAvailable = true;
+            
             // Fetch components:
             _rigidbody2D = GetComponent<Rigidbody2D>();
+            _shadowMeterScript = GetComponent<ShadowMeter>();
+            _playerCollisionScript = GetComponent<PlayerCollision>();
+            _playerPfxSpawnerScript = GetComponent<PlayerPFXSpawner>();
+            _groundCheckScript = GetComponent<GroundCheck>();
+            _playerUIHandler = GetComponent<PlayerUIHandler>();
+            _monoBehaviourUtilityScript = GameObject.Find("Utility").GetComponent<MonoBehaviourUtility>();
+            
             // Generate action map:
             _actionMapScript = new ActionMap();
             _actionMapScript.Enable();
@@ -124,8 +122,7 @@ namespace Resources.Scripts.Player
             DamagedCheck();
         }
         private void WalkingMovement(){
-
-            // Calc movement from input:
+            
             ApplyNormMovement(8.0f);
         }
         private void JumpInput(){
@@ -138,11 +135,21 @@ namespace Resources.Scripts.Player
                 _state = playerMoveState.AirControl;
             }
 
-            // Player releases jump:
+            // Player releases jump [Air Control]:
             if (_jumpRelease && !_groundCheckScript._isGrounded){
                 _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _rigidbody2D.velocity.y / 2.0f);
                 _state = playerMoveState.AirControl;
             }
+
+            // Player hits ceiling [Air Control]:
+            if (_groundCheckScript._isCeiling){
+                _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _rigidbody2D.velocity.y / 2.0f);
+                _state = playerMoveState.AirControl;
+            }
+
+            // Set bool to false to prevent another force being applied if player hits another ground:
+            if (!_groundCheckScript._isGrounded)
+                _inJump = false;
 
             DashCheck();
             DamagedCheck();
@@ -151,8 +158,9 @@ namespace Resources.Scripts.Player
         private void JumpMovement(){
 
             // Apply force when jumping:
-            if (_groundCheckScript._isGrounded)
+            if (_groundCheckScript._isGrounded && _inJump)
                 _rigidbody2D.AddForce(new Vector2(_rigidbody2D.velocity.x, _jumpForce));
+            
             ApplyNormMovement(7.0f);
         }
         private void AirControlInput(){
@@ -171,29 +179,27 @@ namespace Resources.Scripts.Player
             BounceDiveCheck();
         }
         private void AirControlMovement(){
-            ApplyNormMovement(7.0f);
+            
+            ApplyNormMovement(8.0f);
         }
         private void LandInput(){
+            
             _landTimer -= Time.deltaTime;
 
             // Amount of time the player can be in the Land state is finished:
             if (_landTimer <= 0.0f){
-                _state = playerMoveState.Idle;
                 _landTimer = _landDelay;
+                _state = playerMoveState.Idle;
             }
 
             // Make double jump & dash available when on the ground:
             _doubleJumpAvailable = true;
-            _dashAvailable = true;
-            
+
             WalkCheck();
             JumpCheck();
             DamagedCheck();
         }
         private void DashInput(){
-
-            // Reduce shadow meter:
-            _shadowMeterScript.DecrementShadowMeter(_dashShadowDecrement);
             
             // Check if the dash has ended:
             if (_shadowMeterScript._shadowMeter < 0f || _dashRelease)
@@ -205,8 +211,10 @@ namespace Resources.Scripts.Player
 
         }
         private void DashMovement(){
-            _dashTimer -= Time.deltaTime;
 
+            // Reduce shadow meter:
+            _shadowMeterScript.DecrementShadowMeter(_dashShadowDecrement);
+            
             // Apply horizontal force depending on the player's facing direction:
             _rigidbody2D.velocity = _isFacingRight switch{
                 true => // Dash right
@@ -216,13 +224,9 @@ namespace Resources.Scripts.Player
             };
         }
         private void DashHitInput(){
-
-            // Reduce shadow meter:
-            _shadowMeterScript.DecrementShadowMeter(_dashShadowDecrement);
             
             // On hit, the player can dash & double jump again:
             _doubleJumpAvailable = true;
-            _dashAvailable = true;
             
             // Check for end of dash hit:
             if (_dashRelease || _shadowMeterScript._shadowMeter <= 0f){
@@ -235,6 +239,8 @@ namespace Resources.Scripts.Player
             // Keep the player in place:
             _rigidbody2D.velocity = new Vector2(0f, 0f);
             
+            // Reduce shadow meter:
+            _shadowMeterScript.DecrementShadowMeter(_dashShadowDecrement);
         }
         
         private void DashRecoverInput(){
@@ -286,8 +292,7 @@ namespace Resources.Scripts.Player
         private void BounceDiveInput(){
 
             _playerCollisionScript._boxCollider.enabled = true;
-
-            // Apply initial force:
+            
             // If the player hits the ground [Land]:
             if (_groundCheckScript._isGrounded)
                 _state = playerMoveState.Land;
@@ -314,7 +319,6 @@ namespace Resources.Scripts.Player
 
             _state = playerMoveState.BounceDive;
             _doubleJumpAvailable = true;
-            _dashAvailable = true;
         }
         private void BounceDiveHitMovement(){
             
@@ -441,10 +445,10 @@ namespace Resources.Scripts.Player
 
             // Process movement:
             if (_actionMapScript.Player.Movement.ReadValue<Vector2>().x > 0f)
-                _horizontalInput = 1f * _runSpeed;
+                _horizontalInput = 1f * _walkSpeed;
 
             else if (_actionMapScript.Player.Movement.ReadValue<Vector2>().x < 0f)
-                _horizontalInput = -1f * _runSpeed;
+                _horizontalInput = -1f * _walkSpeed;
             else
                 _horizontalInput = 0f;
         }
@@ -478,44 +482,19 @@ namespace Resources.Scripts.Player
         }
         private void JumpCheck(){
             // If player presses jump button [Jump]:
-            if (_jumpPress){
+            if (_jumpPress && !_groundCheckScript._isCeiling){
                 _state = playerMoveState.Jump;
                 _airTimer = _maxAirTime;
+                _inJump = true;
             }
         }
         private void DashCheck(){
-
-            // Check if the player has enough shadow meter:
-            if (_shadowMeterScript._shadowMeter >= _dashCost){
-                switch (_groundCheckScript._isGrounded){
-                    // Dash while in-air:
-                    case false:{
-                        if (_dashPress && _dashAvailable){
-                            _state = playerMoveState.Dash;
-                            _dashTimer = _dashDuration;
-                            _dashAvailable = false;
-                            
-                            // Spawn pfx:
-                            _playerPfxSpawnerScript.SpawnDashPfx();
-                        }
-
-                        break;
-                    }
-                    case true:{
-                        // Dash while grounded:
-                        _dashDelayTimer -= Time.deltaTime;
-                        if (_dashPress && _dashDelayTimer < 0f){
-                            _state = playerMoveState.Dash;
-                            _dashTimer = _dashDuration;
-                            _dashDelayTimer = _dashDelay;
-                            
-                            // Spawn pfx:
-                            _playerPfxSpawnerScript.SpawnDashPfx();
-                        }
-
-                        break;
-                    }
-                }
+            
+            if (_dashPress && _shadowMeterScript._shadowMeter > 0f){
+                _state = playerMoveState.Dash;
+                        
+                // Spawn pfx:
+                _playerPfxSpawnerScript.SpawnDashPfx();
             }
         }
         private void DoubleJumpCheck(){
@@ -578,3 +557,4 @@ namespace Resources.Scripts.Player
         Idle, Walking, Jump, DoubleJump, AirControl, Land, Dash, DashHit, DashRecover, Damaged, BounceDive, BounceDiveHit
     }
 }
+

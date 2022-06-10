@@ -29,6 +29,12 @@ namespace Resources.Scripts.General
             slider.value = startVal;
         }
         
+        public static void SetSliderF(ref Slider slider, float minVal, float maxVal, float startVal){
+            slider.maxValue = maxVal;
+            slider.minValue = minVal;
+            slider.value = startVal;
+        }
+        
         // Using a line renderer, draw a circle:
         public static void DrawCircle(ref LineRenderer circleRenderer, int steps, float radius){
 

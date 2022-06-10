@@ -5,11 +5,15 @@ using UnityEngine;
 namespace Resources.Scripts.Player{
     public class PlayerAnimator : MonoBehaviour{
         
-        [SerializeField] private PlayerMovement _playerMovementScript;
-        [SerializeField] private playerMoveState _state;
-        [SerializeField] private Animator _animator;
-        [SerializeField] private SpriteRenderer _spriteRenderer;
+        // Scripts:
+        private PlayerMovement _playerMovementScript;
         
+        // Animator values:
+        private playerMoveState _state;
+        private Animator _animator;
+        
+        // I frames values:
+        private SpriteRenderer _spriteRenderer;
         [SerializeField] private Color _iFrameColor;
         private bool _lerpTarget;
         [SerializeField] private float _lerpTime = 0.1f;
@@ -24,6 +28,15 @@ namespace Resources.Scripts.Player{
         private static readonly int Dash = Animator.StringToHash("Dash");
         private static readonly int DoubleJump = Animator.StringToHash("DoubleJump");
         private static readonly int Damaged = Animator.StringToHash("Damaged");
+
+        private void Awake(){
+            
+            // Fetch components:
+            _playerMovementScript = transform.parent.GetComponent<PlayerMovement>();
+            _animator = GetComponent<Animator>();
+            _spriteRenderer = GetComponent<SpriteRenderer>();
+
+        }
 
         private void Update(){
             // Assign player's current state:
@@ -88,7 +101,6 @@ namespace Resources.Scripts.Player{
                     throw new ArgumentOutOfRangeException();
             }
         }
-
         private void IFramesFlash(){
             // If player is in i frames, flash black:
             if (_playerMovementScript._inIFrames){

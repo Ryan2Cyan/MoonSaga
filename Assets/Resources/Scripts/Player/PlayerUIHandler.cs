@@ -9,14 +9,14 @@ namespace Resources.Scripts.Player{
     public class PlayerUIHandler : MonoBehaviour
     {
         // Scripts:
-        [SerializeField] private ShadowMeter _shadowMeterScript;
-        [SerializeField] private GameData _gameDataScript;
+        private ShadowMeter _shadowMeterScript;
+        private GameData _gameDataScript;
         
         // Shadow meter:
         [SerializeField] private Slider _shadowSlider;
         [SerializeField] private Slider _subtractSlider;
-        private const int _maxValue = 100;
-        private const int _minValue = 0;
+        private float _maxValue = 100;
+        private const float _minValue = 0;
         [SerializeField] private float _sliderDecrementDelay = 1.5f;
         private float _sliderDecrementTimer;
         internal bool _delay;
@@ -30,11 +30,17 @@ namespace Resources.Scripts.Player{
 
         private void Awake(){
             
-            // Set values:
-            UtilityFunctions.SetSlider(ref _shadowSlider, _minValue, _maxValue, _minValue);
-            _subtractSlider.value = _shadowSlider.value;
+            // Fetch components:
+            _shadowMeterScript = GetComponent<ShadowMeter>();
+            _gameDataScript = GameObject.Find("Data-Manager").GetComponent<GameData>();
+            
+            // Set values for sliders:
+            _maxValue = _shadowMeterScript._maxShadow;
+            UtilityFunctions.SetSliderF(ref _shadowSlider, _minValue, _maxValue, _minValue);
+            UtilityFunctions.SetSliderF(ref _subtractSlider, _minValue, _maxValue, _minValue);
             _sliderDecrementTimer = 0f;
 
+            // For each hit point, add UI element:
             for (int i = 0; i < _gameDataScript.maxPoints; i++){
                 _hitPointUI.Add(_hitPointsParent.transform.GetChild(i).GetComponent<Image>());
             }
@@ -52,6 +58,7 @@ namespace Resources.Scripts.Player{
         }
 
         public void DecrementShadowSlider(float value){
+            _subtractSlider.value = _shadowSlider.value;
             _shadowSlider.value -= value;
         }
         private void UpdateSubtractSlider(){
@@ -62,12 +69,13 @@ namespace Resources.Scripts.Player{
                 _sliderDecrementTimer = _sliderDecrementDelay;
                 _delay = false;
             }
+            
             // White bar delay, then catch up:
             if (_sliderDecrementTimer <= 0f){
                 if (_subtractSlider.value > _shadowSlider.value)
-                    _subtractSlider.value -= 1;
+                    _subtractSlider.value -= 1f;
                 else if (_subtractSlider.value < _shadowSlider.value)
-                    _subtractSlider.value += 1;
+                    _subtractSlider.value = 0f;
             }
         }
         public void ReduceHitPoint(){

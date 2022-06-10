@@ -1,6 +1,4 @@
-using System;
 using Resources.Scripts.Enemies.General;
-using Resources.Scripts.General;
 using UnityEngine;
 
 // Code within this class is responsible (only) for collisions the player
@@ -8,22 +6,17 @@ using UnityEngine;
 namespace Resources.Scripts.Player{
     public class PlayerCollision : MonoBehaviour{
         
-        // Scripts:
-        [SerializeField] private GroundCheck _groundCheckScript;
-        [SerializeField] private GameObject[] _sceneEnemies;
-        [SerializeField] internal GameObject _collidedEnemy;
-        
         // Trigger collider:
         [SerializeField] internal Collider2D _boxCollider;
         
         // Values:
-        private Rigidbody2D _rigidbody;
-        [SerializeField] internal bool _enemyCollision;
+        private GameObject[] _sceneEnemies;
+        internal GameObject _collidedEnemy;
+        internal bool _enemyCollision;
 
         private void Awake(){
-            _rigidbody = GetComponent<Rigidbody2D>();
             
-            // Ignore collision with enemy ground collider:
+            // Ignore collision with enemy ground collider (circle colliders):
             _sceneEnemies = GameObject.FindGameObjectsWithTag("Enemy");
             foreach (GameObject enemy in _sceneEnemies){
                 Physics2D.IgnoreCollision(enemy.GetComponent<CircleCollider2D>(), GetComponent<CircleCollider2D>());
@@ -35,11 +28,6 @@ namespace Resources.Scripts.Player{
                 _enemyCollision = true;
                 _collidedEnemy = other.gameObject;
                 _collidedEnemy.GetComponent<EnemyCollision>()._collidingWithPlayer = true;
-            }
-
-            // If player collides with platform, but is not on top of it, make sure they slide off:
-            if (other.gameObject.layer == 6 && !_groundCheckScript._isGrounded){
-                _rigidbody.velocity = new Vector2(_rigidbody.velocity.x, _rigidbody.velocity.y);
             }
         }
 
