@@ -43,6 +43,7 @@ namespace Resources.Scripts.Player
         [SerializeField] private float _dashKnockBackDelay = 0.1f;
         [SerializeField] private float _dashShadowDecrement = 0.1f;
         [Range(0f, 10f)] [SerializeField] private float _dashMod = 5f;
+        internal bool _dashDown;
         
         // Land:
         private const float _landDelay = 0.1f;
@@ -246,6 +247,7 @@ namespace Resources.Scripts.Player
                 _state = playerMoveState.DashRecover;
                 _knockBackTimer = _dashKnockBackDelay;
                 _playerCollisionScript._collidedEnemy.GetComponent<Animator>().SetBool("Damaged", false);
+                _dashDown = false;
             }
         }
         private void DashHitMovement(){
@@ -469,6 +471,7 @@ namespace Resources.Scripts.Player
 
             if (_dashDownPress && _shadowMeterScript._shadowMeter > 0f){
                 _state = playerMoveState.DashDown;
+                _dashDown = true;
             }
         }
         private void DoubleJumpCheck(){

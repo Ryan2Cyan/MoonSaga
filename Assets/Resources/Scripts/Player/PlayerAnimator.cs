@@ -28,6 +28,7 @@ namespace Resources.Scripts.Player{
         private static readonly int Dash = Animator.StringToHash("Dash");
         private static readonly int DoubleJump = Animator.StringToHash("DoubleJump");
         private static readonly int Damaged = Animator.StringToHash("Damaged");
+        private static readonly int DashDown = Animator.StringToHash("DashDown");
 
         private void Awake(){
             
@@ -58,6 +59,7 @@ namespace Resources.Scripts.Player{
             _animator.SetBool(Dash, false);
             _animator.SetBool(DoubleJump, false);
             _animator.SetBool(Damaged, false);
+            _animator.SetBool(DashDown, false);
         }
         private void ProcessStateAnimation(){
             ResetAnimator();
@@ -80,7 +82,7 @@ namespace Resources.Scripts.Player{
                     _animator.SetBool(Dash, true);
                     break;
                 case playerMoveState.DashHit:
-                    _animator.SetBool(Dash, true);
+                    _animator.SetBool(!_playerMovementScript._dashDown ? Dash : DashDown, true);
                     break;
                 case playerMoveState.Damaged:
                     _animator.SetBool(Damaged, true);
@@ -89,7 +91,7 @@ namespace Resources.Scripts.Player{
                     _animator.SetBool(DoubleJump, true);
                     break;
                 case playerMoveState.DashDown:
-                    _animator.SetBool(Dash, true);
+                    _animator.SetBool(DashDown, true);
                     break;
                 case playerMoveState.DashRecover:
                     _animator.SetBool(Damaged, true);

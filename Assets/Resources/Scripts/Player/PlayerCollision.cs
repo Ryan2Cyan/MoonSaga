@@ -40,7 +40,6 @@ namespace Resources.Scripts.Player{
             
             // Collide with shadow sapphire:
             if (other.gameObject.CompareTag("ShadowSapphire0")){
-                Debug.Log(other);
                 Destroy(other.gameObject);
                 _gameDataScript.shadowSapphires += 1;
             }
