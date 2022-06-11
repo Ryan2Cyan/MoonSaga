@@ -246,7 +246,6 @@ namespace Resources.Scripts.Player
             if (_dashRelease || _dashDownRelease || _shadowMeterScript._shadowMeter <= 0f){
                 _state = playerMoveState.DashRecover;
                 _knockBackTimer = _dashKnockBackDelay;
-                _playerCollisionScript._collidedEnemy.GetComponent<Animator>().SetBool("Damaged", false);
                 _dashDown = false;
             }
         }
@@ -496,7 +495,6 @@ namespace Resources.Scripts.Player
                 _state = playerMoveState.DashHit;
                 _knockBackTimer = _dashKnockBackDelay;
                 _monoBehaviourUtilityScript.StartSleep(0.05f);
-                _playerCollisionScript._collidedEnemy.GetComponent<Animator>().SetBool("Damaged", true);
             }
         }
         private void DamagedCheck(){

@@ -38,8 +38,6 @@ namespace Resources.Scripts.Player{
         }
         internal void SpawnDashPfx(){
             
-            // Spawn more shadow particles when player is in light:
-           
             if (_playerMovementScript._isFacingRight){
                 // Player facing right, spawn pfx to go left:
                 Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/PFX/Player/Dash-Burst-Right"),
@@ -52,35 +50,19 @@ namespace Resources.Scripts.Player{
                     new Vector3(transform.position.x + _dashOffsetX, transform.position.y - _dashOffsetY,
                         transform.position.z), Quaternion.identity, _pfxParent);
             }
-            
         }
         internal void SpawnDoubleJumpPfx(){
-            // Spawn more shadow particles when player is in light:
-            if (_lightDetectionScript._inLight){
-                // Spawn first wing pfx:
-                Instantiate(UnityEngine.Resources.Load<GameObject>
-                        ("Prefabs/PFX/Player/Double-Jump-0"),
-                    new Vector3(transform.position.x - _doubleJumpOffsetX, transform.position.y - _doubleJumpOffsetY,
-                        transform.position.z), Quaternion.identity, _pfxParent);
-                // Spawn other wing pfx:
-                Instantiate(UnityEngine.Resources.Load<GameObject>
-                        ("Prefabs/PFX/Player/Double-Jump-1"),
-                    new Vector3(transform.position.x + _doubleJumpOffsetX, transform.position.y - _doubleJumpOffsetY,
-                        transform.position.z), Quaternion.identity, _pfxParent);
-            }
-            // Spawn less shadow particles when player is in light:
-            else{
-                // Spawn first wing pfx:
-                Instantiate(UnityEngine.Resources.Load<GameObject>
-                        ("Prefabs/PFX/Player/Double-Jump-Shadow-0"),
-                    new Vector3(transform.position.x - _doubleJumpOffsetX, transform.position.y - _doubleJumpOffsetY,
-                        transform.position.z), Quaternion.identity, _pfxParent);
-                // Spawn other wing pfx:
-                Instantiate(UnityEngine.Resources.Load<GameObject>
-                        ("Prefabs/PFX/Player/Double-Jump-Shadow-1"),
-                    new Vector3(transform.position.x + _doubleJumpOffsetX, transform.position.y - _doubleJumpOffsetY,
-                        transform.position.z), Quaternion.identity, _pfxParent);
-            }
+           
+            // Spawn first wing pfx:
+            Instantiate(UnityEngine.Resources.Load<GameObject>
+                    ("Prefabs/PFX/Player/Double-Jump-0"),
+                new Vector3(transform.position.x - _doubleJumpOffsetX, transform.position.y - _doubleJumpOffsetY,
+                    transform.position.z), Quaternion.identity, _pfxParent);
+            // Spawn other wing pfx:
+            Instantiate(UnityEngine.Resources.Load<GameObject>
+                    ("Prefabs/PFX/Player/Double-Jump-1"),
+                new Vector3(transform.position.x + _doubleJumpOffsetX, transform.position.y - _doubleJumpOffsetY,
+                    transform.position.z), Quaternion.identity, _pfxParent);
         }
         internal void SpawnDamagedPfx(){
           

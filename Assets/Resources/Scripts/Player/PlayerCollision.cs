@@ -1,4 +1,3 @@
-using Resources.Scripts.Enemies.General;
 using Resources.Scripts.Managers;
 using UnityEngine;
 
@@ -35,7 +34,6 @@ namespace Resources.Scripts.Player{
             if (other.gameObject.CompareTag("Enemy")){
                 _enemyCollision = true;
                 _collidedEnemy = other.gameObject;
-                _collidedEnemy.GetComponent<EnemyCollision>()._collidingWithPlayer = true;
             }
             
             // Collide with shadow sapphire:
@@ -45,15 +43,14 @@ namespace Resources.Scripts.Player{
             }
         }
 
-        private void OnTriggerStay2D(Collider2D other){
-            
-            // Collide with enemy:
-            if (other.gameObject.CompareTag("Enemy")){
-                _enemyCollision = true;
-                _collidedEnemy = other.gameObject;
-                _collidedEnemy.GetComponent<EnemyCollision>()._collidingWithPlayer = true;
-            }
-        }
+        // private void OnTriggerStay2D(Collider2D other){
+        //     
+        //     // Collide with enemy:
+        //     if (other.gameObject.CompareTag("Enemy")){
+        //         _enemyCollision = true;
+        //         _collidedEnemy = other.gameObject;
+        //     }
+        // }
 
         private void OnTriggerExit2D(Collider2D other){
 
