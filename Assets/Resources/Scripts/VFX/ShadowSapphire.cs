@@ -1,9 +1,14 @@
 using System;
+using Resources.Scripts.General;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Resources.Scripts.VFX{
     public class ShadowSapphire : MonoBehaviour{
+        
+        // Scripts:
+        [SerializeField] private GroundCheck _groundCheckScript;
+        
         private Rigidbody2D _rigidbody2D;
         [SerializeField] private float _minX;
         [SerializeField] private float _maxX;
@@ -23,7 +28,24 @@ namespace Resources.Scripts.VFX{
             if (_sceneEnemies.Length > 0){
                 foreach (GameObject enemy in _sceneEnemies){
                     Physics2D.IgnoreCollision(enemy.GetComponent<CircleCollider2D>(), GetComponent<CircleCollider2D>());
+                    Physics2D.IgnoreCollision(enemy.GetComponent<CircleCollider2D>(), GetComponent<BoxCollider2D>());
                 }
+            }
+        }
+
+        private void Update(){
+
+            if (_groundCheckScript._isGrounded){
+                GetComponent<BoxCollider2D>().enabled = true;
+                GetComponent<CircleCollider2D>().enabled = true;
+                _rigidbody2D.velocity = new Vector2(0f, _rigidbody2D.velocity.y);
+            }
+        }
+        
+
+        private void OnCollisionEnter2D(Collision2D other){
+            if (other.gameObject.CompareTag("Platform") || other.gameObject.CompareTag("PlatformEdge") ){
+                _rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
             }
         }
     }

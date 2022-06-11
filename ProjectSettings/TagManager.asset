@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - PlatformEdge
   - ShadowSapphire0
+  - Platform
   layers:
   - Default
   - TransparentFX

@@ -12,13 +12,6 @@ namespace Resources.Scripts.Enemies.General{
             if (other.gameObject.CompareTag("Player"))
                 _collidingWithPlayer = true;
         }
-        
-        // private void OnTriggerStay2D(Collider2D other){
-        //     
-        //     // Collision with player:
-        //     if (other.gameObject.CompareTag("Player"))
-        //         _collidingWithPlayer = false;
-        // }
 
         private void OnTriggerExit2D(Collider2D other){
             

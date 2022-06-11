@@ -43,15 +43,6 @@ namespace Resources.Scripts.Player{
             }
         }
 
-        // private void OnTriggerStay2D(Collider2D other){
-        //     
-        //     // Collide with enemy:
-        //     if (other.gameObject.CompareTag("Enemy")){
-        //         _enemyCollision = true;
-        //         _collidedEnemy = other.gameObject;
-        //     }
-        // }
-
         private void OnTriggerExit2D(Collider2D other){
 
             // Collide with enemy:

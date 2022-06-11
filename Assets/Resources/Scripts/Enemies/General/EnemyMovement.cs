@@ -14,12 +14,13 @@ namespace Resources.Scripts.Enemies.General{
         [SerializeField] private EnemyCollision _enemyColliderScript;
         [SerializeField] private GroundCheck _groundCheckScript;
         [SerializeField] private PlayerMovement _playerMovementScript;
+        [SerializeField] private EnemyData _enemyDataScript;
         
         // Movement Values:
         [Range(0, 100f)] [SerializeField] private float _runSpeed = 37.5f;
-        [Range(0, 30.0f)] [SerializeField] private float _damagedKnockBackX = 15f;
-        [Range(0, 30.0f)] [SerializeField] private float _damagedKnockBackY = 15f;
-        [SerializeField] private float _damagedKnockBackDelay = 0.1f;
+        // [Range(0, 30.0f)] [SerializeField] private float _damagedKnockBackX = 15f;
+        // [Range(0, 30.0f)] [SerializeField] private float _damagedKnockBackY = 15f;
+        // [SerializeField] private float _damagedKnockBackDelay = 0.1f;
 
         // Orientation:
         [SerializeField] internal bool _isFacingRight = true;
@@ -41,18 +42,9 @@ namespace Resources.Scripts.Enemies.General{
             // Process all movements:
             ProcessStateMovement();
         }
-
-
-        // State Functions:
-        private void IdleInput(){
-            DamagedCheck();
-        }
         
-        private void IdleMovement(){
-        }
-
+        // State Functions:
         private void WalkingInput(){
-            Debug.Log("Walking");
             DamagedCheck();
         }
         private void WalkingMovement(){
@@ -70,23 +62,23 @@ namespace Resources.Scripts.Enemies.General{
         }
 
         private void DamagedInput(){
-            
+
+            // Check if collision stops:
             if (!_enemyColliderScript._collidingWithPlayer)
-                _state = enemyMoveState.Walking;
-            Debug.Log("Damaged");
+                SetDefaultState();
         }
         private void DamagedMovement(){
             
+            // Decrement HP:
+            _enemyDataScript.DecrementHp(1f);
+            
+            // Freeze position:
             _rigidbody2D.velocity = new Vector2(0f, 0f);
         }
 
         
-
         private void ProcessStateMovement(){
             switch (_state){
-                case enemyMoveState.Idle:
-                    IdleMovement();
-                    break;
                 case enemyMoveState.Walking:
                     WalkingMovement();
                     break;
@@ -100,9 +92,6 @@ namespace Resources.Scripts.Enemies.General{
         
         private void ProcessStateInput(){
             switch (_state){
-                case enemyMoveState.Idle:
-                    IdleInput();
-                    break;
                 case enemyMoveState.Walking:
                     WalkingInput();
                     break;
@@ -117,11 +106,7 @@ namespace Resources.Scripts.Enemies.General{
 
         // Input checks for switching state:
         private void SetDefaultState(){
-        }
-        private void IdleCheck(){
-        }
-        private void WalkCheck(){
-            
+            _state = enemyMoveState.Walking;
         }
         private void DamagedCheck(){
             
@@ -135,6 +120,6 @@ namespace Resources.Scripts.Enemies.General{
     }
     
     internal enum enemyMoveState{
-        Idle, Walking, Damaged
+        Walking, Damaged
     }
 }

@@ -37,6 +37,7 @@ namespace Resources.Scripts.Player
         
         // Dash:
         [Range(0, 100.0f)] [SerializeField] private float _dashSpeed = 100f;
+        [SerializeField] private float _dashThresholdCost = 20f;
         [Range(0, 100.0f)] [SerializeField] private float _dashDownSpeed = 100f;
         [Range(0, 30.0f)] [SerializeField] private float _dashKnockBackX = 15f;
         [Range(0, 30.0f)] [SerializeField] private float _dashKnockBackY = 15f;
@@ -248,11 +249,10 @@ namespace Resources.Scripts.Player
                 _knockBackTimer = _dashKnockBackDelay;
                 _dashDown = false;
             }
+
+            _rigidbody2D.velocity = new Vector2(0f, 0f);
         }
         private void DashHitMovement(){
-            // Keep the player in place:
-            _rigidbody2D.velocity = new Vector2(0f, 0f);
-            transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
             
             // Reduce shadow meter:
             _shadowMeterScript.DecrementShadowMeter(_dashShadowDecrement);
@@ -461,7 +461,7 @@ namespace Resources.Scripts.Player
         }
         private void DashCheck(){
             
-            if (_dashPress && _shadowMeterScript._shadowMeter > 0f){
+            if (_dashPress && _shadowMeterScript._shadowMeter >= _dashThresholdCost){
                 _state = playerMoveState.Dash;
                         
                 // Spawn pfx:

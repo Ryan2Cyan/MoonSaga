@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Resources.Scripts.Enemies.General{
@@ -23,6 +24,27 @@ namespace Resources.Scripts.Enemies.General{
         private void Update(){
             
             _state = _enemyMovementScript._state;
+            
+            // Change animation based on enemy's current state:
+            ProcessStateAnimation();
+        }
+
+        private void ResetAnimator(){
+            
+            _animator.SetBool(Damaged, false);
+        }
+
+        private void ProcessStateAnimation(){
+            ResetAnimator();
+            switch (_state){
+                case enemyMoveState.Walking:
+                    break;
+                case enemyMoveState.Damaged:
+                    _animator.SetBool(Damaged, true);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }
