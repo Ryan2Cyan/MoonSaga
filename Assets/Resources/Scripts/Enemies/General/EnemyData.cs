@@ -1,9 +1,13 @@
 using System.Collections.Generic;
+using Resources.Scripts.General;
 using UnityEngine;
 
 namespace Resources.Scripts.Enemies.General{
     public class EnemyData : MonoBehaviour{
 
+        // Scripts:
+        private MonoBehaviourUtility _monoBehaviourUtilityScript;
+        
         [Range(0f, 5000f)][SerializeField] internal float _maxHp;
         [SerializeField] internal float _hp;
 
@@ -16,6 +20,11 @@ namespace Resources.Scripts.Enemies.General{
         private bool _spawnedSecondLoot;
         private bool _spawnedDeathLoot;
         private void Awake(){
+            
+            // Fetch components:
+            _monoBehaviourUtilityScript = GameObject.Find("Utility").GetComponent<MonoBehaviourUtility>();
+            
+            // Set values:
             _hp = _maxHp;
         }
 
@@ -38,6 +47,7 @@ namespace Resources.Scripts.Enemies.General{
         private void SpawnLoot(){
             // First threshold:
             if (_hp < _maxHp * firstDropThreshold && !_spawnedFirstLoot){
+                _monoBehaviourUtilityScript.StartSleep(0.2f);
                 SpawnSapphires(0, firstDrop[0]);
                 // SpawnSapphires(1, firstDrop[1]);
                 // SpawnSapphires(2, firstDrop[2]);
@@ -45,6 +55,7 @@ namespace Resources.Scripts.Enemies.General{
             }
             // Second threshold:
             if (_hp < _maxHp * secondDropThreshold && !_spawnedSecondLoot){
+                _monoBehaviourUtilityScript.StartSleep(0.2f);
                 SpawnSapphires(0, secondDrop[0]);
                 // SpawnSapphires(1, secondDrop[1]);
                 // SpawnSapphires(2, secondDrop[2]);
@@ -52,6 +63,7 @@ namespace Resources.Scripts.Enemies.General{
             }
             // Death threshold:
             if (_hp <= 0f && !_spawnedDeathLoot){
+                _monoBehaviourUtilityScript.StartSleep(0.3f);
                 SpawnSapphires(0, deathDrop[0]);
                 // SpawnSapphires(1, deathDrop[1]);
                 // SpawnSapphires(2, deathDrop[2]);

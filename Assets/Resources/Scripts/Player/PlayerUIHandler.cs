@@ -30,13 +30,13 @@ namespace Resources.Scripts.Player{
         
         // Shadow sapphires:
         [SerializeField] private TextMeshProUGUI _totalCounter;
-        [SerializeField] private TextMeshProUGUI _addCounter;
-        [SerializeField] private float _addDelay;
-        [SerializeField] private float _addDelayTimer;
-        [SerializeField] private float _addCounterTime;
-        [SerializeField] private float _addCounterTimer;
-        private bool _deactivateAdd;
-        [SerializeField] private int _addValue;
+        [SerializeField] private TextMeshProUGUI _tempCounter;
+        [SerializeField] private float _tempDelay;
+        [SerializeField] private float _tempDelayTimer;
+        [SerializeField] private float _tempSubtractTime;
+        [SerializeField] private float _tempSubtractTimer;
+        [SerializeField] private bool _deactivateAdd;
+        [SerializeField] private int _tempValue;
         [SerializeField] private int _totalValue;
 
 
@@ -112,55 +112,55 @@ namespace Resources.Scripts.Player{
                 }
             }
         }
-
         public void IncrementShadowSapphires(){
             
             // If add counter is not visible, fade in:
             StopAllCoroutines();
             StartCoroutine(MonoBehaviourUtility.FadeColorTMP(
                 1.0f,
-                new Color(_addCounter.color.r, _addCounter.color.g, _addCounter.color.b, 1f),
-                _addCounter));
+                new Color(_tempCounter.color.r, _tempCounter.color.g, _tempCounter.color.b, 1f),
+                _tempCounter));
 
             // Increment values:
             _gameDataScript.shadowSapphires++;
-            _addValue++;
-            _addCounterTimer = _addCounterTime;
-            _addDelayTimer = _addDelay;
+            _tempValue++;
+            _tempSubtractTimer = _tempSubtractTime;
+            _tempDelayTimer = _tempDelay;
+            
+            // Prevent the program from closing the temp counter:
+            _deactivateAdd = false;
         }
-
         private void UpdateShadowSapphireUI(){
             
             // Update sliders:
-            _addCounter.text = "+" + _addValue;
+            _tempCounter.text = "+" + _tempValue;
             _totalCounter.text = _totalValue.ToString();
 
-            _addDelayTimer -= Time.deltaTime;
+            // Decrement delay times (when 0, open/close the add counter):
+            _tempDelayTimer -= Time.deltaTime;
 
-            if (_addDelayTimer <= 0f){
-                // Check if the add counter is active:
-                if (_addCounter.gameObject.activeInHierarchy && _addValue > 0){
-                    _addCounterTimer -= Time.deltaTime;
-                    if (_addCounterTimer <= 0f){
-                        _addValue--;
-                        _totalValue++;
-                        _addCounterTimer = _addCounterTime;
-                        if (_addValue == 0){
-                            _deactivateAdd = true;
-                            _addDelayTimer = _addDelay;
-                        }
+            // Keep taking values away from the temp counter, and adding them to the total:
+            if (_tempDelayTimer <= 0f && _tempValue > 0){
+                _tempSubtractTimer -= Time.deltaTime;
+                if (_tempSubtractTimer <= 0f){
+                    _tempValue--;
+                    _totalValue++;
+                    _tempSubtractTimer = _tempSubtractTime;
+                    if (_tempValue == 0){
+                        _deactivateAdd = true;
+                        _tempDelayTimer = _tempDelay;
                     }
                 }
-                
-                // Fade out add bar when no longer in use:
-                if (_deactivateAdd){
-                    StopAllCoroutines();
-                    StartCoroutine(MonoBehaviourUtility.FadeColorTMP(
-                        1.0f,
-                        new Color(_addCounter.color.r, _addCounter.color.g, _addCounter.color.b, 0f),
-                        _addCounter));
-                    _deactivateAdd = false;
-                }
+            }
+            
+            // Fade out temp bar when no longer in use:
+            if (_tempDelayTimer <= 0f && _deactivateAdd){
+                StopAllCoroutines();
+                StartCoroutine(MonoBehaviourUtility.FadeColorTMP(
+                    1.0f,
+                    new Color(_tempCounter.color.r, _tempCounter.color.g, _tempCounter.color.b, 0f),
+                    _tempCounter));
+                _deactivateAdd = false;
             }
         }
     }
