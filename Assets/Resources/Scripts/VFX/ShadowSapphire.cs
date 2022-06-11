@@ -10,6 +10,7 @@ namespace Resources.Scripts.VFX{
         [SerializeField] private GroundCheck _groundCheckScript;
         
         private Rigidbody2D _rigidbody2D;
+        private Animator _animator;
         [SerializeField] private float _minX;
         [SerializeField] private float _maxX;
         [SerializeField] private float _minY;
@@ -19,6 +20,7 @@ namespace Resources.Scripts.VFX{
             
             // Fetch components:
             _rigidbody2D = GetComponent<Rigidbody2D>();
+            _animator = GetComponent<Animator>();
             
             // Apply force on spawn:
             _rigidbody2D.AddForce(new Vector2(Random.Range(_minX, _maxX), Random.Range(_minY, _maxY)));
@@ -38,6 +40,7 @@ namespace Resources.Scripts.VFX{
             if (_groundCheckScript._isGrounded){
                 GetComponent<BoxCollider2D>().enabled = true;
                 GetComponent<CircleCollider2D>().enabled = true;
+                _animator.enabled = true;
                 _rigidbody2D.velocity = new Vector2(0f, _rigidbody2D.velocity.y);
             }
         }

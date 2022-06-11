@@ -5941,9 +5941,9 @@ MonoBehaviour:
   _hp: 0
   firstDropThreshold: 0.8
   secondDropThreshold: 0.5
-  firstDrop: 020000000200000002000000
-  secondDrop: 040000000000000000000000
-  deathDrop: 060000000000000000000000
+  firstDrop: 010000000200000002000000
+  secondDrop: 010000000000000000000000
+  deathDrop: 030000000000000000000000
 --- !u!4 &2095361638
 Transform:
   m_ObjectHideFlags: 0

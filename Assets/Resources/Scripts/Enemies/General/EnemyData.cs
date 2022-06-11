@@ -38,14 +38,13 @@ namespace Resources.Scripts.Enemies.General{
         private void SpawnLoot(){
             // First threshold:
             if (_hp < _maxHp * firstDropThreshold && !_spawnedFirstLoot){
-                Debug.Log("Spawn loot");
                 SpawnSapphires(0, firstDrop[0]);
                 // SpawnSapphires(1, firstDrop[1]);
                 // SpawnSapphires(2, firstDrop[2]);
                 _spawnedFirstLoot = true;
             }
             // Second threshold:
-            if (_hp < _hp * secondDropThreshold && !_spawnedSecondLoot){
+            if (_hp < _maxHp * secondDropThreshold && !_spawnedSecondLoot){
                 SpawnSapphires(0, secondDrop[0]);
                 // SpawnSapphires(1, secondDrop[1]);
                 // SpawnSapphires(2, secondDrop[2]);
@@ -63,7 +62,6 @@ namespace Resources.Scripts.Enemies.General{
         private void SpawnSapphires(int type, int amount){
             if (amount > 0){
                 for (int i = 0; i < amount; i++){
-                    Debug.Log("spawn");
                     Instantiate(UnityEngine.Resources.Load<GameObject>
                             ("Prefabs/General/ShadowSapphires/Shadow-Sapphire-" + type), 
                         new Vector3(transform.position.x, transform.position.y + 1f, transform.position.z),

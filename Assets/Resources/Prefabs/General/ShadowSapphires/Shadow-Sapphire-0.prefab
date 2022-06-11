@@ -99,7 +99,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 877a1454137ad4d40bb375d677d178a7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -165,9 +165,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.00102458, y: -0.030585015}
+  m_Offset: {x: -0.00102458, y: -0.04539323}
   serializedVersion: 2
-  m_Radius: 0.015526044
+  m_Radius: 0.020285845
 --- !u!61 &1324368199004028689
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -202,7 +202,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1324368199004028692}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: ff79d4c5f4a9ff04cbe65a52a2c3a0e1, type: 2}
   m_CullingMode: 0
