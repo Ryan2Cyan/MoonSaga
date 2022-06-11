@@ -35,6 +35,7 @@ namespace Resources.Scripts.Player{
         [SerializeField] private float _addDelayTimer;
         [SerializeField] private float _addCounterTime;
         [SerializeField] private float _addCounterTimer;
+        private bool _deactivateAdd;
         [SerializeField] private int _addValue;
         [SerializeField] private int _totalValue;
 
@@ -114,10 +115,13 @@ namespace Resources.Scripts.Player{
 
         public void IncrementShadowSapphires(){
             
-            // If add counter is not on, turn on:
-            if(!_addCounter.gameObject.activeInHierarchy)
-                _addCounter.gameObject.SetActive(true);
-            
+            // If add counter is not visible, fade in:
+            StopAllCoroutines();
+            StartCoroutine(MonoBehaviourUtility.FadeColorTMP(
+                1.0f,
+                new Color(_addCounter.color.r, _addCounter.color.g, _addCounter.color.b, 1f),
+                _addCounter));
+
             // Increment values:
             _gameDataScript.shadowSapphires++;
             _addValue++;
@@ -141,14 +145,21 @@ namespace Resources.Scripts.Player{
                         _addValue--;
                         _totalValue++;
                         _addCounterTimer = _addCounterTime;
+                        if (_addValue == 0){
+                            _deactivateAdd = true;
+                            _addDelayTimer = _addDelay;
+                        }
                     }
                 }
-
-                // Shut off add timer if value is zero:
-                if (_addValue == 0){
-                    _addCounterTimer -= Time.deltaTime;
-                    if (_addCounterTimer <= 0f)
-                        _addCounter.gameObject.SetActive(false);
+                
+                // Fade out add bar when no longer in use:
+                if (_deactivateAdd){
+                    StopAllCoroutines();
+                    StartCoroutine(MonoBehaviourUtility.FadeColorTMP(
+                        1.0f,
+                        new Color(_addCounter.color.r, _addCounter.color.g, _addCounter.color.b, 0f),
+                        _addCounter));
+                    _deactivateAdd = false;
                 }
             }
         }

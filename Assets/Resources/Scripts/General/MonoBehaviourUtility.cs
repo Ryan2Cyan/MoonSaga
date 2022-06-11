@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 // MonoBehaviour Utility is used to house functions that can be called by any class. These
@@ -14,6 +15,26 @@ namespace Resources.Scripts.General{
             Time.timeScale = 0;
             yield return new WaitForSecondsRealtime(duration);
             Time.timeScale = 1;
+        }
+        
+        public static IEnumerator FadeColorTMP(float duration, Color target, TextMeshProUGUI arg){
+
+            if (arg.color != target){
+                for (float i = 0; i < duration; i += Time.deltaTime){
+                    float normalisedTime = i / duration;
+                    arg.color = Color.Lerp(
+                        arg.color,
+                        target,
+                        normalisedTime
+                    );
+                    yield return null;
+                }
+
+                arg.color = target;
+            }
+            else
+                yield return null;
+            
         }
         
         // Check whether current object is touching the ground:

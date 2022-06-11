@@ -1194,7 +1194,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &499068754
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1244,8 +1244,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4287811305
-  m_fontColor: {r: 0.9150943, g: 0.80635977, b: 0.5740922, a: 1}
+    rgba: 9621225
+  m_fontColor: {r: 0.9150943, g: 0.80635977, b: 0.5740922, a: 0}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1622,7 +1622,7 @@ MonoBehaviour:
   _addCounter: {fileID: 499068755}
   _addDelay: 1
   _addDelayTimer: 0
-  _addCounterTime: 0.5
+  _addCounterTime: 0.25
   _addCounterTimer: 0
   _addValue: 0
   _totalValue: 0
