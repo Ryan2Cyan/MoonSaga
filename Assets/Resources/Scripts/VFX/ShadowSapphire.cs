@@ -16,11 +16,18 @@ namespace Resources.Scripts.VFX{
         [SerializeField] private float _minY;
         [SerializeField] private float _maxY;
         private GameObject[] _sceneEnemies;
+        [SerializeField] private float _shineTime = 3f;
+        [SerializeField] private float _shineTimer;
+        
+        // Property index:
+        private static readonly int Shine = Animator.StringToHash("Shine");
+
         private void Awake(){
             
             // Fetch components:
             _rigidbody2D = GetComponent<Rigidbody2D>();
             _animator = GetComponent<Animator>();
+            _shineTimer = _shineTime;
             
             // Apply force on spawn:
             _rigidbody2D.AddForce(new Vector2(Random.Range(_minX, _maxX), Random.Range(_minY, _maxY)));
@@ -43,9 +50,14 @@ namespace Resources.Scripts.VFX{
                 _animator.enabled = true;
                 _rigidbody2D.velocity = new Vector2(0f, _rigidbody2D.velocity.y);
             }
+
+            _shineTimer -= Time.deltaTime;
+            if (_shineTimer <= 0f){
+                _animator.SetTrigger(Shine);
+                _shineTimer = _shineTime;
+            }
         }
         
-
         private void OnCollisionEnter2D(Collision2D other){
             if (other.gameObject.CompareTag("Platform") || other.gameObject.CompareTag("PlatformEdge") ){
                 _rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Resources.Scripts.General;
 using Resources.Scripts.Managers;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,6 +27,16 @@ namespace Resources.Scripts.Player{
         [SerializeField] private List<Image> _hitPointUI;
         [SerializeField] private float _hitPointSubtractDelay = 0.1f;
         private float _hitPointSubtractTimer;
+        
+        // Shadow sapphires:
+        [SerializeField] private TextMeshProUGUI _totalCounter;
+        [SerializeField] private TextMeshProUGUI _addCounter;
+        [SerializeField] private float _addDelay;
+        [SerializeField] private float _addDelayTimer;
+        [SerializeField] private float _addCounterTime;
+        [SerializeField] private float _addCounterTimer;
+        [SerializeField] private int _addValue;
+        [SerializeField] private int _totalValue;
 
 
         private void Awake(){
@@ -55,6 +66,8 @@ namespace Resources.Scripts.Player{
             UpdateSubtractSlider();
             // Update hit points UI:
             UpdateHitPoints();
+            // Update shadow sapphires:
+            UpdateShadowSapphireUI();
         }
 
         public void DecrementShadowSlider(float value){
@@ -95,6 +108,47 @@ namespace Resources.Scripts.Player{
                 // Empty hit points:
                 else{
                     _hitPointUI[i].sprite = UnityEngine.Resources.Load<Sprite>("Sprites/UI/Hitpoints/hitpoint-empty");
+                }
+            }
+        }
+
+        public void IncrementShadowSapphires(){
+            
+            // If add counter is not on, turn on:
+            if(!_addCounter.gameObject.activeInHierarchy)
+                _addCounter.gameObject.SetActive(true);
+            
+            // Increment values:
+            _gameDataScript.shadowSapphires++;
+            _addValue++;
+            _addCounterTimer = _addCounterTime;
+            _addDelayTimer = _addDelay;
+        }
+
+        private void UpdateShadowSapphireUI(){
+            
+            // Update sliders:
+            _addCounter.text = "+" + _addValue;
+            _totalCounter.text = _totalValue.ToString();
+
+            _addDelayTimer -= Time.deltaTime;
+
+            if (_addDelayTimer <= 0f){
+                // Check if the add counter is active:
+                if (_addCounter.gameObject.activeInHierarchy && _addValue > 0){
+                    _addCounterTimer -= Time.deltaTime;
+                    if (_addCounterTimer <= 0f){
+                        _addValue--;
+                        _totalValue++;
+                        _addCounterTimer = _addCounterTime;
+                    }
+                }
+
+                // Shut off add timer if value is zero:
+                if (_addValue == 0){
+                    _addCounterTimer -= Time.deltaTime;
+                    if (_addCounterTimer <= 0f)
+                        _addCounter.gameObject.SetActive(false);
                 }
             }
         }

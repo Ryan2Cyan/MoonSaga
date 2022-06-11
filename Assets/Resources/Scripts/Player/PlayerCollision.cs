@@ -8,6 +8,7 @@ namespace Resources.Scripts.Player{
         
         // Scripts:
         private GameData _gameDataScript;
+        [SerializeField] private PlayerUIHandler _playerUIHandlerScript;
         
         // Values:
         private GameObject[] _sceneEnemies;
@@ -39,7 +40,7 @@ namespace Resources.Scripts.Player{
             // Collide with shadow sapphire:
             if (other.gameObject.CompareTag("ShadowSapphire0")){
                 Destroy(other.gameObject);
-                _gameDataScript.shadowSapphires += 1;
+                _playerUIHandlerScript.IncrementShadowSapphires();
             }
         }
 
