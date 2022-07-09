@@ -223,7 +223,7 @@ namespace Resources.Scripts.Player
         private void DashDownInput(){
             
             // Check if the dash has ended:
-            if (_shadowMeterScript._shadowMeter < 0f || _dashRelease || _groundCheckScript._isGrounded)
+            if (_shadowMeterScript._shadowMeter < 0f || _dashDownRelease || _groundCheckScript._isGrounded)
                 SetDefaultState();
 
             // Check if the player hit an enemy:
@@ -257,7 +257,6 @@ namespace Resources.Scripts.Player
             // Reduce shadow meter:
             _shadowMeterScript.DecrementShadowMeter(_dashShadowDecrement);
         }
-        
         private void DashRecoverInput(){
             _knockBackTimer -= Time.deltaTime;
         }
@@ -271,7 +270,6 @@ namespace Resources.Scripts.Player
                 if (_knockBackTimer <= 0f)
                     SetDefaultState();
         }
-        
         private void DoubleJumpInput(){
 
             _airTimer -= Time.deltaTime;
@@ -471,6 +469,7 @@ namespace Resources.Scripts.Player
             if (_dashDownPress && _shadowMeterScript._shadowMeter > 0f){
                 _state = playerMoveState.DashDown;
                 _dashDown = true;
+                _playerPfxSpawnerScript.SpawnDashDownPfx();
             }
         }
         private void DoubleJumpCheck(){

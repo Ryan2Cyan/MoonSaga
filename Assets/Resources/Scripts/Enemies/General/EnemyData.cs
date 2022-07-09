@@ -47,7 +47,7 @@ namespace Resources.Scripts.Enemies.General{
         private void SpawnLoot(){
             // First threshold:
             if (_hp < _maxHp * firstDropThreshold && !_spawnedFirstLoot){
-                _monoBehaviourUtilityScript.StartSleep(0.2f);
+                _monoBehaviourUtilityScript.StartSleep(0.05f);
                 SpawnSapphires(0, firstDrop[0]);
                 // SpawnSapphires(1, firstDrop[1]);
                 // SpawnSapphires(2, firstDrop[2]);
@@ -55,7 +55,7 @@ namespace Resources.Scripts.Enemies.General{
             }
             // Second threshold:
             if (_hp < _maxHp * secondDropThreshold && !_spawnedSecondLoot){
-                _monoBehaviourUtilityScript.StartSleep(0.2f);
+                _monoBehaviourUtilityScript.StartSleep(0.05f);
                 SpawnSapphires(0, secondDrop[0]);
                 // SpawnSapphires(1, secondDrop[1]);
                 // SpawnSapphires(2, secondDrop[2]);
@@ -63,7 +63,7 @@ namespace Resources.Scripts.Enemies.General{
             }
             // Death threshold:
             if (_hp <= 0f && !_spawnedDeathLoot){
-                _monoBehaviourUtilityScript.StartSleep(0.3f);
+                _monoBehaviourUtilityScript.StartSleep(0.1f);
                 SpawnSapphires(0, deathDrop[0]);
                 // SpawnSapphires(1, deathDrop[1]);
                 // SpawnSapphires(2, deathDrop[2]);

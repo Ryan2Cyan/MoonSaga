@@ -17,6 +17,7 @@ namespace Resources.Scripts.General{
             Time.timeScale = 1;
         }
         
+        // Fade script:
         public static IEnumerator FadeColorTMP(float duration, Color target, TextMeshProUGUI arg){
 
             if (arg.color != target){

@@ -51,6 +51,13 @@ namespace Resources.Scripts.Player{
                         transform.position.z), Quaternion.identity, _pfxParent);
             }
         }
+        internal void SpawnDashDownPfx(){
+            
+            // Player facing right, spawn pfx to go left:
+            Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/PFX/Player/Dash-Burst-Down"),
+                new Vector3(transform.position.x, transform.position.y - _dashOffsetY,
+                    transform.position.z), Quaternion.identity, _pfxParent);
+        }
         internal void SpawnDoubleJumpPfx(){
            
             // Spawn first wing pfx:

@@ -28,7 +28,6 @@ namespace Resources.Scripts.General
             slider.minValue = minVal;
             slider.value = startVal;
         }
-        
         public static void SetSliderF(ref Slider slider, float minVal, float maxVal, float startVal){
             slider.maxValue = maxVal;
             slider.minValue = minVal;
@@ -106,6 +105,5 @@ namespace Resources.Scripts.General
 
             return arg;
         }
-        
     }
 }
