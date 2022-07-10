@@ -1,4 +1,5 @@
 using Resources.Scripts.Managers;
+using Resources.Scripts.VFX;
 using UnityEngine;
 
 // Code within this class is responsible (only) for collisions the player
@@ -38,9 +39,9 @@ namespace Resources.Scripts.Player{
             }
             
             // Collide with shadow sapphire:
-            if (other.gameObject.CompareTag("ShadowSapphire0")){
+            if (other.gameObject.CompareTag("ShadowSapphire")){
                 Destroy(other.gameObject);
-                _playerUIHandlerScript.IncrementShadowSapphires();
+                _playerUIHandlerScript.IncrementShadowSapphires(other.gameObject.GetComponent<ShadowSapphire>()._value);
             }
         }
 

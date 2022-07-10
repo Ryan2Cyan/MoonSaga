@@ -8,8 +8,9 @@ TagManager:
   - Obstacle
   - Enemy
   - PlatformEdge
-  - ShadowSapphire0
   - Platform
+  - ShadowSapphire
+  - ShadowSapphire0
   layers:
   - Default
   - TransparentFX

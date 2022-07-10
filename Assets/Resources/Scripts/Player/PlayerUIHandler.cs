@@ -112,7 +112,7 @@ namespace Resources.Scripts.Player{
                 }
             }
         }
-        public void IncrementShadowSapphires(){
+        public void IncrementShadowSapphires(int value){
             
             // If add counter is not visible, fade in:
             StopAllCoroutines();
@@ -122,8 +122,8 @@ namespace Resources.Scripts.Player{
                 _tempCounter));
 
             // Increment values:
-            _gameDataScript.shadowSapphires++;
-            _tempValue++;
+            _gameDataScript.shadowSapphires += value;
+            _tempValue += value;
             _tempSubtractTimer = _tempSubtractTime;
             _tempDelayTimer = _tempDelay;
             

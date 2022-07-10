@@ -1,4 +1,3 @@
-using System;
 using Resources.Scripts.General;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -11,12 +10,14 @@ namespace Resources.Scripts.VFX{
         
         private Rigidbody2D _rigidbody2D;
         private Animator _animator;
+        [SerializeField] public int _value;
         [SerializeField] private float _minX;
         [SerializeField] private float _maxX;
         [SerializeField] private float _minY;
         [SerializeField] private float _maxY;
         private GameObject[] _sceneEnemies;
-        [SerializeField] private float _shineTime = 3f;
+        [SerializeField] private float _shineTimeMin = 3f;
+        [SerializeField] private float _shineTimeMax = 10f;
         [SerializeField] private float _shineTimer;
         
         // Property index:
@@ -27,7 +28,9 @@ namespace Resources.Scripts.VFX{
             // Fetch components:
             _rigidbody2D = GetComponent<Rigidbody2D>();
             _animator = GetComponent<Animator>();
-            _shineTimer = _shineTime;
+            
+            // Set and randomise shine time:
+            _shineTimer = Random.Range(_shineTimeMin, _shineTimeMax);
             
             // Apply force on spawn:
             _rigidbody2D.AddForce(new Vector2(Random.Range(_minX, _maxX), Random.Range(_minY, _maxY)));
@@ -44,6 +47,7 @@ namespace Resources.Scripts.VFX{
 
         private void Update(){
 
+            // Once on the ground, play animation, and allow the player to pick the sapphire up:
             if (_groundCheckScript._isGrounded){
                 GetComponent<BoxCollider2D>().enabled = true;
                 GetComponent<CircleCollider2D>().enabled = true;
@@ -51,10 +55,11 @@ namespace Resources.Scripts.VFX{
                 _rigidbody2D.velocity = new Vector2(0f, _rigidbody2D.velocity.y);
             }
 
+            // Play the shine animation after certain period:
             _shineTimer -= Time.deltaTime;
             if (_shineTimer <= 0f){
                 _animator.SetTrigger(Shine);
-                _shineTimer = _shineTime;
+                _shineTimer = Random.Range(_shineTimeMin, _shineTimeMax);
             }
         }
         
