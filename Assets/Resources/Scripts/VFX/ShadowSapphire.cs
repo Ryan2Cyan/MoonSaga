@@ -1,4 +1,5 @@
 using Resources.Scripts.General;
+using Resources.Scripts.Player;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -19,6 +20,8 @@ namespace Resources.Scripts.VFX{
         [SerializeField] private float _shineTimeMin = 3f;
         [SerializeField] private float _shineTimeMax = 10f;
         [SerializeField] private float _shineTimer;
+
+        public bool _collided;
         
         // Property index:
         private static readonly int Shine = Animator.StringToHash("Shine");
@@ -43,6 +46,10 @@ namespace Resources.Scripts.VFX{
                     Physics2D.IgnoreCollision(enemy.GetComponent<CircleCollider2D>(), GetComponent<BoxCollider2D>());
                 }
             }
+            
+            // Ignore player's circle collider:
+            Physics2D.IgnoreCollision(GameObject.FindGameObjectWithTag("Player").GetComponent<CircleCollider2D>(), 
+                GetComponent<BoxCollider2D>());
         }
 
         private void Update(){
@@ -61,11 +68,23 @@ namespace Resources.Scripts.VFX{
                 _animator.SetTrigger(Shine);
                 _shineTimer = Random.Range(_shineTimeMin, _shineTimeMax);
             }
+            
+            // Check for collision:
+            if (_collided){
+                Debug.Log("Collision");
+                GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerUIHandler>().
+                    IncrementShadowSapphires(_value);
+                Destroy(gameObject);
+            }
         }
         
         private void OnCollisionEnter2D(Collision2D other){
             if (other.gameObject.CompareTag("Platform") || other.gameObject.CompareTag("PlatformEdge") ){
                 _rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
+            }
+
+            if (other.gameObject.CompareTag("Player")){
+                Destroy(gameObject);
             }
         }
     }

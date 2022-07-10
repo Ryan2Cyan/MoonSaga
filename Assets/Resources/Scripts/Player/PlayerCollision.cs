@@ -39,10 +39,8 @@ namespace Resources.Scripts.Player{
             }
             
             // Collide with shadow sapphire:
-            if (other.gameObject.CompareTag("ShadowSapphire")){
-                Destroy(other.gameObject);
-                _playerUIHandlerScript.IncrementShadowSapphires(other.gameObject.GetComponent<ShadowSapphire>()._value);
-            }
+            if (other.gameObject.CompareTag("ShadowSapphire"))
+                other.gameObject.GetComponent<ShadowSapphire>()._collided = true;
         }
 
         private void OnTriggerExit2D(Collider2D other){
@@ -52,7 +50,6 @@ namespace Resources.Scripts.Player{
                 _collidedEnemy = null;
                 _enemyCollision = false;
             }
-            
         }
     }
 }

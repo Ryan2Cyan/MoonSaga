@@ -53,7 +53,7 @@ namespace Resources.Scripts.Enemies.General{
                 _monoBehaviourUtilityScript.StartSleep(0.05f);
                 SpawnSapphires(0, firstDrop[0]);
                 SpawnSapphires(1, firstDrop[1]);
-                // SpawnSapphires(2, firstDrop[2]);
+                SpawnSapphires(2, firstDrop[2]);
                 _spawnedFirstLoot = true;
             }
             // Second threshold:
@@ -62,7 +62,7 @@ namespace Resources.Scripts.Enemies.General{
                 _monoBehaviourUtilityScript.StartSleep(0.05f);
                 SpawnSapphires(0, secondDrop[0]);
                 SpawnSapphires(1, secondDrop[1]);
-                // SpawnSapphires(2, secondDrop[2]);
+                SpawnSapphires(2, secondDrop[2]);
                 _spawnedSecondLoot = true;
             }
             // Death threshold:
@@ -71,7 +71,7 @@ namespace Resources.Scripts.Enemies.General{
                 _monoBehaviourUtilityScript.StartSleep(0.1f);
                 SpawnSapphires(0, deathDrop[0]);
                 SpawnSapphires(1, deathDrop[1]);
-                // SpawnSapphires(2, deathDrop[2]);
+                SpawnSapphires(2, deathDrop[2]);
                 _spawnedDeathLoot = true;
             }
         }
