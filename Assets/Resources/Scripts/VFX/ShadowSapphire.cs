@@ -69,9 +69,8 @@ namespace Resources.Scripts.VFX{
                 _shineTimer = Random.Range(_shineTimeMin, _shineTimeMax);
             }
             
-            // Check for collision:
+            // Check for collision with player:
             if (_collided){
-                Debug.Log("Collision");
                 GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerUIHandler>().
                     IncrementShadowSapphires(_value);
                 Destroy(gameObject);

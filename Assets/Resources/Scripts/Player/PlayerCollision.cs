@@ -1,4 +1,3 @@
-using Resources.Scripts.Managers;
 using Resources.Scripts.VFX;
 using UnityEngine;
 
@@ -6,11 +5,7 @@ using UnityEngine;
 // may have with object or enemies:
 namespace Resources.Scripts.Player{
     public class PlayerCollision : MonoBehaviour{
-        
-        // Scripts:
-        private GameData _gameDataScript;
-        [SerializeField] private PlayerUIHandler _playerUIHandlerScript;
-        
+
         // Values:
         private GameObject[] _sceneEnemies;
         internal GameObject _collidedEnemy;
@@ -20,8 +15,7 @@ namespace Resources.Scripts.Player{
         private void Awake(){
             
             // Fetch components:
-            _gameDataScript = GameObject.Find("Data-Manager").GetComponent<GameData>();
-            
+
             // Ignore collision with enemy ground collider (circle colliders):
             _sceneEnemies = GameObject.FindGameObjectsWithTag("Enemy");
             if (_sceneEnemies.Length > 0){

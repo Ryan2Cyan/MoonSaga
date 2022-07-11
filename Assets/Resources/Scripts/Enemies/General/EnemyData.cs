@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Resources.Scripts.Camera;
 using Resources.Scripts.General;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ namespace Resources.Scripts.Enemies.General{
         // Scripts:
         private MonoBehaviourUtility _monoBehaviourUtilityScript;
         private EnemyPFXSpawner _enemyPfxSpawnerScript;
+        [SerializeField] private CameraShake _cameraShakeScript;
         
         [Range(0f, 5000f)][SerializeField] internal float _maxHp;
         [SerializeField] internal float _hp;
@@ -26,7 +28,7 @@ namespace Resources.Scripts.Enemies.General{
             // Fetch components:
             _monoBehaviourUtilityScript = GameObject.Find("Utility").GetComponent<MonoBehaviourUtility>();
             _enemyPfxSpawnerScript = GetComponent<EnemyPFXSpawner>();
-            
+
             // Set values:
             _hp = _maxHp;
         }
@@ -49,30 +51,36 @@ namespace Resources.Scripts.Enemies.General{
         private void SpawnLoot(){
             // First threshold:
             if (_hp < _maxHp * firstDropThreshold && !_spawnedFirstLoot){
-                _enemyPfxSpawnerScript.SpawnDamagedPfx();
-                _monoBehaviourUtilityScript.StartSleep(0.05f);
                 SpawnSapphires(0, firstDrop[0]);
                 SpawnSapphires(1, firstDrop[1]);
                 SpawnSapphires(2, firstDrop[2]);
                 _spawnedFirstLoot = true;
+                // VFX:
+                _enemyPfxSpawnerScript.SpawnDamagedPfx();
+                _monoBehaviourUtilityScript.StartSleep(0.05f);
+                _cameraShakeScript.StartShake(0.2f, 0.3f);
             }
             // Second threshold:
             if (_hp < _maxHp * secondDropThreshold && !_spawnedSecondLoot){
-                _enemyPfxSpawnerScript.SpawnDamagedPfx();
-                _monoBehaviourUtilityScript.StartSleep(0.05f);
                 SpawnSapphires(0, secondDrop[0]);
                 SpawnSapphires(1, secondDrop[1]);
                 SpawnSapphires(2, secondDrop[2]);
                 _spawnedSecondLoot = true;
+                // VFX:
+                _enemyPfxSpawnerScript.SpawnDamagedPfx();
+                _monoBehaviourUtilityScript.StartSleep(0.05f);
+                _cameraShakeScript.StartShake(0.2f, 0.3f);
             }
             // Death threshold:
             if (_hp <= 0f && !_spawnedDeathLoot){
-                _enemyPfxSpawnerScript.SpawnDamagedPfx();
-                _monoBehaviourUtilityScript.StartSleep(0.1f);
                 SpawnSapphires(0, deathDrop[0]);
                 SpawnSapphires(1, deathDrop[1]);
                 SpawnSapphires(2, deathDrop[2]);
                 _spawnedDeathLoot = true;
+                // VFX:
+                _enemyPfxSpawnerScript.SpawnDamagedPfx();
+                _monoBehaviourUtilityScript.StartSleep(0.1f);
+                _cameraShakeScript.StartShake(0.2f, 0.3f);
             }
         }
 
