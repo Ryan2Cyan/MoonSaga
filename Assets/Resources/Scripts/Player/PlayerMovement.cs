@@ -39,8 +39,7 @@ namespace Resources.Scripts.Player
         [Range(0, 100.0f)] [SerializeField] private float _dashSpeed = 100f;
         [SerializeField] private float _dashThresholdCost = 20f;
         [Range(0, 100.0f)] [SerializeField] private float _dashDownSpeed = 100f;
-        [Range(0, 30.0f)] [SerializeField] private float _dashKnockBackX = 15f;
-        [Range(0, 30.0f)] [SerializeField] private float _dashKnockBackY = 15f;
+        [SerializeField] private Vector2 _dashKnockBack;
         [SerializeField] private float _dashKnockBackDelay = 0.1f;
         [SerializeField] private float _dashShadowDecrement = 0.1f;
         [Range(0f, 10f)] [SerializeField] private float _dashMod = 5f;
@@ -51,8 +50,6 @@ namespace Resources.Scripts.Player
         private float _landTimer = _landDelay;
         
         // Damaged:
-        [Range(0, 30.0f)] [SerializeField] private float _damagedKnockBackX = 15f;
-        [Range(0, 30.0f)] [SerializeField] private float _damagedKnockBackY = 15f;
         [SerializeField] private float _damagedKnockBackDelay = 0.1f;
         private float _knockBackTimer;
 
@@ -265,8 +262,8 @@ namespace Resources.Scripts.Player
                 // Knock back the player:
                 _rigidbody2D.velocity =
                     _isFacingRight
-                        ? new Vector2(-_dashKnockBackX, _dashKnockBackY)
-                        : new Vector2(_dashKnockBackX, _dashKnockBackY);
+                        ? new Vector2(-_dashKnockBack.x, _dashKnockBack.y)
+                        : new Vector2(_dashKnockBack.x, _dashKnockBack.y);
                 if (_knockBackTimer <= 0f)
                     SetDefaultState();
         }
@@ -299,8 +296,8 @@ namespace Resources.Scripts.Player
         private void DamagedMovement(){
             // Knock back the player:
             _rigidbody2D.velocity =
-                _isFacingRight ? new Vector2(-_dashKnockBackX, _dashKnockBackY) : 
-                    new Vector2(_damagedKnockBackX, _damagedKnockBackY);
+                _isFacingRight ? new Vector2(-_dashKnockBack.x, _dashKnockBack.y) : 
+                    new Vector2(_dashKnockBack.x, _dashKnockBack.y);
         }
         
         // Process state functions:

@@ -16,17 +16,24 @@ namespace Resources.Scripts.Enemies.General{
         [SerializeField] private PlayerMovement _playerMovementScript;
         [SerializeField] private EnemyData _enemyDataScript;
         
+        // Child objects:
+        [SerializeField] private GameObject _sprite;
+        [SerializeField] private GameObject _deathSprite;
+        [SerializeField] private GameObject _triggerCollider;
+
         // Movement Values:
         [Range(0, 100f)] [SerializeField] private float _runSpeed = 37.5f;
-        // [Range(0, 30.0f)] [SerializeField] private float _damagedKnockBackX = 15f;
-        // [Range(0, 30.0f)] [SerializeField] private float _damagedKnockBackY = 15f;
-        // [SerializeField] private float _damagedKnockBackDelay = 0.1f;
-
+        
         // Orientation:
         [SerializeField] internal bool _isFacingRight = true;
         
         // Knock back values:
+        [SerializeField] private Vector2 _knockBack;
+        [SerializeField] private float _knockBackDelay = 0.1f;
         private float _knockBackTimer;
+        
+        // Values:
+        [SerializeField] internal bool _isActive = true;
 
         private void Awake(){
             // Fetch components:
@@ -66,6 +73,8 @@ namespace Resources.Scripts.Enemies.General{
             // Check if collision stops:
             if (!_enemyColliderScript._collidingWithPlayer)
                 SetDefaultState();
+
+            DeathCheck();
         }
         private void DamagedMovement(){
             
@@ -75,8 +84,38 @@ namespace Resources.Scripts.Enemies.General{
             // Freeze position:
             _rigidbody2D.velocity = new Vector2(0f, 0f);
         }
-
         
+        private void DeathInput(){
+
+            _knockBackTimer -= Time.deltaTime;
+            
+            // After knock back [Inactive]:
+            if (_knockBackTimer <= 0f){
+                _state = enemyMoveState.Inactive;
+                _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _rigidbody2D.velocity.y / 2.0f);
+            }
+        }
+
+        private void DeathMovement(){
+            
+            // Knock back enemy based on position in relation to player:
+            _rigidbody2D.velocity = _playerMovementScript.transform.position.x < transform.position.x ? _knockBack : 
+                    new Vector2(-_knockBack.x, _knockBack.y);
+        }
+        
+        private void InactiveInput(){
+            
+            // If the enemy hits the ground, prevent them from moving, then disable the script:
+            if (_groundCheckScript._isGrounded){
+                _rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
+                _triggerCollider.SetActive(false);
+                GetComponent<CircleCollider2D>().enabled = false;
+                _groundCheckScript.enabled = false;
+                enabled = false;
+            }
+        }
+
+
         private void ProcessStateMovement(){
             switch (_state){
                 case enemyMoveState.Walking:
@@ -84,6 +123,11 @@ namespace Resources.Scripts.Enemies.General{
                     break;
                 case enemyMoveState.Damaged:
                     DamagedMovement();
+                    break;
+                case enemyMoveState.Death:
+                    DeathMovement();
+                    break;
+                case enemyMoveState.Inactive:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -97,6 +141,12 @@ namespace Resources.Scripts.Enemies.General{
                     break;
                 case enemyMoveState.Damaged:
                     DamagedInput();
+                    break;
+                case enemyMoveState.Death:
+                    DeathInput();
+                    break;
+                case enemyMoveState.Inactive:
+                    InactiveInput();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -117,9 +167,24 @@ namespace Resources.Scripts.Enemies.General{
                 _state = enemyMoveState.Damaged;
             }
         }
+
+        private void DeathCheck(){
+            // If HP is 0 [Death]:
+            if (_enemyDataScript._hp <= 0f){
+                
+                _state = enemyMoveState.Death;
+                _isActive = false;
+                
+                // Swap to death sprite:
+                _triggerCollider.SetActive(false);
+                _sprite.SetActive(false);
+                _deathSprite.SetActive(true);
+                _knockBackTimer = _knockBackDelay;
+            }
+        }
     }
     
     internal enum enemyMoveState{
-        Walking, Damaged
+        Walking, Damaged, Death, Inactive
     }
 }

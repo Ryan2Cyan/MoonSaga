@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Resources.Scripts.General;
 using Resources.Scripts.Managers;
@@ -29,6 +30,7 @@ namespace Resources.Scripts.Player{
         private float _hitPointSubtractTimer;
         
         // Shadow sapphires:
+        [SerializeField] private GameObject _shadowSapphiresUI;
         [SerializeField] private TextMeshProUGUI _totalCounter;
         [SerializeField] private TextMeshProUGUI _tempCounter;
         [SerializeField] private float _tempDelay;
@@ -145,6 +147,7 @@ namespace Resources.Scripts.Player{
                 if (_tempSubtractTimer <= 0f){
                     _tempValue--;
                     _totalValue++;
+                    StartCoroutine(ShadowSapphireBob(0.05f, 3f));
                     _tempSubtractTimer = _tempSubtractTime;
                     if (_tempValue == 0){
                         _deactivateAdd = true;
@@ -162,6 +165,23 @@ namespace Resources.Scripts.Player{
                     _tempCounter));
                 _deactivateAdd = false;
             }
+        }
+        private IEnumerator ShadowSapphireBob(float duration, float posMod)
+        {
+            // Store original UI pos:
+            Vector3 originalPos = _shadowSapphiresUI.transform.position;
+
+            float elapsed = 0.0f;
+            while (elapsed < duration){
+                _shadowSapphiresUI.transform.position = new Vector2(
+                    originalPos.x,
+                    originalPos.y + posMod);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+            
+            // Reset to original pos:
+            _shadowSapphiresUI.transform.position = originalPos;
         }
     }
 }

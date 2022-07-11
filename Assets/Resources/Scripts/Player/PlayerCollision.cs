@@ -1,3 +1,4 @@
+using Resources.Scripts.Enemies.General;
 using Resources.Scripts.VFX;
 using UnityEngine;
 
@@ -28,8 +29,11 @@ namespace Resources.Scripts.Player{
 
             // Collide with enemy:
             if (other.gameObject.CompareTag("Enemy")){
-                _enemyCollision = true;
-                _collidedEnemy = other.gameObject;
+                // Check if enemy is alive:
+                if (other.gameObject.GetComponent<EnemyMovement>()._isActive){
+                    _enemyCollision = true;
+                    _collidedEnemy = other.gameObject;
+                }
             }
             
             // Collide with shadow sapphire:
