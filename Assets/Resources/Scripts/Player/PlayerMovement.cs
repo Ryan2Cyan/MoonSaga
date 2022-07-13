@@ -110,6 +110,7 @@ namespace Resources.Scripts.Player
         private void IdleMovement(){
             ApplyNormMovement(8.0f);
         }
+        
         private void WalkingInput(){
 
             IdleCheck();
@@ -121,6 +122,7 @@ namespace Resources.Scripts.Player
             
             ApplyNormMovement(8.0f);
         }
+        
         private void JumpInput(){
 
             _airTimer -= Time.deltaTime;
@@ -158,6 +160,7 @@ namespace Resources.Scripts.Player
             
             ApplyNormMovement(7.0f);
         }
+        
         private void AirControlInput(){
 
             // If player touches the ground [Land]:
@@ -176,6 +179,7 @@ namespace Resources.Scripts.Player
             
             ApplyNormMovement(8.0f);
         }
+        
         private void LandInput(){
             
             _landTimer -= Time.deltaTime;
@@ -193,6 +197,7 @@ namespace Resources.Scripts.Player
             JumpCheck();
             DamagedCheck();
         }
+        
         private void DashInput(){
             
             // Check if the dash has ended:
@@ -217,6 +222,7 @@ namespace Resources.Scripts.Player
                     new Vector2(-_dashSpeed, 0f)
             };
         }
+        
         private void DashDownInput(){
             
             // Check if the dash has ended:
@@ -235,6 +241,7 @@ namespace Resources.Scripts.Player
             // Apply force:
             _rigidbody2D.velocity = new Vector2(0f, -_dashDownSpeed);
         }
+        
         private void DashHitInput(){
             
             // On hit, the player can dash & double jump again:
@@ -247,15 +254,19 @@ namespace Resources.Scripts.Player
                 _dashDown = false;
             }
 
-            _rigidbody2D.velocity = new Vector2(0f, 0f);
+            // Prevent the player from moving:
+            _rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
         }
         private void DashHitMovement(){
             
             // Reduce shadow meter:
             _shadowMeterScript.DecrementShadowMeter(_dashShadowDecrement);
         }
+        
         private void DashRecoverInput(){
             _knockBackTimer -= Time.deltaTime;
+            _rigidbody2D.constraints = RigidbodyConstraints2D.None;
+            _rigidbody2D.constraints = RigidbodyConstraints2D.FreezeRotation;
         }
         private void DashRecoverMovement(){
             
@@ -267,6 +278,7 @@ namespace Resources.Scripts.Player
                 if (_knockBackTimer <= 0f)
                     SetDefaultState();
         }
+        
         private void DoubleJumpInput(){
 
             _airTimer -= Time.deltaTime;
@@ -286,6 +298,7 @@ namespace Resources.Scripts.Player
                 _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _doubleJumpForce);
             ApplyNormMovement(7.0f);
         }
+        
         private void DamagedInput(){
             
             // Knock back timer:

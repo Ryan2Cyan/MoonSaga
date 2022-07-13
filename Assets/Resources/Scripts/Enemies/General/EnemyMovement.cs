@@ -160,12 +160,10 @@ namespace Resources.Scripts.Enemies.General{
         }
         private void DamagedCheck(){
             
-            // Check if the enemy has collided with the player:
-            if (_enemyColliderScript._collidingWithPlayer){
-                if(_playerMovementScript._state == playerMoveState.Dash ||
-                   _playerMovementScript._state == playerMoveState.DashDown)
+            // Check if the enemy has been hit by the player:
+            if (_enemyColliderScript._collidingWithPlayer && _playerMovementScript._state == playerMoveState.DashHit)
                 _state = enemyMoveState.Damaged;
-            }
+            
         }
 
         private void DeathCheck(){

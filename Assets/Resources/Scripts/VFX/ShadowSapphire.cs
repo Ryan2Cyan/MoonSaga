@@ -43,7 +43,6 @@ namespace Resources.Scripts.VFX{
             if (_sceneEnemies.Length > 0){
                 foreach (GameObject enemy in _sceneEnemies){
                     Physics2D.IgnoreCollision(enemy.GetComponent<CircleCollider2D>(), GetComponent<CircleCollider2D>());
-                    Physics2D.IgnoreCollision(enemy.GetComponent<CircleCollider2D>(), GetComponent<BoxCollider2D>());
                 }
             }
             
