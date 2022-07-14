@@ -6,8 +6,6 @@ using UnityEngine;
 namespace Resources.Scripts.Enemies.General{
     public class EnemyMovement : MonoBehaviour
     {
-        private Rigidbody2D _rigidbody2D;
-
         // State:
         [SerializeField] internal enemyMoveState _state;
         
@@ -16,11 +14,13 @@ namespace Resources.Scripts.Enemies.General{
         private PlayerMovement _playerMovementScript;
         private GroundCheck _groundCheckScript;
         private EnemyData _enemyDataScript;
+        
+        // Animator property index:
+        private static readonly int State = Animator.StringToHash("State");
 
         private void Awake(){
             
             // Fetch components:
-            _rigidbody2D = GetComponent<Rigidbody2D>();
             _enemyDataScript = GetComponent<EnemyData>();
             _enemyColliderScript = _enemyDataScript._triggerCollider.GetComponent<EnemyCollision>();
             _playerMovementScript = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
@@ -30,6 +30,9 @@ namespace Resources.Scripts.Enemies.General{
 
         private void Update(){
             ProcessStateInput();
+            
+            // Update animator:
+            _enemyDataScript._animator.SetInteger(State, (int) _state);
         }
 
         private void FixedUpdate(){
@@ -46,13 +49,14 @@ namespace Resources.Scripts.Enemies.General{
             // Move enemy left or right depending on direction:
             if (_enemyColliderScript._collidingWithPlayer){
                 _enemyColliderScript._collidingWithPlayer = false;
-                _rigidbody2D.velocity = new Vector2(0f, 0f);
+                _enemyDataScript._rigidbody2D.velocity = new Vector2(0f, 0f);
                 return;
             }
             
             if(_groundCheckScript._isGrounded && !_enemyColliderScript._collidingWithPlayer)
-                _rigidbody2D.velocity = _enemyDataScript._isFacingRight ? new Vector2(_enemyDataScript._runSpeed, 
-                    _rigidbody2D.velocity.y) : new Vector2(-_enemyDataScript._runSpeed, _rigidbody2D.velocity.y);
+                _enemyDataScript._rigidbody2D.velocity = _enemyDataScript._isFacingRight ? 
+                    new Vector2(_enemyDataScript._runSpeed, _enemyDataScript._rigidbody2D.velocity.y) : 
+                    new Vector2(-_enemyDataScript._runSpeed, _enemyDataScript._rigidbody2D.velocity.y);
         }
 
         private void DamagedInput(){
@@ -69,7 +73,7 @@ namespace Resources.Scripts.Enemies.General{
             _enemyDataScript.DecrementHp(1f);
             
             // Freeze position:
-            _rigidbody2D.velocity = new Vector2(0f, 0f);
+            _enemyDataScript._rigidbody2D.velocity = new Vector2(0f, 0f);
         }
         
         private void DeathInput(){
@@ -79,13 +83,14 @@ namespace Resources.Scripts.Enemies.General{
             // After knock back [Inactive]:
             if (_enemyDataScript._knockBackTimer <= 0f){
                 _state = enemyMoveState.Inactive;
-                _rigidbody2D.velocity = new Vector2(_rigidbody2D.velocity.x, _rigidbody2D.velocity.y / 2.0f);
+                _enemyDataScript._rigidbody2D.velocity = new Vector2(_enemyDataScript._rigidbody2D.velocity.x, 
+                    _enemyDataScript._rigidbody2D.velocity.y / 2.0f);
             }
         }
         private void DeathMovement(){
             
             // Knock back enemy based on position in relation to player:
-            _rigidbody2D.velocity = _playerMovementScript.transform.position.x < transform.position.x ? 
+            _enemyDataScript._rigidbody2D.velocity = _playerMovementScript.transform.position.x < transform.position.x ? 
                 _enemyDataScript._knockBack : new Vector2(-_enemyDataScript._knockBack.x, _enemyDataScript._knockBack.y);
         }
         
@@ -93,7 +98,7 @@ namespace Resources.Scripts.Enemies.General{
             
             // If the enemy hits the ground, prevent them from moving, then disable the script:
             if (_groundCheckScript._isGrounded){
-                _rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
+                _enemyDataScript._rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
                 _enemyDataScript._triggerCollider.SetActive(false);
                 GetComponent<CircleCollider2D>().enabled = false;
                 _groundCheckScript.enabled = false;
@@ -160,14 +165,12 @@ namespace Resources.Scripts.Enemies.General{
                 
                 // Swap to death sprite:
                 _enemyDataScript._triggerCollider.SetActive(false);
-                _enemyDataScript._sprite.SetActive(false);
-                _enemyDataScript._deathSprite.SetActive(true);
                 _enemyDataScript._knockBackTimer = _enemyDataScript._knockBackDelay;
             }
         }
     }
     
     internal enum enemyMoveState{
-        Walking, Damaged, Death, Inactive
+        Walking = 0, Damaged = 1, Death = 2, Inactive = 3
     }
 }

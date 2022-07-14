@@ -29,6 +29,10 @@ namespace Resources.Scripts.Enemies.General{
         [Range(0, 100f)] [SerializeField] internal float _runSpeed = 37.5f;
         [SerializeField] internal bool _isFacingRight = true;
         
+        // Components:
+        internal Rigidbody2D _rigidbody2D;
+        internal Animator _animator;
+        
         // Knock back:
         [SerializeField] internal Vector2 _knockBack;
         [SerializeField] internal float _knockBackDelay = 0.1f;
@@ -39,7 +43,6 @@ namespace Resources.Scripts.Enemies.General{
         
         // Child Objects:
         [SerializeField] internal GameObject _sprite;
-        [SerializeField] internal GameObject _deathSprite;
         [SerializeField] internal GameObject _triggerCollider;
         
         private void Awake(){
@@ -48,6 +51,8 @@ namespace Resources.Scripts.Enemies.General{
             _monoBehaviourUtilityScript = GameObject.Find("Utility").GetComponent<MonoBehaviourUtility>();
             _cameraShakeScript = GameObject.Find("Camera").GetComponent<CameraShake>();
             _enemyPfxSpawnerScript = GetComponent<EnemyPFXSpawner>();
+            _rigidbody2D = GetComponent<Rigidbody2D>();
+            _animator = _sprite.GetComponent<Animator>();
 
             // Set values:
             _hp = _maxHp;
