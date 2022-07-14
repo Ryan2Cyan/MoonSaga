@@ -34,9 +34,9 @@ namespace Resources.Scripts.Player{
         [SerializeField] private TextMeshProUGUI _totalCounter;
         [SerializeField] private TextMeshProUGUI _tempCounter;
         [SerializeField] private float _tempDelay;
-        [SerializeField] private float _tempDelayTimer;
+        private float _tempDelayTimer;
         [SerializeField] private float _tempSubtractTime;
-        [SerializeField] private float _tempSubtractTimer;
+        private float _tempSubtractTimer;
         [SerializeField] private bool _deactivateAdd;
         [SerializeField] private int _tempValue;
         [SerializeField] private int _totalValue;
@@ -147,7 +147,7 @@ namespace Resources.Scripts.Player{
                 if (_tempSubtractTimer <= 0f){
                     _tempValue--;
                     _totalValue++;
-                    StartCoroutine(ShadowSapphireBob(0.05f, 3f));
+                    StartCoroutine(ShadowSapphireBob(_tempSubtractTime / 3, 3f));
                     _tempSubtractTimer = _tempSubtractTime;
                     if (_tempValue == 0){
                         _deactivateAdd = true;

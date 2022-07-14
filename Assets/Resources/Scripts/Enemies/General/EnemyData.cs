@@ -9,11 +9,13 @@ namespace Resources.Scripts.Enemies.General{
         // Scripts:
         private MonoBehaviourUtility _monoBehaviourUtilityScript;
         private EnemyPFXSpawner _enemyPfxSpawnerScript;
-        [SerializeField] private CameraShake _cameraShakeScript;
+        private CameraShake _cameraShakeScript;
         
+        // Health:
         [Range(0f, 5000f)][SerializeField] internal float _maxHp;
         [SerializeField] internal float _hp;
 
+        // Loot drops:
         [Range(0f, 1f)][SerializeField] private float firstDropThreshold;
         [Range(0f, 1f)][SerializeField] private float secondDropThreshold;
         [SerializeField] private List<int> firstDrop;
@@ -23,10 +25,28 @@ namespace Resources.Scripts.Enemies.General{
         private bool _spawnedSecondLoot;
         private bool _spawnedDeathLoot;
         
+        // Movement:
+        [Range(0, 100f)] [SerializeField] internal float _runSpeed = 37.5f;
+        [SerializeField] internal bool _isFacingRight = true;
+        
+        // Knock back:
+        [SerializeField] internal Vector2 _knockBack;
+        [SerializeField] internal float _knockBackDelay = 0.1f;
+        internal float _knockBackTimer;
+        
+        // Active:
+        [SerializeField] internal bool _isActive = true;
+        
+        // Child Objects:
+        [SerializeField] internal GameObject _sprite;
+        [SerializeField] internal GameObject _deathSprite;
+        [SerializeField] internal GameObject _triggerCollider;
+        
         private void Awake(){
             
             // Fetch components:
             _monoBehaviourUtilityScript = GameObject.Find("Utility").GetComponent<MonoBehaviourUtility>();
+            _cameraShakeScript = GameObject.Find("Camera").GetComponent<CameraShake>();
             _enemyPfxSpawnerScript = GetComponent<EnemyPFXSpawner>();
 
             // Set values:

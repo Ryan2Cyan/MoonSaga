@@ -48,7 +48,7 @@ namespace Resources.Scripts.Player{
             // Collide with enemy:
             if (other.gameObject.CompareTag("EnemyTrigger")){
                 // Check if enemy is alive:
-                if (other.transform.parent.GetComponent<EnemyMovement>()._isActive){
+                if (other.transform.parent.GetComponent<EnemyData>()._isActive){
                     _enemyCollision = true;
                     _collidedEnemy = other.gameObject;
                 }
