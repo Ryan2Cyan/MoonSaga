@@ -126,14 +126,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _state: 0
-  _sprite: {fileID: 0}
-  _deathSprite: {fileID: 0}
-  _triggerCollider: {fileID: 0}
-  _runSpeed: 37.5
-  _isFacingRight: 1
-  _knockBack: {x: 0, y: 0}
-  _knockBackDelay: 0.1
-  _isActive: 1
 --- !u!114 &3535061631566109205
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -153,6 +145,13 @@ MonoBehaviour:
   firstDrop: 010000000000000000000000
   secondDrop: 010000000200000000000000
   deathDrop: 030000000100000001000000
+  _runSpeed: 37.5
+  _isFacingRight: 1
+  _knockBack: {x: 0, y: 0}
+  _knockBackDelay: 0.1
+  _isActive: 1
+  _sprite: {fileID: 0}
+  _triggerCollider: {fileID: 0}
 --- !u!114 &3535061631566109207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,7 +177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3327f3fab5a8b1e4ab3bba71943238ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enemyMovementScript: {fileID: 0}
+  _enemyDataScript: {fileID: 0}
 --- !u!114 &3535061631566109208
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -332,7 +331,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3535061633099843103}
-  - component: {fileID: 3535061633099843074}
   - component: {fileID: 3535061633099843073}
   - component: {fileID: 3535061633099843072}
   m_Layer: 0
@@ -356,18 +354,6 @@ Transform:
   m_Father: {fileID: 3535061631566109206}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3535061633099843074
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3535061633099843102}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d0d27022eba4a24e866bb914f078b3e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!212 &3535061633099843073
 SpriteRenderer:
   m_ObjectHideFlags: 0
