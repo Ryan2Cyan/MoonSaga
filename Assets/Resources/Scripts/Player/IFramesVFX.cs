@@ -2,7 +2,7 @@ using Resources.Scripts.General;
 using UnityEngine;
 
 namespace Resources.Scripts.Player{
-    public class PlayerAnimator : MonoBehaviour{
+    public class IFramesVFX : MonoBehaviour{
         
         // Scripts:
         private PlayerMovement _playerMovementScript;
