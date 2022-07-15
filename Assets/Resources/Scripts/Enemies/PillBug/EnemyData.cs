@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using Resources.Scripts.Camera;
+using Resources.Scripts.Enemies.General;
 using Resources.Scripts.General;
 using UnityEngine;
 
-namespace Resources.Scripts.Enemies.General{
+namespace Resources.Scripts.Enemies.PillBug{
     public class EnemyData : MonoBehaviour{
 
         // Scripts:

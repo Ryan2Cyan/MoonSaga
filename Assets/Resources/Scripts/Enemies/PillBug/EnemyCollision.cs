@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Resources.Scripts.Enemies.General{
+namespace Resources.Scripts.Enemies.PillBug{
     public class EnemyCollision : MonoBehaviour{
         
         // Values:
@@ -24,7 +24,10 @@ namespace Resources.Scripts.Enemies.General{
             // Collision with player:
             if (other.gameObject.CompareTag("Player"))
                 _collidingWithPlayer = true;
-            
+
+            if (other.gameObject.CompareTag("DeathZone")){
+                transform.parent.GetComponent<EnemyData>()._hp = 0;
+            }
         }
 
         private void OnTriggerExit2D(Collider2D other){

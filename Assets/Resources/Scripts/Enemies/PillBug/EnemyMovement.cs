@@ -1,9 +1,10 @@
 using System;
+using Resources.Scripts.Enemies.General;
 using Resources.Scripts.General;
 using Resources.Scripts.Player;
 using UnityEngine;
 
-namespace Resources.Scripts.Enemies.General{
+namespace Resources.Scripts.Enemies.PillBug{
     public class EnemyMovement : MonoBehaviour
     {
         // State:
@@ -155,7 +156,6 @@ namespace Resources.Scripts.Enemies.General{
                 _state = enemyMoveState.Damaged;
             
         }
-
         private void DeathCheck(){
             // If HP is 0 [Death]:
             if (_enemyDataScript._hp <= 0f){
