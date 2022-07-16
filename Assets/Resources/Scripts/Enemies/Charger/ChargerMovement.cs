@@ -1,5 +1,4 @@
 using System;
-using Resources.Scripts.Enemies.General;
 using Resources.Scripts.Enemies.PillBug;
 using Resources.Scripts.General;
 using Resources.Scripts.Player;
@@ -16,7 +15,8 @@ namespace Resources.Scripts.Enemies.Charger{
         private PlayerMovement _playerMovementScript;
         private GroundCheck _groundCheckScript;
         private ChargerData _chargerDataScript;
-        private ChargerRaycast _chargerRaycastScript;
+        [SerializeField] private EnemyRaycast _playerRaycastScript;
+        [SerializeField] private EnemyRaycast _obstacleRaycastScript;
 
         // Animator property index:
         private static readonly int State = Animator.StringToHash("State");
@@ -24,7 +24,6 @@ namespace Resources.Scripts.Enemies.Charger{
         private void Awake(){
             
             // Fetch components:
-            _chargerRaycastScript = GetComponent<ChargerRaycast>();
             _chargerDataScript = GetComponent<ChargerData>();
             _enemyColliderScript = _chargerDataScript._triggerCollider.GetComponent<EnemyCollision>();
             _playerMovementScript = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
@@ -49,6 +48,7 @@ namespace Resources.Scripts.Enemies.Charger{
             
             DamagedCheck();
             ChargeCheck();
+            HitWallCheck();
         }
         private void WalkingMovement(){
             
@@ -121,7 +121,7 @@ namespace Resources.Scripts.Enemies.Charger{
             _chargerDataScript._chargeTimer -= Time.deltaTime;
             if (_chargerDataScript._chargeTimer <= 0f){
                 // Charge at player:
-                if (_chargerRaycastScript._hitPlayer){
+                if (_playerRaycastScript._hitTarget){
                     _state = enemyMoveState.Charge;
                     _chargerDataScript._chargeTimer = _chargerDataScript._chargeTime;
                 }
@@ -140,11 +140,12 @@ namespace Resources.Scripts.Enemies.Charger{
             
             DamagedCheck();
             DeathCheck();
+            HitWallCheck();
             
             // Once timer has ran out, check if player is still in front of charger:
             _chargerDataScript._chargeTimer -= Time.deltaTime;
             if (_chargerDataScript._chargeTimer <= 0f){
-                if (_chargerRaycastScript._hitPlayer){
+                if (_playerRaycastScript._hitTarget){
                     _chargerDataScript._chargeTimer = _chargerDataScript._chargeTime;
                 }
                 else{
@@ -169,6 +170,42 @@ namespace Resources.Scripts.Enemies.Charger{
                     new Vector2(_chargerDataScript._chargeSpeed, _chargerDataScript._rigidbody2D.velocity.y) : 
                     new Vector2(-_chargerDataScript._chargeSpeed, _chargerDataScript._rigidbody2D.velocity.y);
         }
+        
+        private void HitWallInput(){
+            
+            // Knock back timer:
+            _chargerDataScript._knockBackTimer -= Time.deltaTime;
+            if (_chargerDataScript._knockBackTimer <= 0f){
+                _state = enemyMoveState.Stunned;
+                _chargerDataScript._stunTimer = _chargerDataScript._stunTime;
+            }
+        }
+        private void HitWallMovement(){
+            // Knock back the player:
+            _chargerDataScript._rigidbody2D.velocity =
+                _chargerDataScript._isFacingRight ? 
+                    new Vector2(-_chargerDataScript._knockBack.x, _chargerDataScript._knockBack.y) : 
+                    new Vector2(_chargerDataScript._knockBack.x, _chargerDataScript._knockBack.y);
+            
+        }
+        
+        private void StunnedInput(){
+            
+            // Knock back timer:
+            _chargerDataScript._stunTimer -= Time.deltaTime;
+            if (_chargerDataScript._stunTimer <= 0f){
+                // Flip enemy:
+                transform.localScale = UtilityFunctions.Flip(transform.localScale, 
+                    ref _chargerDataScript._isFacingRight);
+                SetDefaultState();
+            }
+        }
+        private void StunnedMovement(){
+            
+            // Stop moving:
+            if(_groundCheckScript._isGrounded)
+                _chargerDataScript._rigidbody2D.velocity = Vector2.zero;
+        }
 
 
         private void ProcessStateMovement(){
@@ -191,6 +228,10 @@ namespace Resources.Scripts.Enemies.Charger{
                     ChargeMovement();
                     break;
                 case enemyMoveState.HitWall:
+                    HitWallMovement();
+                    break;
+                case enemyMoveState.Stunned:
+                    StunnedMovement();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -217,6 +258,10 @@ namespace Resources.Scripts.Enemies.Charger{
                     ChargeInput();
                     break;
                 case enemyMoveState.HitWall:
+                    HitWallInput();
+                    break;
+                case enemyMoveState.Stunned:
+                    StunnedInput();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -248,14 +293,29 @@ namespace Resources.Scripts.Enemies.Charger{
             }
         }
         private void ChargeCheck(){
-            if (_chargerRaycastScript._hitPlayer){
+            if (_playerRaycastScript._hitTarget){
                 _state = enemyMoveState.Pause;
                 _chargerDataScript._chargeTimer = _chargerDataScript._chargePauseTime;
+            }
+        }
+        private void HitWallCheck(){
+            switch (_obstacleRaycastScript._hitTarget){
+                
+                // If charging, enemy is staggered:
+                case true when _state == enemyMoveState.Charge:
+                    _state = enemyMoveState.HitWall;
+                    _chargerDataScript._knockBackTimer = _chargerDataScript._knockBackDelay;
+                    break;
+                // Otherwise just flip:
+                case true:
+                    transform.localScale = UtilityFunctions.Flip(transform.localScale, 
+                        ref _chargerDataScript._isFacingRight);
+                    break;
             }
         }
     }
     
     internal enum enemyMoveState{
-        Walking = 0, Damaged = 1, Death = 2, Inactive = 3, Pause = 4, Charge = 5, HitWall = 6
+        Walking = 0, Damaged = 1, Death = 2, Inactive = 3, Pause = 4, Charge = 5, HitWall = 6, Stunned = 7
     }
 }

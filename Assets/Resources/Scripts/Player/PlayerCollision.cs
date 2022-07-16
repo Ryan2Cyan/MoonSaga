@@ -1,5 +1,4 @@
 using System;
-using Resources.Scripts.Enemies.General;
 using Resources.Scripts.Enemies.PillBug;
 using Resources.Scripts.VFX;
 using UnityEngine;
@@ -14,8 +13,10 @@ namespace Resources.Scripts.Player{
         
         // Values:
         private GameObject[] _sceneEnemies;
-        internal GameObject _collidedEnemy;
         internal bool _enemyCollision;
+        internal bool _enemyArmourCollision;
+        
+        // Collider values:
         [SerializeField] private BoxCollider2D _boxCollider2D;
         [SerializeField] private CircleCollider2D _circleCollider2D;
         [SerializeField] private Vector2 _originalColliderSize;
@@ -49,10 +50,13 @@ namespace Resources.Scripts.Player{
             // Collide with enemy:
             if (other.gameObject.CompareTag("EnemyTrigger")){
                 // Check if enemy is alive:
-                if (other.transform.parent.GetComponent<EnemyData>()._isActive){
+                if (other.transform.parent.GetComponent<EnemyData>()._isActive)
                     _enemyCollision = true;
-                    _collidedEnemy = other.gameObject;
-                }
+            }
+            
+            // Collision with enemy armour (causes defection):
+            if (other.gameObject.CompareTag("EnemyArmour")){
+                _enemyArmourCollision = true;
             }
             
             // Collide with shadow sapphire:
@@ -61,11 +65,12 @@ namespace Resources.Scripts.Player{
         }
 
         private void OnTriggerExit2D(Collider2D other){
-
-            // Collide with enemy:
-            if (other.gameObject.CompareTag("EnemyTrigger")){
-                _collidedEnemy = null;
+            
+            if (other.gameObject.CompareTag("EnemyTrigger"))
                 _enemyCollision = false;
+            
+            if (other.gameObject.CompareTag("EnemyArmour")){
+                _enemyArmourCollision = false;
             }
         }
 

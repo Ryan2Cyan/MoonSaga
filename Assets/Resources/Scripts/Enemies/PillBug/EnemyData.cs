@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Resources.Scripts.Camera;
-using Resources.Scripts.Enemies.General;
 using Resources.Scripts.General;
 using UnityEngine;
 

@@ -1,5 +1,4 @@
 using System;
-using Resources.Scripts.Enemies.General;
 using Resources.Scripts.General;
 using Resources.Scripts.Player;
 using UnityEngine;
@@ -15,6 +14,7 @@ namespace Resources.Scripts.Enemies.PillBug{
         private PlayerMovement _playerMovementScript;
         private GroundCheck _groundCheckScript;
         private EnemyData _enemyDataScript;
+        private EnemyRaycast _enemyRaycast;
         
         // Animator property index:
         private static readonly int State = Animator.StringToHash("State");
@@ -22,6 +22,7 @@ namespace Resources.Scripts.Enemies.PillBug{
         private void Awake(){
             
             // Fetch components:
+            _enemyRaycast = GetComponent<EnemyRaycast>();
             _enemyDataScript = GetComponent<EnemyData>();
             _enemyColliderScript = _enemyDataScript._triggerCollider.GetComponent<EnemyCollision>();
             _playerMovementScript = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
@@ -44,6 +45,7 @@ namespace Resources.Scripts.Enemies.PillBug{
         // State Functions:
         private void WalkingInput(){
             DamagedCheck();
+            HitWallCheck();
         }
         private void WalkingMovement(){
             
@@ -167,6 +169,13 @@ namespace Resources.Scripts.Enemies.PillBug{
                 _enemyDataScript._triggerCollider.SetActive(false);
                 _enemyDataScript._knockBackTimer = _enemyDataScript._knockBackDelay;
             }
+        }
+        private void HitWallCheck(){
+            
+            // If enemy walks into a wall - flip:
+            if(_enemyRaycast._hitTarget)
+                transform.localScale = UtilityFunctions.Flip(transform.localScale, 
+                    ref _enemyDataScript._isFacingRight);
         }
     }
     

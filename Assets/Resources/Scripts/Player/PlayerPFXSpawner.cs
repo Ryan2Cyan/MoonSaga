@@ -80,5 +80,11 @@ namespace Resources.Scripts.Player{
                 Vector3(transform.position.x, transform.position.y - 2f, transform.position.z), Quaternion.identity, 
             _pfxParent);
         }
+        internal void SpawnArmourSparkPfx(){
+          
+            Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/PFX/Enemy/Enemy-Sparks"), new 
+                    Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity, 
+                _pfxParent);
+        }
     }
 }

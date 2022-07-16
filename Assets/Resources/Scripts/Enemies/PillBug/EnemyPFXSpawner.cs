@@ -1,10 +1,11 @@
 using UnityEngine;
 
-namespace Resources.Scripts.Enemies.General{
+namespace Resources.Scripts.Enemies.PillBug{
     public class EnemyPFXSpawner : MonoBehaviour{
 
-        [SerializeField] private Transform _playerTransform;
-
+         private Transform _playerTransform;
+        [SerializeField] internal Vector2 _offset;
+        
         private void Awake(){
             _playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         }
@@ -19,8 +20,8 @@ namespace Resources.Scripts.Enemies.General{
                 Instantiate(UnityEngine.Resources.Load<GameObject>
                         ("Prefabs/PFX/Enemy/Enemy-Damaged-Right"),
                     new Vector3(
-                        transform.position.x,
-                        transform.position.y + 1f,
+                        transform.position.x + _offset.x,
+                        transform.position.y + _offset.y,
                         transform.position.z),
                     Quaternion.identity);
             }
@@ -28,8 +29,8 @@ namespace Resources.Scripts.Enemies.General{
                 Instantiate(UnityEngine.Resources.Load<GameObject>
                         ("Prefabs/PFX/Enemy/Enemy-Damaged-Left"),
                     new Vector3(
-                        transform.position.x,
-                        transform.position.y + 1f,
+                        transform.position.x + _offset.x,
+                        transform.position.y + _offset.y,
                         transform.position.z),
                     Quaternion.identity);
             }

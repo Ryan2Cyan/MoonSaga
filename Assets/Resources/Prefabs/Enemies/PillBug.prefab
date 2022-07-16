@@ -115,6 +115,7 @@ GameObject:
   - component: {fileID: 2344622348689807481}
   - component: {fileID: 2344622348689807486}
   - component: {fileID: 2344622348689807487}
+  - component: {fileID: 7048489164515480109}
   - component: {fileID: 2344622348689807484}
   - component: {fileID: 2344622348689807485}
   - component: {fileID: 2344622348689807426}
@@ -183,6 +184,23 @@ MonoBehaviour:
   _isActive: 1
   _sprite: {fileID: 2344622348626678747}
   _triggerCollider: {fileID: 2344622349618003279}
+--- !u!114 &7048489164515480109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2344622348689807425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae0313eeebbe5d446ba6c65621b1104b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _hitTarget: 0
+  _rayDistance: 1
+  _targetLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!114 &2344622348689807484
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,7 +213,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4083aaec16feac2409a8b0b9a6fd0fc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerTransform: {fileID: 0}
+  _offset: {x: 0, y: 1}
 --- !u!114 &2344622348689807485
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,7 +226,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3327f3fab5a8b1e4ab3bba71943238ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enemyDataScript: {fileID: 0}
 --- !u!114 &2344622348689807426
 MonoBehaviour:
   m_ObjectHideFlags: 0

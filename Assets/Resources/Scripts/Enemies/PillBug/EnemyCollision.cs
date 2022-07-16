@@ -36,6 +36,5 @@ namespace Resources.Scripts.Enemies.PillBug{
             if (other.gameObject.CompareTag("Player"))
                 _collidingWithPlayer = false;
         }
-
     }
 }
