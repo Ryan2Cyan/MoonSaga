@@ -190,14 +190,22 @@ namespace Resources.Scripts.Enemies.Charger{
         }
         
         private void StunnedInput(){
-            
+
             // Knock back timer:
             _chargerDataScript._stunTimer -= Time.deltaTime;
             if (_chargerDataScript._stunTimer <= 0f){
                 // Flip enemy:
                 transform.localScale = UtilityFunctions.Flip(transform.localScale, 
                     ref _chargerDataScript._isFacingRight);
-                SetDefaultState();
+                _chargerDataScript._armourCollider.enabled = true;
+                _chargerDataScript._chargeTimer = _chargerDataScript._chargePauseTime;
+                _state = enemyMoveState.Recover;
+            }
+            
+            // Check if the enemy has been hit by the player:
+            if (_enemyColliderScript._collidingWithPlayer && _playerMovementScript._state == playerMoveState.DashHit){
+                _chargerDataScript._armourCollider.enabled = true;
+                _state = enemyMoveState.Damaged;
             }
         }
         private void StunnedMovement(){
@@ -205,6 +213,21 @@ namespace Resources.Scripts.Enemies.Charger{
             // Stop moving:
             if(_groundCheckScript._isGrounded)
                 _chargerDataScript._rigidbody2D.velocity = Vector2.zero;
+        }
+        
+        private void RecoverInput(){
+            
+            DamagedCheck();
+
+            _chargerDataScript._chargeTimer -= Time.deltaTime;
+            if (_chargerDataScript._chargeTimer <= 0f){
+                SetDefaultState();
+            }
+        }
+        private void RecoverMovement(){
+            
+            // Stop moving:
+            _chargerDataScript._rigidbody2D.velocity = Vector2.zero;
         }
 
 
@@ -232,6 +255,9 @@ namespace Resources.Scripts.Enemies.Charger{
                     break;
                 case enemyMoveState.Stunned:
                     StunnedMovement();
+                    break;
+                case enemyMoveState.Recover:
+                    RecoverMovement();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -262,6 +288,9 @@ namespace Resources.Scripts.Enemies.Charger{
                     break;
                 case enemyMoveState.Stunned:
                     StunnedInput();
+                    break;
+                case enemyMoveState.Recover:
+                    RecoverInput();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -305,6 +334,7 @@ namespace Resources.Scripts.Enemies.Charger{
                 case true when _state == enemyMoveState.Charge:
                     _state = enemyMoveState.HitWall;
                     _chargerDataScript._knockBackTimer = _chargerDataScript._knockBackDelay;
+                    _chargerDataScript._armourCollider.enabled = false;
                     break;
                 // Otherwise just flip:
                 case true:
@@ -316,6 +346,6 @@ namespace Resources.Scripts.Enemies.Charger{
     }
     
     internal enum enemyMoveState{
-        Walking = 0, Damaged = 1, Death = 2, Inactive = 3, Pause = 4, Charge = 5, HitWall = 6, Stunned = 7
+        Walking = 0, Damaged = 1, Death = 2, Inactive = 3, Pause = 4, Charge = 5, HitWall = 6, Stunned = 7, Recover = 8
     }
 }
