@@ -12,6 +12,7 @@ TagManager:
   - ShadowSapphire
   - EnemyTrigger
   - DeathZone
+  - EnemyArmour
   layers:
   - Default
   - TransparentFX

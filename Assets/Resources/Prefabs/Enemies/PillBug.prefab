@@ -196,6 +196,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerTransform: {fileID: 0}
+  _offset: {x: 0, y: 1}
 --- !u!114 &2344622348689807485
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,7 +209,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3327f3fab5a8b1e4ab3bba71943238ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enemyDataScript: {fileID: 0}
 --- !u!114 &2344622348689807426
 MonoBehaviour:
   m_ObjectHideFlags: 0

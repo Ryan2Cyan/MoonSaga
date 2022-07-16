@@ -521,9 +521,12 @@ namespace Resources.Scripts.Player
                 _knockBackTimer = _dashKnockBackDelay;
                 _monoBehaviourUtilityScript.StartSleep(0.05f);
             }
+
+            HitArmourCheck();
         }
         private void DamagedCheck(){
-            // Check if the player hit an enemy:
+            
+            // Player touched enemy - they take damage:
             if (_playerCollisionScript._enemyCollision && !_inIFrames){
                 _knockBackTimer = _damagedKnockBackDelay;
                 _state = playerMoveState.Damaged;
@@ -533,9 +536,18 @@ namespace Resources.Scripts.Player
                 _inIFrames = true;
                 _playerPfxSpawnerScript.SpawnDamagedPfx();
             }
-            
+
             // Check for i frames:
             IFramesCheck();
+        }
+        private void HitArmourCheck(){
+            
+            // Player hit armour, they are deflected:
+            if (_playerCollisionScript._enemyArmourCollision){
+                _knockBackTimer = _damagedKnockBackDelay;
+                _state = playerMoveState.Damaged;
+                _playerPfxSpawnerScript.SpawnArmourSparkPfx();
+            }
         }
         private void IFramesCheck(){
             

@@ -1,5 +1,4 @@
 using System;
-using Resources.Scripts.Enemies.General;
 using Resources.Scripts.Enemies.PillBug;
 using Resources.Scripts.General;
 using Resources.Scripts.Player;
