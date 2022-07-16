@@ -299,16 +299,18 @@ namespace Resources.Scripts.Enemies.Charger{
             }
         }
         private void HitWallCheck(){
-            
-            // If charging, enemy is staggered:
-            if (_obstacleRaycastScript._hitTarget && _state == enemyMoveState.Charge){
-                _state = enemyMoveState.HitWall;
-                _chargerDataScript._knockBackTimer = _chargerDataScript._knockBackDelay;
-            }
-            // Otherwise just flip:
-            else if(_obstacleRaycastScript._hitTarget){
-                transform.localScale = UtilityFunctions.Flip(transform.localScale, 
-                    ref _chargerDataScript._isFacingRight);
+            switch (_obstacleRaycastScript._hitTarget){
+                
+                // If charging, enemy is staggered:
+                case true when _state == enemyMoveState.Charge:
+                    _state = enemyMoveState.HitWall;
+                    _chargerDataScript._knockBackTimer = _chargerDataScript._knockBackDelay;
+                    break;
+                // Otherwise just flip:
+                case true:
+                    transform.localScale = UtilityFunctions.Flip(transform.localScale, 
+                        ref _chargerDataScript._isFacingRight);
+                    break;
             }
         }
     }

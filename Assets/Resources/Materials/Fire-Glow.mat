@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Glow
+  m_Name: Fire-Glow
   m_Shader: {fileID: -6465566751694194690, guid: 34648e732341c9243a68a1bf28d03251,
     type: 3}
   m_ShaderKeywords: 
@@ -44,5 +44,5 @@ Material:
     m_Floats:
     - _InLight: 0
     m_Colors:
-    - _Color: {r: 4.621482, g: 5.17915, b: 2.5162852, a: 0}
+    - _Color: {r: 0.9056604, g: 0.45915276, b: 0.046991818, a: 0}
   m_BuildTextureStacks: []
