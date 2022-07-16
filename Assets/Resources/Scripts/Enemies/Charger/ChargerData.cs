@@ -8,5 +8,7 @@ namespace Resources.Scripts.Enemies.Charger{
         [SerializeField] internal float _chargePauseTime;
         [SerializeField] internal float _chargeTime;
         internal float _chargeTimer;
+        [SerializeField] internal float _stunTime;
+        internal float _stunTimer;
     }
 }

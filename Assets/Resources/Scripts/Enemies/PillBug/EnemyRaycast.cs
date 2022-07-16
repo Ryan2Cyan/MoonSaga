@@ -1,11 +1,10 @@
-using Resources.Scripts.Enemies.PillBug;
 using UnityEngine;
 
-namespace Resources.Scripts.Enemies.Charger{
-    public class ChargerRaycast : MonoBehaviour{
-
+namespace Resources.Scripts.Enemies.PillBug{
+    public class EnemyRaycast : MonoBehaviour
+    {
         // Scripts:
-        private EnemyData _chargerDataScript;
+        private EnemyData _dataScript;
         
         // Values:
         [SerializeField] internal bool _hitTarget;
@@ -14,12 +13,12 @@ namespace Resources.Scripts.Enemies.Charger{
         private RaycastHit2D _hit2D;
 
         private void Awake(){
-            _chargerDataScript = GetComponent<ChargerData>();
+            _dataScript = GetComponent<EnemyData>();
         }
 
         private void FixedUpdate(){
             _hitTarget = Physics2D.Raycast(
-                transform.position, _chargerDataScript._isFacingRight ? Vector2.right : 
+                transform.position, _dataScript._isFacingRight ? Vector2.right : 
                     Vector2.left, _rayDistance, _targetLayer);
         }
     }
