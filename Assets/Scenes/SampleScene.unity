@@ -212,6 +212,75 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 4456493690927595598}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &66139092
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2344622348689807425, guid: a6b1c834cca29b24db893bb1ab291d12,
+        type: 3}
+      propertyPath: m_Name
+      value: PillBug
+      objectReference: {fileID: 0}
+    - target: {fileID: 2344622348689807481, guid: a6b1c834cca29b24db893bb1ab291d12,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2344622348689807481, guid: a6b1c834cca29b24db893bb1ab291d12,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -4.0272045
+      objectReference: {fileID: 0}
+    - target: {fileID: 2344622348689807481, guid: a6b1c834cca29b24db893bb1ab291d12,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -4.9076138
+      objectReference: {fileID: 0}
+    - target: {fileID: 2344622348689807481, guid: a6b1c834cca29b24db893bb1ab291d12,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2344622348689807481, guid: a6b1c834cca29b24db893bb1ab291d12,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2344622348689807481, guid: a6b1c834cca29b24db893bb1ab291d12,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2344622348689807481, guid: a6b1c834cca29b24db893bb1ab291d12,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2344622348689807481, guid: a6b1c834cca29b24db893bb1ab291d12,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2344622348689807481, guid: a6b1c834cca29b24db893bb1ab291d12,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2344622348689807481, guid: a6b1c834cca29b24db893bb1ab291d12,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2344622348689807481, guid: a6b1c834cca29b24db893bb1ab291d12,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a6b1c834cca29b24db893bb1ab291d12, type: 3}
 --- !u!1 &80225438
 GameObject:
   m_ObjectHideFlags: 0
@@ -598,7 +667,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &183110537 stripped
 Transform:
@@ -1034,7 +1103,7 @@ Transform:
   - {fileID: 872845063}
   - {fileID: 1484106253}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &499068753
 GameObject:
@@ -1309,7 +1378,7 @@ Transform:
   - {fileID: 412210780}
   - {fileID: 1149933508682152944}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &542220380
 MonoBehaviour:
@@ -1323,7 +1392,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a662ddc7ee0b22842b438242c94fb86e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _state: 0
+  _state: 4
   _playerCollisionScript: {fileID: 402465832}
   _walkSpeed: 65
   _jumpForce: 470
@@ -3020,7 +3089,7 @@ Transform:
   - {fileID: 1006255622}
   - {fileID: 80225439}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1245706761
 GameObject:
@@ -3115,7 +3184,7 @@ RectTransform:
   m_Children:
   - {fileID: 91977146}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -4899,7 +4968,7 @@ PrefabInstance:
     - target: {fileID: 2073651325613741397, guid: fcfd77b4532e7984ea855b82271c0c9d,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2073651325613741397, guid: fcfd77b4532e7984ea855b82271c0c9d,
         type: 3}
@@ -4955,6 +5024,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Charger (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 2073651325613741423, guid: fcfd77b4532e7984ea855b82271c0c9d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fcfd77b4532e7984ea855b82271c0c9d, type: 3}
@@ -5262,7 +5336,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1648260030
 GameObject:
@@ -5342,7 +5416,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1657576884 stripped
 Transform:
@@ -6061,7 +6135,7 @@ Transform:
   m_Children:
   - {fileID: 1716170855}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1802436016 stripped
 Transform:
@@ -6200,7 +6274,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1826825726
 GameObject:
@@ -6248,7 +6322,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1833270403 stripped
 Transform:
