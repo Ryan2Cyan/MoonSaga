@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Resources.Scripts.Enemies.PillBug{
+namespace Resources.Scripts.Enemies.General{
     public class EnemyRaycast : MonoBehaviour
     {
         // Scripts:

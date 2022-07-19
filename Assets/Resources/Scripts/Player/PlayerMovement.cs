@@ -16,7 +16,8 @@ namespace Resources.Scripts.Player
         [SerializeField] private PlayerCollision _playerCollisionScript;
         private PlayerData _playerDataScript;
         private PlayerPFXSpawner _playerPfxSpawnerScript;
-        private GroundCheck _groundCheckScript;
+        [SerializeField] private RadiusChecker _groundCheckScript;
+        [SerializeField] private RadiusChecker _ceilingCheckScript;
         private PlayerUIHandler _playerUIHandler;
         private ActionMap _actionMapScript;
         private MonoBehaviourUtility _monoBehaviourUtilityScript;
@@ -83,7 +84,6 @@ namespace Resources.Scripts.Player
             _shadowMeterScript = GetComponent<ShadowMeter>();
             // _playerCollisionScript = GetComponent<PlayerCollision>();
             _playerPfxSpawnerScript = GetComponent<PlayerPFXSpawner>();
-            _groundCheckScript = GetComponent<GroundCheck>();
             _playerUIHandler = GetComponent<PlayerUIHandler>();
             _monoBehaviourUtilityScript = GameObject.Find("Utility").GetComponent<MonoBehaviourUtility>();
             _playerDataScript = GetComponent<PlayerData>();
@@ -143,21 +143,21 @@ namespace Resources.Scripts.Player
             }
 
             // Player releases jump [Air Control]:
-            if (_jumpRelease && !_groundCheckScript._isGrounded){
+            if (_jumpRelease && !_groundCheckScript._collided){
                 _playerDataScript._rigidbody2D.velocity = new Vector2(_playerDataScript._rigidbody2D.velocity.x, 
                     _playerDataScript._rigidbody2D.velocity.y / 2.0f);
                 _state = playerMoveState.AirControl;
             }
 
             // Player hits ceiling [Air Control]:
-            if (_groundCheckScript._isCeiling){
+            if (_ceilingCheckScript._collided){
                 _playerDataScript._rigidbody2D.velocity = new Vector2(_playerDataScript._rigidbody2D.velocity.x, 
                     _playerDataScript._rigidbody2D.velocity.y / 2.0f);
                 _state = playerMoveState.AirControl;
             }
 
             // Set bool to false to prevent another force being applied if player hits another ground:
-            if (!_groundCheckScript._isGrounded)
+            if (!_groundCheckScript._collided)
                 _inJump = false;
 
             DashCheck();
@@ -166,7 +166,7 @@ namespace Resources.Scripts.Player
         private void JumpMovement(){
 
             // Apply force when jumping:
-            if (_groundCheckScript._isGrounded && _inJump)
+            if (_groundCheckScript._collided && _inJump)
                 _playerDataScript._rigidbody2D.AddForce(new Vector2(_playerDataScript._rigidbody2D.velocity.x, _jumpForce));
             
             ApplyNormMovement(7.0f);
@@ -175,7 +175,7 @@ namespace Resources.Scripts.Player
         private void AirControlInput(){
 
             // If player touches the ground [Land]:
-            if (_groundCheckScript._isGrounded){
+            if (_groundCheckScript._collided){
                 _state = playerMoveState.Land;
                 
                 // Spawn pfx:
@@ -239,7 +239,7 @@ namespace Resources.Scripts.Player
             // Check if the dash has ended:
             if (_shadowMeterScript._shadowMeter < 0f || _dashDownRelease)
                 SetDefaultState();
-            if (_groundCheckScript._isGrounded){
+            if (_groundCheckScript._collided){
                 _state = playerMoveState.Land;
                 _playerPfxSpawnerScript.SpawnLandPfx();
             }
@@ -459,7 +459,7 @@ namespace Resources.Scripts.Player
 
         // Input checks for switching state:
         private void SetDefaultState(){
-            _state = _groundCheckScript._isGrounded switch{
+            _state = _groundCheckScript._collided switch{
                 true => playerMoveState.Idle,
                 false => playerMoveState.AirControl
             };
@@ -467,18 +467,18 @@ namespace Resources.Scripts.Player
         private void IdleCheck(){
 
             // Check if the player is moving on the x-axis [Walking]:
-            if (_horizontalInput == 0.0f && _groundCheckScript._isGrounded)
+            if (_horizontalInput == 0.0f && _groundCheckScript._collided)
                 _state = playerMoveState.Idle;
         }
         private void WalkCheck(){
 
             // Check if the player is moving on the x-axis [Walking]:
-            if (_horizontalInput < 0.0f || _horizontalInput > 0.0f && _groundCheckScript._isGrounded)
+            if (_horizontalInput < 0.0f || _horizontalInput > 0.0f && _groundCheckScript._collided)
                 _state = playerMoveState.Walking;
         }
         private void JumpCheck(){
             // If player presses jump button [Jump]:
-            if (_jumpPress && !_groundCheckScript._isCeiling){
+            if (_jumpPress && !_ceilingCheckScript._collided){
                 _state = playerMoveState.Jump;
                 _airTimer = _maxAirTime;
                 _inJump = true;

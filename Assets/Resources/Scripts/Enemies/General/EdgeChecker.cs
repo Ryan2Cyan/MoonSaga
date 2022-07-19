@@ -1,7 +1,7 @@
 using Resources.Scripts.General;
 using UnityEngine;
 
-namespace Resources.Scripts.Enemies.PillBug{
+namespace Resources.Scripts.Enemies.General{
     public class EdgeChecker : MonoBehaviour{
         
         private EnemyData _enemyDataScript;

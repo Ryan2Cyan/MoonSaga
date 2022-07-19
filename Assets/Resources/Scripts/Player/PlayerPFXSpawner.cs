@@ -9,7 +9,7 @@ namespace Resources.Scripts.Player{
         // Scripts:
         [SerializeField] private PlayerMovement _playerMovementScript;
         [SerializeField] private LightDetection _lightDetectionScript;
-        [SerializeField] private GroundCheck _groundCheckScript;
+        [SerializeField] private RadiusChecker _groundCheckScript;
         
         // PFX Parent:
         [SerializeField] private Transform _pfxParent;
@@ -25,14 +25,14 @@ namespace Resources.Scripts.Player{
             if (_lightDetectionScript._inLight){
                 Instantiate(UnityEngine.Resources.Load<GameObject>
                         ("Prefabs/Environment/CelestialGrove/PFX/Land-Leaves-Light"),
-                    _groundCheckScript._groundCheck.position,
+                    _groundCheckScript._transform.position,
                     Quaternion.identity);
             }
             // If player in light, spawn shadow leaves:
             else{
                 Instantiate(UnityEngine.Resources.Load<GameObject>
                         ("Prefabs/Environment/CelestialGrove/PFX/Land-Leaves"),
-                    _groundCheckScript._groundCheck.position,
+                    _groundCheckScript._transform.position,
                     Quaternion.identity);
             }
         }

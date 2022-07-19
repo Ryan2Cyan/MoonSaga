@@ -1,5 +1,5 @@
 using System;
-using Resources.Scripts.Enemies.PillBug;
+using Resources.Scripts.Enemies.General;
 using Resources.Scripts.General;
 using Resources.Scripts.Player;
 using UnityEngine;
@@ -11,9 +11,10 @@ namespace Resources.Scripts.Enemies.Charger{
         [SerializeField] internal enemyMoveState _state;
         
         // Scripts:
+        private ChargerPFXSpawner _chargerPfxSpawnerScript;
         private EnemyCollision _enemyColliderScript;
         private PlayerMovement _playerMovementScript;
-        private GroundCheck _groundCheckScript;
+        private RadiusChecker _groundCheckScript;
         private ChargerData _chargerDataScript;
         [SerializeField] private EnemyRaycast _playerRaycastScript;
         [SerializeField] private EnemyRaycast _obstacleRaycastScript;
@@ -24,10 +25,11 @@ namespace Resources.Scripts.Enemies.Charger{
         private void Awake(){
             
             // Fetch components:
+            _chargerPfxSpawnerScript = GetComponent<ChargerPFXSpawner>();
             _chargerDataScript = GetComponent<ChargerData>();
             _enemyColliderScript = _chargerDataScript._triggerCollider.GetComponent<EnemyCollision>();
             _playerMovementScript = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
-            _groundCheckScript = GetComponent<GroundCheck>();
+            _groundCheckScript = GetComponent<RadiusChecker>();
             _state = enemyMoveState.Walking;
         }
 
@@ -60,7 +62,7 @@ namespace Resources.Scripts.Enemies.Charger{
             }
             
             // Move enemy left or right depending on direction:
-            if(_groundCheckScript._isGrounded && !_enemyColliderScript._collidingWithPlayer)
+            if(_groundCheckScript._collided && !_enemyColliderScript._collidingWithPlayer)
                 _chargerDataScript._rigidbody2D.velocity = _chargerDataScript._isFacingRight ? 
                     new Vector2(_chargerDataScript._runSpeed, _chargerDataScript._rigidbody2D.velocity.y) : 
                     new Vector2(-_chargerDataScript._runSpeed, _chargerDataScript._rigidbody2D.velocity.y);
@@ -104,7 +106,7 @@ namespace Resources.Scripts.Enemies.Charger{
         private void InactiveInput(){
             
             // If the enemy hits the ground, prevent them from moving, then disable the script:
-            if (_groundCheckScript._isGrounded){
+            if (_groundCheckScript._collided){
                 _chargerDataScript._rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
                 _chargerDataScript._triggerCollider.SetActive(false);
                 GetComponent<CircleCollider2D>().enabled = false;
@@ -146,9 +148,11 @@ namespace Resources.Scripts.Enemies.Charger{
             _chargerDataScript._chargeTimer -= Time.deltaTime;
             if (_chargerDataScript._chargeTimer <= 0f){
                 if (_playerRaycastScript._hitTarget){
+                    // Continue charge:
                     _chargerDataScript._chargeTimer = _chargerDataScript._chargeTime;
                 }
                 else{
+                    // Stop charge:
                     _chargerDataScript._chargeTimer = _chargerDataScript._chargePauseTime;
                     _state = enemyMoveState.Pause;
                 }
@@ -165,7 +169,7 @@ namespace Resources.Scripts.Enemies.Charger{
             }
             
             // Charge left or right depending on direction:
-            if(_groundCheckScript._isGrounded && !_enemyColliderScript._collidingWithPlayer)
+            if(_groundCheckScript._collided && !_enemyColliderScript._collidingWithPlayer)
                 _chargerDataScript._rigidbody2D.velocity = _chargerDataScript._isFacingRight ? 
                     new Vector2(_chargerDataScript._chargeSpeed, _chargerDataScript._rigidbody2D.velocity.y) : 
                     new Vector2(-_chargerDataScript._chargeSpeed, _chargerDataScript._rigidbody2D.velocity.y);
@@ -211,7 +215,7 @@ namespace Resources.Scripts.Enemies.Charger{
         private void StunnedMovement(){
             
             // Stop moving:
-            if(_groundCheckScript._isGrounded)
+            if(_groundCheckScript._collided)
                 _chargerDataScript._rigidbody2D.velocity = Vector2.zero;
         }
         
@@ -335,6 +339,8 @@ namespace Resources.Scripts.Enemies.Charger{
                     _state = enemyMoveState.HitWall;
                     _chargerDataScript._knockBackTimer = _chargerDataScript._knockBackDelay;
                     _chargerDataScript._armourCollider.enabled = false;
+                    _chargerPfxSpawnerScript.SpawnArmourSparkPfx();
+                    
                     break;
                 // Otherwise just flip:
                 case true:

@@ -3,7 +3,7 @@ using Resources.Scripts.Camera;
 using Resources.Scripts.General;
 using UnityEngine;
 
-namespace Resources.Scripts.Enemies.PillBug{
+namespace Resources.Scripts.Enemies.General{
     public class EnemyData : MonoBehaviour{
 
         // Scripts:

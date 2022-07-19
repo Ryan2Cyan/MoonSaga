@@ -1,4 +1,4 @@
-using Resources.Scripts.Enemies.PillBug;
+using Resources.Scripts.Enemies.General;
 using UnityEngine;
 
 namespace Resources.Scripts.Enemies.Charger{

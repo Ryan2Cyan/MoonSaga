@@ -3,7 +3,7 @@ using Resources.Scripts.General;
 using Resources.Scripts.Player;
 using UnityEngine;
 
-namespace Resources.Scripts.Enemies.PillBug{
+namespace Resources.Scripts.Enemies.General{
     public class EnemyMovement : MonoBehaviour
     {
         // State:
@@ -12,7 +12,7 @@ namespace Resources.Scripts.Enemies.PillBug{
         // Scripts:
         private EnemyCollision _enemyColliderScript;
         private PlayerMovement _playerMovementScript;
-        private GroundCheck _groundCheckScript;
+        private RadiusChecker _groundCheckScript;
         private EnemyData _enemyDataScript;
         private EnemyRaycast _enemyRaycast;
         
@@ -26,7 +26,7 @@ namespace Resources.Scripts.Enemies.PillBug{
             _enemyDataScript = GetComponent<EnemyData>();
             _enemyColliderScript = _enemyDataScript._triggerCollider.GetComponent<EnemyCollision>();
             _playerMovementScript = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
-            _groundCheckScript = GetComponent<GroundCheck>();
+            _groundCheckScript = GetComponent<RadiusChecker>();
             _state = enemyMoveState.Walking;
         }
 
@@ -56,7 +56,7 @@ namespace Resources.Scripts.Enemies.PillBug{
                 return;
             }
             
-            if(_groundCheckScript._isGrounded && !_enemyColliderScript._collidingWithPlayer)
+            if(_groundCheckScript._collided && !_enemyColliderScript._collidingWithPlayer)
                 _enemyDataScript._rigidbody2D.velocity = _enemyDataScript._isFacingRight ? 
                     new Vector2(_enemyDataScript._runSpeed, _enemyDataScript._rigidbody2D.velocity.y) : 
                     new Vector2(-_enemyDataScript._runSpeed, _enemyDataScript._rigidbody2D.velocity.y);
@@ -100,7 +100,7 @@ namespace Resources.Scripts.Enemies.PillBug{
         private void InactiveInput(){
             
             // If the enemy hits the ground, prevent them from moving, then disable the script:
-            if (_groundCheckScript._isGrounded){
+            if (_groundCheckScript._collided){
                 _enemyDataScript._rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
                 _enemyDataScript._triggerCollider.SetActive(false);
                 GetComponent<CircleCollider2D>().enabled = false;

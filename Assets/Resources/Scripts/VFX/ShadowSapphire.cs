@@ -7,9 +7,11 @@ namespace Resources.Scripts.VFX{
     public class ShadowSapphire : MonoBehaviour{
         
         // Scripts:
-        [SerializeField] private GroundCheck _groundCheckScript;
+        [SerializeField] private RadiusChecker _groundCheckScript;
         
         private Rigidbody2D _rigidbody2D;
+        private CircleCollider2D _circleCollider2D;
+        private BoxCollider2D _boxCollider2D;
         private Animator _animator;
         [SerializeField] public int _value;
         [SerializeField] private float _minX;
@@ -30,6 +32,8 @@ namespace Resources.Scripts.VFX{
             
             // Fetch components:
             _rigidbody2D = GetComponent<Rigidbody2D>();
+            _circleCollider2D = GetComponent<CircleCollider2D>();
+            _boxCollider2D = GetComponent<BoxCollider2D>();
             _animator = GetComponent<Animator>();
             
             // Set and randomise shine time:
@@ -38,15 +42,13 @@ namespace Resources.Scripts.VFX{
             // Apply force on spawn:
             _rigidbody2D.AddForce(new Vector2(Random.Range(_minX, _maxX), Random.Range(_minY, _maxY)));
             
-            // Ignore collision with enemy ground collider (circle colliders):
+            // Ignore colliders:
             _sceneEnemies = GameObject.FindGameObjectsWithTag("Enemy");
             if (_sceneEnemies.Length > 0){
                 foreach (GameObject enemy in _sceneEnemies){
                     Physics2D.IgnoreCollision(enemy.GetComponent<CircleCollider2D>(), GetComponent<CircleCollider2D>());
                 }
             }
-            
-            // Ignore player's circle collider:
             Physics2D.IgnoreCollision(GameObject.FindGameObjectWithTag("Player").GetComponent<CircleCollider2D>(), 
                 GetComponent<BoxCollider2D>());
         }
@@ -54,9 +56,9 @@ namespace Resources.Scripts.VFX{
         private void Update(){
 
             // Once on the ground, play animation, and allow the player to pick the sapphire up:
-            if (_groundCheckScript._isGrounded){
-                GetComponent<BoxCollider2D>().enabled = true;
-                GetComponent<CircleCollider2D>().enabled = true;
+            if (_groundCheckScript._collided){
+                _boxCollider2D.enabled = true;
+                _circleCollider2D.enabled = true;
                 _animator.enabled = true;
                 _rigidbody2D.velocity = new Vector2(0f, _rigidbody2D.velocity.y);
             }
