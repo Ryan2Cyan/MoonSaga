@@ -127,7 +127,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2344622348689807481
 Transform:
   m_ObjectHideFlags: 0
@@ -238,18 +238,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7444388f310ad804ab299e244fffd5eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _groundedRadius: 0.2
-  _isGrounded: 0
-  _groundCheck: {fileID: 2344622350072493021}
-  _groundLayerMask:
+  _radius: 0.2
+  _collided: 0
+  _transform: {fileID: 2344622350072493021}
+  _layerMask:
     serializedVersion: 2
     m_Bits: 64
-  _ceilingRadius: 0.2
-  _isCeiling: 0
-  _ceilingCheck: {fileID: 0}
-  _ceilingLayerMask:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!50 &2344622348689807427
 Rigidbody2D:
   serializedVersion: 4

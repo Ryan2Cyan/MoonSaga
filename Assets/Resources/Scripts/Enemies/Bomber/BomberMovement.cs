@@ -13,9 +13,9 @@ namespace Resources.Scripts.Enemies.Bomber{
         // Scripts:
         private EnemyCollision _enemyColliderScript;
         private PlayerMovement _playerMovementScript;
-        private RadiusChecker _groundCheckScript;
-        private EnemyData _enemyDataScript;
-        private EnemyRaycast _enemyRaycast;
+        [SerializeField] private RadiusChecker _groundCheckScript;
+        private BomberData _bomberDataScript;
+        private EnemyRaycast _wallCheckScript;
         
         // Animator property index:
         private static readonly int State = Animator.StringToHash("State");
@@ -23,9 +23,9 @@ namespace Resources.Scripts.Enemies.Bomber{
         private void Awake(){
             
             // Fetch components:
-            _enemyRaycast = GetComponent<EnemyRaycast>();
-            _enemyDataScript = GetComponent<EnemyData>();
-            _enemyColliderScript = _enemyDataScript._triggerCollider.GetComponent<EnemyCollision>();
+            _wallCheckScript = GetComponent<EnemyRaycast>();
+            _bomberDataScript = GetComponent<BomberData>();
+            _enemyColliderScript = _bomberDataScript._triggerCollider.GetComponent<EnemyCollision>();
             _playerMovementScript = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
             _groundCheckScript = GetComponent<RadiusChecker>();
             _state = enemyMoveState.Walking;
@@ -35,7 +35,7 @@ namespace Resources.Scripts.Enemies.Bomber{
             ProcessStateInput();
             
             // Update animator:
-            _enemyDataScript._animator.SetInteger(State, (int) _state);
+            _bomberDataScript._animator.SetInteger(State, (int) _state);
         }
 
         private void FixedUpdate(){
@@ -45,6 +45,8 @@ namespace Resources.Scripts.Enemies.Bomber{
         
         // State Functions:
         private void WalkingInput(){
+
+            AgroCheck();
             DamagedCheck();
             HitWallCheck();
         }
@@ -53,14 +55,14 @@ namespace Resources.Scripts.Enemies.Bomber{
             // Move enemy left or right depending on direction:
             if (_enemyColliderScript._collidingWithPlayer){
                 _enemyColliderScript._collidingWithPlayer = false;
-                _enemyDataScript._rigidbody2D.velocity = new Vector2(0f, 0f);
+                _bomberDataScript._rigidbody2D.velocity = new Vector2(0f, 0f);
                 return;
             }
             
             if(_groundCheckScript._collided && !_enemyColliderScript._collidingWithPlayer)
-                _enemyDataScript._rigidbody2D.velocity = _enemyDataScript._isFacingRight ? 
-                    new Vector2(_enemyDataScript._runSpeed, _enemyDataScript._rigidbody2D.velocity.y) : 
-                    new Vector2(-_enemyDataScript._runSpeed, _enemyDataScript._rigidbody2D.velocity.y);
+                _bomberDataScript._rigidbody2D.velocity = _bomberDataScript._isFacingRight ? 
+                    new Vector2(_bomberDataScript._runSpeed, _bomberDataScript._rigidbody2D.velocity.y) : 
+                    new Vector2(-_bomberDataScript._runSpeed, _bomberDataScript._rigidbody2D.velocity.y);
         }
 
         private void DamagedInput(){
@@ -74,40 +76,91 @@ namespace Resources.Scripts.Enemies.Bomber{
         private void DamagedMovement(){
             
             // Decrement HP:
-            _enemyDataScript.DecrementHp(1f);
+            _bomberDataScript.DecrementHp(1f);
             
             // Freeze position:
-            _enemyDataScript._rigidbody2D.velocity = new Vector2(0f, 0f);
+            _bomberDataScript._rigidbody2D.velocity = new Vector2(0f, 0f);
         }
         
         private void DeathInput(){
 
-            _enemyDataScript._knockBackTimer -= Time.deltaTime;
+            _bomberDataScript._knockBackTimer -= Time.deltaTime;
             
             // After knock back [Inactive]:
-            if (_enemyDataScript._knockBackTimer <= 0f){
+            if (_bomberDataScript._knockBackTimer <= 0f){
                 _state = enemyMoveState.Inactive;
-                _enemyDataScript._rigidbody2D.velocity = new Vector2(_enemyDataScript._rigidbody2D.velocity.x, 
-                    _enemyDataScript._rigidbody2D.velocity.y / 2.0f);
+                _bomberDataScript._rigidbody2D.velocity = new Vector2(_bomberDataScript._rigidbody2D.velocity.x, 
+                    _bomberDataScript._rigidbody2D.velocity.y / 2.0f);
             }
         }
         private void DeathMovement(){
             
             // Knock back enemy based on position in relation to player:
-            _enemyDataScript._rigidbody2D.velocity = _playerMovementScript.transform.position.x < transform.position.x ? 
-                _enemyDataScript._knockBack : new Vector2(-_enemyDataScript._knockBack.x, _enemyDataScript._knockBack.y);
+            _bomberDataScript._rigidbody2D.velocity = _playerMovementScript.transform.position.x < transform.position.x ? 
+                _bomberDataScript._knockBack : new Vector2(-_bomberDataScript._knockBack.x, _bomberDataScript._knockBack.y);
         }
         
         private void InactiveInput(){
             
             // If the enemy hits the ground, prevent them from moving, then disable the script:
             if (_groundCheckScript._collided){
-                _enemyDataScript._rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
-                _enemyDataScript._triggerCollider.SetActive(false);
+                _bomberDataScript._rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
+                _bomberDataScript._triggerCollider.SetActive(false);
                 GetComponent<CircleCollider2D>().enabled = false;
                 _groundCheckScript.enabled = false;
                 enabled = false;
             }
+        }
+        
+        private void AgroInput(){
+            
+            DamagedCheck();
+            // Once timer expires [Shoot]:
+            _bomberDataScript._agroTimer -= Time.deltaTime;
+            if (_bomberDataScript._agroTimer <= 0f){
+                _state = enemyMoveState.Shoot;
+                _bomberDataScript._shootTimer = _bomberDataScript._shootTime;
+            }
+
+        }
+        private void AgroMovement(){
+            
+            // Stop moving:
+            _bomberDataScript._rigidbody2D.velocity = Vector2.zero;
+        }
+        
+        private void ShootInput(){
+            DamagedCheck();
+            
+            // Once timer expires [Walking]:
+            _bomberDataScript._shootTimer -= Time.deltaTime;
+            if (_bomberDataScript._shootTimer <= 0f){
+                SetDefaultState();
+                _bomberDataScript._coolDownTimer = _bomberDataScript._coolDownTime;
+                // Spawn bomb:
+                Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/EnemyWeapons&Items/Bomb"),
+                    new Vector3(transform.position.x, transform.position.y, transform.position.z),
+                    Quaternion.identity);
+            }
+
+        }
+        private void ShootMovement(){
+            
+            // Stop moving:
+            _bomberDataScript._rigidbody2D.velocity = Vector2.zero;
+        }
+        
+        private void IdleInput(){
+            DamagedCheck();
+            // Until timer expires, enemy can't attack:
+            _bomberDataScript._coolDownTimer -= Time.deltaTime;
+            if (_bomberDataScript._coolDownTimer <= 0f)
+                _state = enemyMoveState.Walking;
+        }
+        private void IdleMovement(){
+            
+            // Stop moving:
+            _bomberDataScript._rigidbody2D.velocity = Vector2.zero;
         }
 
 
@@ -123,6 +176,15 @@ namespace Resources.Scripts.Enemies.Bomber{
                     DeathMovement();
                     break;
                 case enemyMoveState.Inactive:
+                    break;
+                case enemyMoveState.Agro:
+                    AgroMovement();
+                    break;
+                case enemyMoveState.Shoot:
+                    ShootMovement();
+                    break;
+                case enemyMoveState.Idle:
+                    IdleMovement();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -142,6 +204,15 @@ namespace Resources.Scripts.Enemies.Bomber{
                 case enemyMoveState.Inactive:
                     InactiveInput();
                     break;
+                case enemyMoveState.Agro:
+                    AgroInput();
+                    break;
+                case enemyMoveState.Shoot:
+                    ShootInput();
+                    break;
+                case enemyMoveState.Idle:
+                    IdleInput();
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -150,7 +221,7 @@ namespace Resources.Scripts.Enemies.Bomber{
 
         // Input checks for switching state:
         private void SetDefaultState(){
-            _state = enemyMoveState.Walking;
+            _state = enemyMoveState.Idle;
         }
         private void DamagedCheck(){
             
@@ -161,27 +232,36 @@ namespace Resources.Scripts.Enemies.Bomber{
         }
         private void DeathCheck(){
             // If HP is 0 [Death]:
-            if (_enemyDataScript._hp <= 0f){
+            if (_bomberDataScript._hp <= 0f){
                 
                 _state = enemyMoveState.Death;
-                _enemyDataScript._isActive = false;
+                _bomberDataScript._isActive = false;
                 
                 // Swap to death sprite:
-                _enemyDataScript._triggerCollider.SetActive(false);
-                _enemyDataScript._knockBackTimer = _enemyDataScript._knockBackDelay;
+                _bomberDataScript._triggerCollider.SetActive(false);
+                _bomberDataScript._knockBackTimer = _bomberDataScript._knockBackDelay;
             }
         }
         private void HitWallCheck(){
             
             // If enemy walks into a wall - flip:
-            if(_enemyRaycast._hitTarget)
+            if(_wallCheckScript._hitTarget)
                 transform.localScale = UtilityFunctions.Flip(transform.localScale, 
-                    ref _enemyDataScript._isFacingRight);
+                    ref _bomberDataScript._isFacingRight);
+        }
+
+        private void AgroCheck(){
+            
+            // Check if the player is in range:
+            if (_bomberDataScript._playerRadiusCheckerScript._collided){
+                _state = enemyMoveState.Agro;
+                _bomberDataScript._agroTimer = _bomberDataScript._agroTime;
+            }
         }
     }
     
     internal enum enemyMoveState{
-        Walking = 0, Damaged = 1, Death = 2, Inactive = 3
+        Walking = 0, Damaged = 1, Death = 2, Inactive = 3, Agro = 4, Shoot = 5, Idle = 6
     }
     
 }
