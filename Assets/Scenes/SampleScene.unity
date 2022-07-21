@@ -227,7 +227,7 @@ PrefabInstance:
     - target: {fileID: 2344622348689807425, guid: a6b1c834cca29b24db893bb1ab291d12,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2344622348689807481, guid: a6b1c834cca29b24db893bb1ab291d12,
         type: 3}
@@ -7317,6 +7317,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Bomber
+      objectReference: {fileID: 0}
+    - target: {fileID: 4227319502261809657, guid: e193f2cee130e39469a69c5a8d6c66f1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e193f2cee130e39469a69c5a8d6c66f1, type: 3}

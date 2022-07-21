@@ -79,9 +79,9 @@ namespace Resources.Scripts.VFX{
         }
         
         private void OnCollisionEnter2D(Collision2D other){
-            if (other.gameObject.CompareTag("Platform") || other.gameObject.CompareTag("PlatformEdge") ){
-                _rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
-            }
+            // if (other.gameObject.CompareTag("Platform") || other.gameObject.CompareTag("PlatformEdge") ){
+            //     _rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
+            // }
 
             if (other.gameObject.CompareTag("Player")){
                 Destroy(gameObject);

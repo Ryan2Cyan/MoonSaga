@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 8524870592489759521}
   - component: {fileID: 8524870592489759520}
   m_Layer: 0
-  m_Name: Bomb
+  m_Name: Contact-Bomb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -136,6 +136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fed9cdeffd432b74089a6c50818574f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _xMod: 0.1
+  _xMod: 0.5
+  _yMod: 0
   _explosionTime: 8
   _initVel: 15

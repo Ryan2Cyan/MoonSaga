@@ -1,7 +1,7 @@
 using UnityEngine;
 
 namespace Resources.Scripts.Enemies{
-    public class Bomb : MonoBehaviour{
+    public class ContactBomb : MonoBehaviour{
         
         private Rigidbody2D _rigidbody2D;
         [SerializeField] private float _xMod;
@@ -9,36 +9,22 @@ namespace Resources.Scripts.Enemies{
         private float _explosionTimer;
         [SerializeField] private float _initVel;
         private Transform _playerTransform;
-        private GameObject[] _sceneEnemies;
         
         private void Awake(){
             
             _rigidbody2D = GetComponent<Rigidbody2D>();
             _playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
-            
-            // Ignore enemy colliders:
-            // Ignore collision with enemy ground collider (circle colliders):
-            _sceneEnemies = GameObject.FindGameObjectsWithTag("Enemy");
-            if (_sceneEnemies.Length > 0){
-                foreach (GameObject enemy in _sceneEnemies){
-                    Physics2D.IgnoreCollision(enemy.GetComponent<CircleCollider2D>(), GetComponent<CircleCollider2D>());
-                }
-            }
-            
+
             // Set timer:
             _explosionTimer = _explosionTime;
             
-            // Calc angle:
+            
+            // Calc angle and direction to shoot the bomb:
             float theta = CalcShootAngleDiffY();
-            // Calc direction:
             Vector2 norm = _playerTransform.position - transform.position;
             Vector2 shootVec = Vector2.zero;
-            if (norm.x >= 0f){
-                shootVec.x = Mathf.Cos(theta) + _xMod;
-            }
-            else{
-                shootVec.x = -Mathf.Cos(theta) - _xMod;
-            }
+            shootVec.x = norm.x >= 0f ? shootVec.x = Mathf.Cos(theta) + Random.Range(-0f, _xMod) : 
+                shootVec.x = -Mathf.Cos(theta) - Random.Range(-0f, _xMod);
             shootVec.y = Mathf.Sin(theta);
             // Multiply by velocity (shoot):
             _rigidbody2D.velocity = shootVec * _initVel;
@@ -67,9 +53,7 @@ namespace Resources.Scripts.Enemies{
                 float theta = pt4 / 2f;
                 return theta;
             }
-            else
-                return 1;
-            
+            return 1;
         }
         
         private void OnTriggerEnter2D(Collider2D other){

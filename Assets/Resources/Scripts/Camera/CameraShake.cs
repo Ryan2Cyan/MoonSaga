@@ -1,11 +1,11 @@
 using System.Collections;
 using UnityEngine;
 
+// Code within this class is responsible for shaking the camera
+// to create a dynamic visual effect:
 namespace Resources.Scripts.Camera{
     public class CameraShake : MonoBehaviour
     {
-        
-        // Add this to a script on the camera
         public void StartShake(float dur, float mag)
         {
             StartCoroutine(Shake(dur, mag));

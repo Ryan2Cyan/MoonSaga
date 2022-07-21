@@ -2,6 +2,8 @@ using Resources.Scripts.Enemies.General;
 using Resources.Scripts.General;
 using UnityEngine;
 
+// Code within this class is responsible for storing additional
+// data unique to the "Bomber" enemy class:
 namespace Resources.Scripts.Enemies.Bomber{
     public class BomberData : EnemyData{
         

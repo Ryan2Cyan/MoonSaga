@@ -4,6 +4,8 @@ using Resources.Scripts.General;
 using Resources.Scripts.Player;
 using UnityEngine;
 
+// Code within this class is a state machine, responsible
+// for the actions of the "Bomber" enemy class"
 namespace Resources.Scripts.Enemies.Bomber{
     public class BomberMovement : MonoBehaviour
     {
@@ -13,9 +15,9 @@ namespace Resources.Scripts.Enemies.Bomber{
         // Scripts:
         private EnemyCollision _enemyColliderScript;
         private PlayerMovement _playerMovementScript;
-        [SerializeField] private RadiusChecker _groundCheckScript;
         private BomberData _bomberDataScript;
         private EnemyRaycast _wallCheckScript;
+        [SerializeField] private RadiusChecker _groundCheckScript;
         
         // Animator property index:
         private static readonly int State = Animator.StringToHash("State");
@@ -28,10 +30,14 @@ namespace Resources.Scripts.Enemies.Bomber{
             _enemyColliderScript = _bomberDataScript._triggerCollider.GetComponent<EnemyCollision>();
             _playerMovementScript = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
             _groundCheckScript = GetComponent<RadiusChecker>();
+            
+            // Set default state:
             _state = enemyMoveState.Walking;
         }
 
         private void Update(){
+            
+            // Update state:
             ProcessStateInput();
             
             // Update animator:
@@ -39,7 +45,8 @@ namespace Resources.Scripts.Enemies.Bomber{
         }
 
         private void FixedUpdate(){
-            // Process all movements:
+            
+            // Process all state movements:
             ProcessStateMovement();
         }
         
@@ -53,13 +60,7 @@ namespace Resources.Scripts.Enemies.Bomber{
         private void WalkingMovement(){
             
             // Move enemy left or right depending on direction:
-            if (_enemyColliderScript._collidingWithPlayer){
-                _enemyColliderScript._collidingWithPlayer = false;
-                _bomberDataScript._rigidbody2D.velocity = new Vector2(0f, 0f);
-                return;
-            }
-            
-            if(_groundCheckScript._collided && !_enemyColliderScript._collidingWithPlayer)
+            if(_groundCheckScript._collided)
                 _bomberDataScript._rigidbody2D.velocity = _bomberDataScript._isFacingRight ? 
                     new Vector2(_bomberDataScript._runSpeed, _bomberDataScript._rigidbody2D.velocity.y) : 
                     new Vector2(-_bomberDataScript._runSpeed, _bomberDataScript._rigidbody2D.velocity.y);
@@ -138,7 +139,7 @@ namespace Resources.Scripts.Enemies.Bomber{
                 SetDefaultState();
                 _bomberDataScript._coolDownTimer = _bomberDataScript._coolDownTime;
                 // Spawn bomb:
-                Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/EnemyWeapons&Items/Bomb"),
+                Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/EnemyWeapons&Items/Contact-Bomb"),
                     new Vector3(transform.position.x, transform.position.y, transform.position.z),
                     Quaternion.identity);
             }

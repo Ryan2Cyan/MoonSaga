@@ -6,20 +6,28 @@ using UnityEngine;
 namespace Resources.Scripts.Camera{
     public class CameraFollow : MonoBehaviour{
         
-        [SerializeField] private Transform _target;
+        private Transform _target;
+        private PlayerMovement _playerMovementScript;
+        private bool _isFacingRight;
         [SerializeField] private Vector2 _offset;
         [Range(0f, 1f)] [SerializeField] private float _smoothSpeed = 0.125f;
-        [SerializeField] private PlayerMovement _playerMovementScript;
-        [SerializeField] private bool _isFacingRight;
         
+
+        private void Awake(){
+            
+            // Fetch components
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            _target = player.transform;
+            _playerMovementScript = player.GetComponent<PlayerMovement>();
+        }
 
         private void FixedUpdate(){
             
             // Check if the player is facing right or left:
             _isFacingRight = _playerMovementScript._isFacingRight;
 
+            // Calculate the desired position of the camera - alter x-axis offset depending on player's direction:
             Vector2 desiredPos = _isFacingRight switch{
-                // Calculate the desired position of the camera - alter x-axis offset depending on player's direction:
                 true => new Vector2(_target.position.x + _offset.x + 1f, _target.position.y + _offset.y),
                 false => new Vector2(_target.position.x + _offset.x - 1f, _target.position.y + _offset.y)
             };

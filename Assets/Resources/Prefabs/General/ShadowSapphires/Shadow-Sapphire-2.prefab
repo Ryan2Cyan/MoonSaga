@@ -72,18 +72,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7444388f310ad804ab299e244fffd5eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _groundedRadius: 0.5
-  _isGrounded: 0
-  _groundCheck: {fileID: 3162467289070259184}
-  _groundLayerMask:
+  _radius: 0.5
+  _collided: 0
+  _transform: {fileID: 3162467289070259184}
+  _layerMask:
     serializedVersion: 2
     m_Bits: 64
-  _ceilingRadius: 0.2
-  _isCeiling: 0
-  _ceilingCheck: {fileID: 0}
-  _ceilingLayerMask:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!212 &3162467287416500007
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -122,8 +116,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1448446891
-  m_SortingLayer: -5
+  m_SortingLayerID: -2081619333
+  m_SortingLayer: -4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 8c626275b8722434d8ae41ff324d4d27, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -170,9 +164,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.00102458, y: -0.13394158}
+  m_Offset: {x: -0.00102458, y: -0.14688742}
   serializedVersion: 2
-  m_Radius: 0.025857901
+  m_Radius: 0.038803745
 --- !u!61 &3162467287416500000
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -242,7 +236,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3162467289070259187}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.134, z: 0}
+  m_LocalPosition: {x: 0, y: -0.1459, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 3162467287416500010}
