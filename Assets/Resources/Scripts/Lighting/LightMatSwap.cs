@@ -1,6 +1,7 @@
-using Resources.Scripts.VFX;
 using UnityEngine;
 
+// Code within this class is responsible for changing material
+// when the connected game object is in light:
 namespace Resources.Scripts.Lighting{
     public class LightMatSwap : MonoBehaviour{
         

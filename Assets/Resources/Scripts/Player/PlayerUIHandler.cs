@@ -95,10 +95,12 @@ namespace Resources.Scripts.Player{
             }
         }
         public void ReduceHitPoint(){
+            
             _gameDataScript.hitPoints--;
             _hitPointSubtractTimer = _hitPointSubtractDelay;
         }
         private void UpdateHitPoints(){
+            
             for (int i = 0; i < _gameDataScript.maxPoints; i++){
                 // Full hit points:
                 if (i < _gameDataScript.hitPoints){

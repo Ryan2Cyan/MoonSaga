@@ -39,7 +39,7 @@ namespace Resources.Scripts.Player{
             }
         }
 
-        private void Update(){
+        private void FixedUpdate(){
             
             // Change the shape of the players trigger collider depending on state:
             UpdateColliderSize();
@@ -75,6 +75,8 @@ namespace Resources.Scripts.Player{
         }
 
         private void UpdateColliderSize(){
+            
+            // Change the size of the player's collider depending on state:
             switch (_playerMovementScript._state){
                 
                 case playerMoveState.Idle:

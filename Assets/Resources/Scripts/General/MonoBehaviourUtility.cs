@@ -37,28 +37,5 @@ namespace Resources.Scripts.General{
                 yield return null;
             
         }
-        
-        // Check whether current object is touching the ground:
-        public void GroundCheck(ref bool isGrounded, Transform groundCheck, float radius, LayerMask groundLayerMask){
-            bool wasGrounded = isGrounded;
-            isGrounded = false;
-            
-            // Store all colliders within ground-check's radius, on the ground layer:
-            Collider2D[] collider2Ds = Physics2D.OverlapCircleAll(
-                groundCheck.position,
-                radius,
-                groundLayerMask
-            );
-            
-            // Check if no ground is detected:
-            if (collider2Ds.Length != 0){
-                // Check all detected colliders for the ground:
-                foreach (Collider2D colliderArg in collider2Ds){
-                    if (colliderArg.gameObject != gameObject){
-                        isGrounded = true;
-                    }
-                }
-            }
-        }
     }
 }

@@ -2,18 +2,25 @@ using Resources.Scripts.General;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering.Universal;
 
+// Code within this class is responsible for lerping the color
+// of a 2D light between a target color, and the light's original color:
 namespace Resources.Scripts.Lighting{
     public class LightColorLerp : MonoBehaviour{
 
         [SerializeField] private float _lerpTime = 5.0f;
         [SerializeField] private float _lerpSpeed;
-        [SerializeField] private Light2D _light;
         [SerializeField] private Color _targetColor;
+        private Light2D _light;
         private Color _originalColor;
         private bool _lerpTarget = true;
         private float _lerpTimer;
 
         private void Awake(){
+            
+            // Fetch components:
+            _light = GetComponent<Light2D>();
+            
+            // Set values:
             _originalColor = _light.color;
             _lerpTimer = _lerpTime;
         }

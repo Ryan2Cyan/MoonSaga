@@ -1,16 +1,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Code within this class is responsible detecting whether or not
+// a specified position is touching light:
 namespace Resources.Scripts.Lighting{
     public class LightDetection : MonoBehaviour
     {
         
         [SerializeField] private float _lightDetectionDistance = 90.0f;
-        [SerializeField] internal bool _inLightLOS;
-        [SerializeField] internal bool _inLightCollider;
         [SerializeField] internal bool _inLight;
         [SerializeField] private GameObject[] _sceneLights;
-        [SerializeField] private bool _hitObstacle;
+        private bool _inLightLOS;
+        private bool _inLightCollider;
+        private bool _hitObstacle;
         
         private void Awake(){
             
@@ -23,9 +25,9 @@ namespace Resources.Scripts.Lighting{
             _inLight = false;
             _hitObstacle = false;
             
-            // Cast a ray from player to in-range light source:
+            // Check if light is within range:
             foreach (GameObject inRangeLightSource in FindLightsInRange()){
-                // Check if the player is in line-of-sight of this light source:
+                // Check if in line-of-sight:
                 RayCastLightCheck(inRangeLightSource);
             }
 
@@ -35,18 +37,15 @@ namespace Resources.Scripts.Lighting{
         
         private IEnumerable<GameObject> FindLightsInRange(){
             
-            // Check how far each light is from the player, if below max distance, add to list:
+            // Check how far each light is from the player, if within specified distance, add to list:
             List<GameObject> inRangeLights = new List<GameObject>();
-            
             foreach (GameObject lightSource in _sceneLights){
                 float distance = Vector2.Distance(transform.position, lightSource.transform.position);
-                if (distance < _lightDetectionDistance){
+                if (distance < _lightDetectionDistance)
                     inRangeLights.Add(lightSource);
-                }
             }
             return inRangeLights;
         }
-
         private void RayCastLightCheck(GameObject lightSource){
             
             // Calculate direction to cast the ray:
@@ -57,27 +56,21 @@ namespace Resources.Scripts.Lighting{
             foreach (RaycastHit2D hitValue in hits){
                 // Check for any game objects:
                 if (hitValue.transform.gameObject != null){
-                    // Hit itself [skip]:
                     if (hitValue.transform.gameObject == gameObject)
-                        continue;
-                    // Hit player [skip]:
+                        continue; // Hit itself [skip]:
                     if (hitValue.transform.gameObject.CompareTag("Player"))
-                        continue;
-                    
+                        continue; // Hit player [skip]:
                     if (hitValue.transform.gameObject.CompareTag("Obstacle"))
                         _hitObstacle = true;
                 }   
             }
             // If the object has not hit an obstacle, they are in the light:
-            if (!_hitObstacle)
-                _inLightLOS = true;
+            _inLightLOS = !_hitObstacle;
         }
-
         private void OnTriggerEnter2D(Collider2D other){
             if(other.transform.gameObject.CompareTag("Light"))
                 _inLightCollider = true;
         }
-        
         private void OnTriggerExit2D(Collider2D other){
             if(other.transform.gameObject.CompareTag("Light"))
                 _inLightCollider = false;

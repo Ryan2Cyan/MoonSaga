@@ -1,6 +1,8 @@
 using Resources.Scripts.General;
 using UnityEngine;
 
+// Code within this class is responsible for modifying the
+// player's sprites whenever they have i-frames:
 namespace Resources.Scripts.Player{
     public class IFramesVFX : MonoBehaviour{
         
@@ -20,19 +22,19 @@ namespace Resources.Scripts.Player{
             // Fetch components:
             _playerMovementScript = transform.parent.GetComponent<PlayerMovement>();
             _spriteRenderer = GetComponent<SpriteRenderer>();
-
         }
 
         private void Update(){
 
             // Flash when in i frames:
-            _lerpTimer = _lerpTime;
             IFramesFlash();
         }
         
         private void IFramesFlash(){
+            
             // If player is in i frames, flash black:
             if (_playerMovementScript._inIFrames){
+                _lerpTimer = _lerpTime;
                 _spriteRenderer.color = UtilityFunctions.TwoColorLerpOverTime(
                         _spriteRenderer.color,
                         Color.white,

@@ -1,4 +1,5 @@
 using Resources.Scripts.General;
+using Resources.Scripts.Managers;
 using Resources.Scripts.Player;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -72,6 +73,8 @@ namespace Resources.Scripts.VFX{
             
             // Check for collision with player:
             if (_collided){
+                Debug.Log("Call");
+                // Increment number of shadow sapphires:
                 GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerUIHandler>().
                     IncrementShadowSapphires(_value);
                 Destroy(gameObject);
@@ -79,10 +82,7 @@ namespace Resources.Scripts.VFX{
         }
         
         private void OnCollisionEnter2D(Collision2D other){
-            // if (other.gameObject.CompareTag("Platform") || other.gameObject.CompareTag("PlatformEdge") ){
-            //     _rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
-            // }
-
+            
             if (other.gameObject.CompareTag("Player")){
                 Destroy(gameObject);
             }
