@@ -111,6 +111,7 @@ namespace Resources.Scripts.Player
         private void IdleInput(){
 
             WalkCheck();
+            FallCheck();
             JumpCheck();
             DashCheck();
             DamagedCheck();
@@ -122,6 +123,7 @@ namespace Resources.Scripts.Player
         private void WalkingInput(){
 
             IdleCheck();
+            FallCheck();
             JumpCheck();
             DashCheck();
             DamagedCheck();
@@ -475,6 +477,11 @@ namespace Resources.Scripts.Player
             // Check if the player is moving on the x-axis [Walking]:
             if (_horizontalInput < 0.0f || _horizontalInput > 0.0f && _groundCheckScript._collided)
                 _state = playerMoveState.Walking;
+        }
+
+        private void FallCheck(){
+            if (!_groundCheckScript._collided)
+                _state = playerMoveState.AirControl;
         }
         private void JumpCheck(){
             // If player presses jump button [Jump]:

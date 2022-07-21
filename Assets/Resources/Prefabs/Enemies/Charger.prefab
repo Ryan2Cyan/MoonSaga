@@ -57,7 +57,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _state: 0
   _playerRaycastScript: {fileID: 8882145129497845799}
-  _obstacleRaycastScript: {fileID: 8882145129497845798}
+  _wallCheckScript: {fileID: 8882145129497845798}
 --- !u!114 &8882145129497845796
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// Code within this class is responsible for casting a ray in front
+// of an enemy (at a specified length), to detect a specified target:
 namespace Resources.Scripts.Enemies.General{
     public class EnemyRaycast : MonoBehaviour
     {

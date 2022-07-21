@@ -1,6 +1,8 @@
 using Resources.Scripts.General;
 using UnityEngine;
 
+// Code within this class is responsible for detecting the edge of a
+// platform, and flipping the enemy to prevent it falling:
 namespace Resources.Scripts.Enemies.General{
     public class EdgeChecker : MonoBehaviour{
         
@@ -8,16 +10,11 @@ namespace Resources.Scripts.Enemies.General{
         private void Awake(){
             
             // Fetch Components:
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
             _enemyDataScript = GetComponent<EnemyData>();
-            
-            // Ignore collisions with player:
-            Physics2D.IgnoreCollision(player.GetComponent<CircleCollider2D>(), GetComponent<Collider2D>());
-            
+
             // Check if enemy is facing left or right:
             if (transform.localScale.x < 0f)
                 _enemyDataScript._isFacingRight = true;
-            
         }
 
         private void OnCollisionEnter2D(Collision2D other){

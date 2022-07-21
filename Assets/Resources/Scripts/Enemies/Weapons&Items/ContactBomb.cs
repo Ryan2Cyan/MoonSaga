@@ -17,16 +17,14 @@ namespace Resources.Scripts.Enemies{
 
             // Set timer:
             _explosionTimer = _explosionTime;
-            
-            
+
             // Calc angle and direction to shoot the bomb:
             float theta = CalcShootAngleDiffY();
-            Vector2 norm = _playerTransform.position - transform.position;
-            Vector2 shootVec = Vector2.zero;
-            shootVec.x = norm.x >= 0f ? shootVec.x = Mathf.Cos(theta) + Random.Range(-0f, _xMod) : 
-                shootVec.x = -Mathf.Cos(theta) - Random.Range(-0f, _xMod);
-            shootVec.y = Mathf.Sin(theta);
-            // Multiply by velocity (shoot):
+            Vector2 shootVec = new Vector2(
+                shootVec.x = _playerTransform.position.x - transform.position.x >= 0f
+                    ? shootVec.x = Mathf.Cos(theta) + Random.Range(-0f, _xMod)
+                    : shootVec.x = -Mathf.Cos(theta) - Random.Range(-0f, _xMod),
+                shootVec.y = Mathf.Sin(theta));
             _rigidbody2D.velocity = shootVec * _initVel;
         }
 
@@ -41,9 +39,12 @@ namespace Resources.Scripts.Enemies{
         }
 
         private float CalcShootAngleDiffY(){
+            
+            // Calculate the distance between target and transform:
             float x = Mathf.Abs(_playerTransform.position.x - transform.position.x);
             float y = Mathf.Abs(_playerTransform.position.y - transform.position.y);
 
+            // Calculate the angle required to hit with projectile:
             float pt1 = -Physics.gravity.y * Mathf.Pow(x, 2) / Mathf.Pow(_initVel, 2) - y;
             float pt2 = pt1 / Mathf.Sqrt(Mathf.Pow(y, 2) + Mathf.Pow(x, 2));
             float pt3 = Mathf.Acos(pt2);
@@ -53,12 +54,13 @@ namespace Resources.Scripts.Enemies{
                 float theta = pt4 / 2f;
                 return theta;
             }
+            // In case of NaN error, return 1:
             return 1;
         }
         
         private void OnTriggerEnter2D(Collider2D other){
             
-            // Collision with player [Explode]:
+            // Collision with player or ground [Explode]:
             if (other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Platform")
             || other.gameObject.CompareTag("PlatformEdge")){
                 // Spawn Explosion:

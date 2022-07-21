@@ -4,6 +4,8 @@ using Resources.Scripts.General;
 using Resources.Scripts.Player;
 using UnityEngine;
 
+// Code within this class is a state machine, responsible
+// for the actions of the "Charger" enemy class":
 namespace Resources.Scripts.Enemies.Charger{
     public class ChargerMovement : MonoBehaviour
     {
@@ -17,7 +19,7 @@ namespace Resources.Scripts.Enemies.Charger{
         private RadiusChecker _groundCheckScript;
         private ChargerData _chargerDataScript;
         [SerializeField] private EnemyRaycast _playerRaycastScript;
-        [SerializeField] private EnemyRaycast _obstacleRaycastScript;
+        [SerializeField] private EnemyRaycast _wallCheckScript;
 
         // Animator property index:
         private static readonly int State = Animator.StringToHash("State");
@@ -30,10 +32,14 @@ namespace Resources.Scripts.Enemies.Charger{
             _enemyColliderScript = _chargerDataScript._triggerCollider.GetComponent<EnemyCollision>();
             _playerMovementScript = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerMovement>();
             _groundCheckScript = GetComponent<RadiusChecker>();
+            
+            // Set default state:
             _state = enemyMoveState.Walking;
         }
 
         private void Update(){
+            
+            // Update state:
             ProcessStateInput();
             
             // Update animator:
@@ -41,7 +47,8 @@ namespace Resources.Scripts.Enemies.Charger{
         }
 
         private void FixedUpdate(){
-            // Process all movements:
+            
+            // Process all state movements:
             ProcessStateMovement();
         }
         
@@ -53,16 +60,9 @@ namespace Resources.Scripts.Enemies.Charger{
             HitWallCheck();
         }
         private void WalkingMovement(){
-            
-            // If colliding with player, stop moving:
-            if (_enemyColliderScript._collidingWithPlayer){
-                _enemyColliderScript._collidingWithPlayer = false;
-                _chargerDataScript._rigidbody2D.velocity = new Vector2(0f, 0f);
-                return;
-            }
-            
+
             // Move enemy left or right depending on direction:
-            if(_groundCheckScript._collided && !_enemyColliderScript._collidingWithPlayer)
+            if(_groundCheckScript._collided)
                 _chargerDataScript._rigidbody2D.velocity = _chargerDataScript._isFacingRight ? 
                     new Vector2(_chargerDataScript._runSpeed, _chargerDataScript._rigidbody2D.velocity.y) : 
                     new Vector2(-_chargerDataScript._runSpeed, _chargerDataScript._rigidbody2D.velocity.y);
@@ -107,8 +107,8 @@ namespace Resources.Scripts.Enemies.Charger{
             
             // If the enemy hits the ground, prevent them from moving, then disable the script:
             if (_groundCheckScript._collided){
+                _chargerDataScript._sprite.GetComponent<SpriteRenderer>().sortingLayerName = "Far-Midground";
                 _chargerDataScript._rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
-                _chargerDataScript._triggerCollider.SetActive(false);
                 GetComponent<CircleCollider2D>().enabled = false;
                 _groundCheckScript.enabled = false;
                 enabled = false;
@@ -120,12 +120,13 @@ namespace Resources.Scripts.Enemies.Charger{
             DamagedCheck();
             DeathCheck();
             
-            _chargerDataScript._chargeTimer -= Time.deltaTime;
-            if (_chargerDataScript._chargeTimer <= 0f){
+            // Once timer expires, check if player is still in front of enemy:
+            _chargerDataScript._chargePauseTimer -= Time.deltaTime;
+            if (_chargerDataScript._chargePauseTimer <= 0f){
                 // Charge at player:
                 if (_playerRaycastScript._hitTarget){
-                    _state = enemyMoveState.Charge;
                     _chargerDataScript._chargeTimer = _chargerDataScript._chargeTime;
+                    _state = enemyMoveState.Charge;
                 }
                 // Player is no longer there, return to walking:
                 else
@@ -147,13 +148,12 @@ namespace Resources.Scripts.Enemies.Charger{
             // Once timer has ran out, check if player is still in front of charger:
             _chargerDataScript._chargeTimer -= Time.deltaTime;
             if (_chargerDataScript._chargeTimer <= 0f){
-                if (_playerRaycastScript._hitTarget){
-                    // Continue charge:
+                // Continue charge [Charge]:
+                if (_playerRaycastScript._hitTarget)
                     _chargerDataScript._chargeTimer = _chargerDataScript._chargeTime;
-                }
+                // Stop charge [Pause]:
                 else{
-                    // Stop charge:
-                    _chargerDataScript._chargeTimer = _chargerDataScript._chargePauseTime;
+                    _chargerDataScript._chargePauseTimer = _chargerDataScript._chargePauseTime;
                     _state = enemyMoveState.Pause;
                 }
             }
@@ -161,15 +161,8 @@ namespace Resources.Scripts.Enemies.Charger{
         }
         private void ChargeMovement(){
             
-            // If colliding with player, stop moving:
-            if (_enemyColliderScript._collidingWithPlayer){
-                _enemyColliderScript._collidingWithPlayer = false;
-                _chargerDataScript._rigidbody2D.velocity = new Vector2(0f, 0f);
-                return;
-            }
-            
             // Charge left or right depending on direction:
-            if(_groundCheckScript._collided && !_enemyColliderScript._collidingWithPlayer)
+            if(_groundCheckScript._collided)
                 _chargerDataScript._rigidbody2D.velocity = _chargerDataScript._isFacingRight ? 
                     new Vector2(_chargerDataScript._chargeSpeed, _chargerDataScript._rigidbody2D.velocity.y) : 
                     new Vector2(-_chargerDataScript._chargeSpeed, _chargerDataScript._rigidbody2D.velocity.y);
@@ -177,32 +170,32 @@ namespace Resources.Scripts.Enemies.Charger{
         
         private void HitWallInput(){
             
-            // Knock back timer:
+            // Once timer (knock back) expires [Stunned]:
             _chargerDataScript._knockBackTimer -= Time.deltaTime;
             if (_chargerDataScript._knockBackTimer <= 0f){
-                _state = enemyMoveState.Stunned;
                 _chargerDataScript._stunTimer = _chargerDataScript._stunTime;
+                _state = enemyMoveState.Stunned;
             }
         }
         private void HitWallMovement(){
-            // Knock back the player:
+            
+            // Knock back the charger:
             _chargerDataScript._rigidbody2D.velocity =
                 _chargerDataScript._isFacingRight ? 
                     new Vector2(-_chargerDataScript._knockBack.x, _chargerDataScript._knockBack.y) : 
                     new Vector2(_chargerDataScript._knockBack.x, _chargerDataScript._knockBack.y);
-            
         }
         
         private void StunnedInput(){
 
-            // Knock back timer:
+            // Once timer expires [Recover]
             _chargerDataScript._stunTimer -= Time.deltaTime;
             if (_chargerDataScript._stunTimer <= 0f){
-                // Flip enemy:
+                // Flip enemy and re-activate armour collider:
                 transform.localScale = UtilityFunctions.Flip(transform.localScale, 
                     ref _chargerDataScript._isFacingRight);
                 _chargerDataScript._armourCollider.enabled = true;
-                _chargerDataScript._chargeTimer = _chargerDataScript._chargePauseTime;
+                _chargerDataScript._chargePauseTimer = _chargerDataScript._chargePauseTime;
                 _state = enemyMoveState.Recover;
             }
             
@@ -223,10 +216,9 @@ namespace Resources.Scripts.Enemies.Charger{
             
             DamagedCheck();
 
-            _chargerDataScript._chargeTimer -= Time.deltaTime;
-            if (_chargerDataScript._chargeTimer <= 0f){
+            _chargerDataScript._chargePauseTimer -= Time.deltaTime;
+            if (_chargerDataScript._chargePauseTimer <= 0f)
                 SetDefaultState();
-            }
         }
         private void RecoverMovement(){
             
@@ -314,33 +306,31 @@ namespace Resources.Scripts.Enemies.Charger{
             
         }
         private void DeathCheck(){
+            
             // If HP is 0 [Death]:
             if (_chargerDataScript._hp <= 0f){
-                
-                _state = enemyMoveState.Death;
-                _chargerDataScript._isActive = false;
-                
-                // Swap to death sprite:
                 _chargerDataScript._triggerCollider.SetActive(false);
+                _chargerDataScript._isActive = false;
                 _chargerDataScript._knockBackTimer = _chargerDataScript._knockBackDelay;
+                _state = enemyMoveState.Death;
             }
         }
         private void ChargeCheck(){
+            
             if (_playerRaycastScript._hitTarget){
+                _chargerDataScript._chargePauseTimer = _chargerDataScript._chargePauseTime;
                 _state = enemyMoveState.Pause;
-                _chargerDataScript._chargeTimer = _chargerDataScript._chargePauseTime;
             }
         }
         private void HitWallCheck(){
-            switch (_obstacleRaycastScript._hitTarget){
-                
-                // If charging, enemy is staggered:
+            
+            switch (_wallCheckScript._hitTarget){
+                // If charging [HitWall -> Stunned]:
                 case true when _state == enemyMoveState.Charge:
-                    _state = enemyMoveState.HitWall;
                     _chargerDataScript._knockBackTimer = _chargerDataScript._knockBackDelay;
                     _chargerDataScript._armourCollider.enabled = false;
                     _chargerPfxSpawnerScript.SpawnArmourSparkPfx();
-                    
+                    _state = enemyMoveState.HitWall;
                     break;
                 // Otherwise just flip:
                 case true:

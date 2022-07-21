@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// Code within this class contains functions relating to spawning
+// particle effects for all classes of enemies:
 namespace Resources.Scripts.Enemies.General{
     public class EnemyPFXSpawner : MonoBehaviour{
 

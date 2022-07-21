@@ -5,7 +5,7 @@ using Resources.Scripts.Player;
 using UnityEngine;
 
 // Code within this class is a state machine, responsible
-// for the actions of the "Bomber" enemy class"
+// for the actions of the "Bomber" enemy class":
 namespace Resources.Scripts.Enemies.Bomber{
     public class BomberMovement : MonoBehaviour
     {
@@ -105,8 +105,8 @@ namespace Resources.Scripts.Enemies.Bomber{
             
             // If the enemy hits the ground, prevent them from moving, then disable the script:
             if (_groundCheckScript._collided){
+                _bomberDataScript._sprite.GetComponent<SpriteRenderer>().sortingLayerName = "Far-Midground";
                 _bomberDataScript._rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
-                _bomberDataScript._triggerCollider.SetActive(false);
                 GetComponent<CircleCollider2D>().enabled = false;
                 _groundCheckScript.enabled = false;
                 enabled = false;
@@ -116,6 +116,7 @@ namespace Resources.Scripts.Enemies.Bomber{
         private void AgroInput(){
             
             DamagedCheck();
+            
             // Once timer expires [Shoot]:
             _bomberDataScript._agroTimer -= Time.deltaTime;
             if (_bomberDataScript._agroTimer <= 0f){
@@ -131,17 +132,17 @@ namespace Resources.Scripts.Enemies.Bomber{
         }
         
         private void ShootInput(){
+            
             DamagedCheck();
             
-            // Once timer expires [Walking]:
+            // Once timer expires shoot a bomb, then [Walking]:
             _bomberDataScript._shootTimer -= Time.deltaTime;
             if (_bomberDataScript._shootTimer <= 0f){
-                SetDefaultState();
-                _bomberDataScript._coolDownTimer = _bomberDataScript._coolDownTime;
-                // Spawn bomb:
                 Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/EnemyWeapons&Items/Contact-Bomb"),
                     new Vector3(transform.position.x, transform.position.y, transform.position.z),
                     Quaternion.identity);
+                _bomberDataScript._coolDownTimer = _bomberDataScript._coolDownTime;
+                SetDefaultState();
             }
 
         }
@@ -152,7 +153,9 @@ namespace Resources.Scripts.Enemies.Bomber{
         }
         
         private void IdleInput(){
+            
             DamagedCheck();
+            
             // Until timer expires, enemy can't attack:
             _bomberDataScript._coolDownTimer -= Time.deltaTime;
             if (_bomberDataScript._coolDownTimer <= 0f)
@@ -229,18 +232,15 @@ namespace Resources.Scripts.Enemies.Bomber{
             // Check if the enemy has been hit by the player:
             if (_enemyColliderScript._collidingWithPlayer && _playerMovementScript._state == playerMoveState.DashHit)
                 _state = enemyMoveState.Damaged;
-            
         }
         private void DeathCheck(){
+            
             // If HP is 0 [Death]:
             if (_bomberDataScript._hp <= 0f){
-                
-                _state = enemyMoveState.Death;
-                _bomberDataScript._isActive = false;
-                
-                // Swap to death sprite:
                 _bomberDataScript._triggerCollider.SetActive(false);
+                _bomberDataScript._isActive = false;
                 _bomberDataScript._knockBackTimer = _bomberDataScript._knockBackDelay;
+                _state = enemyMoveState.Death;
             }
         }
         private void HitWallCheck(){
@@ -250,13 +250,12 @@ namespace Resources.Scripts.Enemies.Bomber{
                 transform.localScale = UtilityFunctions.Flip(transform.localScale, 
                     ref _bomberDataScript._isFacingRight);
         }
-
         private void AgroCheck(){
             
             // Check if the player is in range:
             if (_bomberDataScript._playerRadiusCheckerScript._collided){
-                _state = enemyMoveState.Agro;
                 _bomberDataScript._agroTimer = _bomberDataScript._agroTime;
+                _state = enemyMoveState.Agro;
             }
         }
     }

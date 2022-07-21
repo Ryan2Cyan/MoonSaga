@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// This script is responsible for detecting all general collisions required
+// by all enemies. This includes death zones, the player, and others:
 namespace Resources.Scripts.Enemies.General{
     public class EnemyCollision : MonoBehaviour{
         
@@ -25,6 +27,7 @@ namespace Resources.Scripts.Enemies.General{
             if (other.gameObject.CompareTag("Player"))
                 _collidingWithPlayer = true;
 
+            // Collision with death zone:
             if (other.gameObject.CompareTag("DeathZone")){
                 transform.parent.GetComponent<EnemyData>()._hp = 0;
             }

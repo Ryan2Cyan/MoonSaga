@@ -3,6 +3,8 @@ using Resources.Scripts.Camera;
 using Resources.Scripts.General;
 using UnityEngine;
 
+// Code within this class is responsible for storing fundamental
+// data that each class of enemy requires:
 namespace Resources.Scripts.Enemies.General{
     public class EnemyData : MonoBehaviour{
 
@@ -12,21 +14,21 @@ namespace Resources.Scripts.Enemies.General{
         private CameraShake _cameraShakeScript;
         
         // Health:
-        [Range(0f, 5000f)][SerializeField] internal float _maxHp;
+        [Range(0f, 500f)][SerializeField] internal float _maxHp;
         [SerializeField] internal float _hp;
 
         // Loot drops:
-        [Range(0f, 1f)][SerializeField] private float firstDropThreshold;
-        [Range(0f, 1f)][SerializeField] private float secondDropThreshold;
-        [SerializeField] private List<int> firstDrop;
-        [SerializeField] private List<int> secondDrop;
-        [SerializeField] private List<int> deathDrop;
+        [Range(0f, 1f)][SerializeField] private float _firstDropThreshold;
+        [Range(0f, 1f)][SerializeField] private float _secondDropThreshold;
+        [SerializeField] private List<int> _firstDrop;
+        [SerializeField] private List<int> _secondDrop;
+        [SerializeField] private List<int> _deathDrop;
         private bool _spawnedFirstLoot;
         private bool _spawnedSecondLoot;
         private bool _spawnedDeathLoot;
         
         // Movement:
-        [Range(0, 100f)] [SerializeField] internal float _runSpeed = 37.5f;
+        [Range(0, 100f)] [SerializeField] internal float _runSpeed = 10f;
         [SerializeField] internal bool _isFacingRight = true;
         
         // Components:
@@ -59,12 +61,12 @@ namespace Resources.Scripts.Enemies.General{
         }
         private void Update(){
             
-            ClampHp();
             SpawnLoot();
         }
 
         public void DecrementHp(float value){
             _hp -= value;
+            ClampHp();
         }
         private void ClampHp(){
             if (_hp < 0f)
@@ -72,13 +74,13 @@ namespace Resources.Scripts.Enemies.General{
             if (_hp > _maxHp)
                 _hp = _maxHp;
         }
-
         private void SpawnLoot(){
+            
             // First threshold:
-            if (_hp < _maxHp * firstDropThreshold && !_spawnedFirstLoot){
-                SpawnSapphires(0, firstDrop[0]);
-                SpawnSapphires(1, firstDrop[1]);
-                SpawnSapphires(2, firstDrop[2]);
+            if (_hp < _maxHp * _firstDropThreshold && !_spawnedFirstLoot){
+                SpawnSapphires(0, _firstDrop[0]);
+                SpawnSapphires(1, _firstDrop[1]);
+                SpawnSapphires(2, _firstDrop[2]);
                 _spawnedFirstLoot = true;
                 // VFX:
                 _enemyPfxSpawnerScript.SpawnDamagedPfx();
@@ -86,10 +88,10 @@ namespace Resources.Scripts.Enemies.General{
                 _cameraShakeScript.StartShake(0.2f, 0.3f);
             }
             // Second threshold:
-            if (_hp < _maxHp * secondDropThreshold && !_spawnedSecondLoot){
-                SpawnSapphires(0, secondDrop[0]);
-                SpawnSapphires(1, secondDrop[1]);
-                SpawnSapphires(2, secondDrop[2]);
+            if (_hp < _maxHp * _secondDropThreshold && !_spawnedSecondLoot){
+                SpawnSapphires(0, _secondDrop[0]);
+                SpawnSapphires(1, _secondDrop[1]);
+                SpawnSapphires(2, _secondDrop[2]);
                 _spawnedSecondLoot = true;
                 // VFX:
                 _enemyPfxSpawnerScript.SpawnDamagedPfx();
@@ -98,9 +100,9 @@ namespace Resources.Scripts.Enemies.General{
             }
             // Death threshold:
             if (_hp <= 0f && !_spawnedDeathLoot){
-                SpawnSapphires(0, deathDrop[0]);
-                SpawnSapphires(1, deathDrop[1]);
-                SpawnSapphires(2, deathDrop[2]);
+                SpawnSapphires(0, _deathDrop[0]);
+                SpawnSapphires(1, _deathDrop[1]);
+                SpawnSapphires(2, _deathDrop[2]);
                 _spawnedDeathLoot = true;
                 // VFX:
                 _enemyPfxSpawnerScript.SpawnDamagedPfx();
@@ -108,7 +110,6 @@ namespace Resources.Scripts.Enemies.General{
                 _cameraShakeScript.StartShake(0.2f, 0.3f);
             }
         }
-
         private void SpawnSapphires(int type, int amount){
             if (amount > 0){
                 for (int i = 0; i < amount; i++){
