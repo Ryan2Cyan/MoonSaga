@@ -464,6 +464,18 @@ namespace Resources.Scripts.Player
                 _playerPfxSpawnerScript.SpawnDamagedPfx();
                 _state = playerMoveState.Damaged;
             }
+            
+            // Player touched active damage - they take damage:
+            if (_playerCollisionScript._activeDamageCollision && !_playerDataScript._inIFrames){
+                _playerDataScript._knockBackTimer = _playerDataScript._damagedKnockBackDelay;
+                _monoBehaviourUtilityScript.StartSleep(0.2f);
+                _cameraShakeScript.StartShake(0.1f, 0.4f);
+                _playerUIHandler.ReduceHitPoint();
+                _playerDataScript._damageIFramesTimer = _playerDataScript._damageIFrames;
+                _playerDataScript._inIFrames = true;
+                _playerPfxSpawnerScript.SpawnDamagedPfx();
+                _state = playerMoveState.Damaged;
+            }
 
             // Check for i frames:
             IFramesCheck();

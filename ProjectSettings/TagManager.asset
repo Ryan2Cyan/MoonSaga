@@ -13,6 +13,8 @@ TagManager:
   - EnemyTrigger
   - DeathZone
   - EnemyArmour
+  - PFXParent
+  - ActiveDamage
   layers:
   - Default
   - TransparentFX

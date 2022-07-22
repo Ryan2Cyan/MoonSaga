@@ -34,6 +34,9 @@ namespace Resources.Scripts.Enemies{
             _explosionTimer -= Time.deltaTime;
             if (_explosionTimer <= 0f){
                 // Spawn Explosion:
+                Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/EnemyWeapons&Items/Explosion-0"),
+                    new Vector3(transform.position.x, transform.position.y, transform.position.z),
+                    Quaternion.identity);
                 Destroy(gameObject);
             }
         }
@@ -64,6 +67,9 @@ namespace Resources.Scripts.Enemies{
             if (other.gameObject.CompareTag("Player") || other.gameObject.CompareTag("Platform")
             || other.gameObject.CompareTag("PlatformEdge")){
                 // Spawn Explosion:
+                Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/EnemyWeapons&Items/Explosion-0"),
+                    new Vector3(transform.position.x, transform.position.y, transform.position.z),
+                    Quaternion.identity);
                 Destroy(gameObject);
             }
         }

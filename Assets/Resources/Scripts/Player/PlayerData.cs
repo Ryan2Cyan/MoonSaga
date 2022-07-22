@@ -54,6 +54,7 @@ namespace Resources.Scripts.Player{
         internal float _damageIFramesTimer;
 
         private void Awake(){
+            
             _rigidbody2D = GetComponent<Rigidbody2D>();
         }
     }

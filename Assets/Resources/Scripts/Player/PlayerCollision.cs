@@ -15,6 +15,7 @@ namespace Resources.Scripts.Player{
         private GameObject[] _sceneEnemies;
         internal bool _enemyCollision;
         internal bool _enemyArmourCollision;
+        internal bool _activeDamageCollision;
         
         // Collider values:
         private BoxCollider2D _boxCollider2D;
@@ -57,6 +58,10 @@ namespace Resources.Scripts.Player{
                     _enemyCollision = true;
             }
             
+            if (other.gameObject.CompareTag("ActiveDamage")){
+                _activeDamageCollision = true;
+            }
+            
             // Collision with enemy armour (causes defection):
             if (other.gameObject.CompareTag("EnemyArmour")){
                 _enemyArmourCollision = true;
@@ -71,6 +76,10 @@ namespace Resources.Scripts.Player{
             
             if (other.gameObject.CompareTag("EnemyTrigger"))
                 _enemyCollision = false;
+            
+            if (other.gameObject.CompareTag("ActiveDamage")){
+                _activeDamageCollision = false;
+            }
             
             if (other.gameObject.CompareTag("EnemyArmour")){
                 _enemyArmourCollision = false;
