@@ -7,7 +7,7 @@ namespace Resources.Scripts.Player{
     public class IFramesVFX : MonoBehaviour{
         
         // Scripts:
-        private PlayerMovement _playerMovementScript;
+        private PlayerData _playerDataScript;
 
         // I frames values:
         private SpriteRenderer _spriteRenderer;
@@ -20,7 +20,7 @@ namespace Resources.Scripts.Player{
         private void Awake(){
             
             // Fetch components:
-            _playerMovementScript = transform.parent.GetComponent<PlayerMovement>();
+            _playerDataScript = transform.parent.GetComponent<PlayerData>();
             _spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
@@ -33,7 +33,7 @@ namespace Resources.Scripts.Player{
         private void IFramesFlash(){
             
             // If player is in i frames, flash black:
-            if (_playerMovementScript._inIFrames){
+            if (_playerDataScript._inIFrames){
                 _lerpTimer = _lerpTime;
                 _spriteRenderer.color = UtilityFunctions.TwoColorLerpOverTime(
                         _spriteRenderer.color,

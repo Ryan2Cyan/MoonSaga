@@ -3,8 +3,8 @@ using Resources.Scripts.Enemies.General;
 using Resources.Scripts.VFX;
 using UnityEngine;
 
-// Code within this class is responsible (only) for collisions the player
-// may have with object or enemies:
+// Code within this class is responsible for collisions the player may have with objects
+// or enemies, as well as updating the size of the collider based on the player's state:
 namespace Resources.Scripts.Player{
     public class PlayerCollision : MonoBehaviour{
 
@@ -17,8 +17,8 @@ namespace Resources.Scripts.Player{
         internal bool _enemyArmourCollision;
         
         // Collider values:
-        [SerializeField] private BoxCollider2D _boxCollider2D;
-        [SerializeField] private CircleCollider2D _circleCollider2D;
+        private BoxCollider2D _boxCollider2D;
+        private CircleCollider2D _circleCollider2D;
         [SerializeField] private Vector2 _originalColliderSize;
         [SerializeField] private Vector2 _originalColliderOffset;
         [SerializeField] private Vector2 _dashColliderSize;
@@ -29,7 +29,10 @@ namespace Resources.Scripts.Player{
         private void Awake(){
             
             // Fetch components:
+            _boxCollider2D = GetComponent<BoxCollider2D>();
+            _circleCollider2D = transform.parent.GetComponent<CircleCollider2D>();
             _playerMovementScript = transform.parent.gameObject.GetComponent<PlayerMovement>();
+            
             // Ignore collision with enemy ground collider (circle colliders):
             _sceneEnemies = GameObject.FindGameObjectsWithTag("Enemy");
             if (_sceneEnemies.Length > 0){

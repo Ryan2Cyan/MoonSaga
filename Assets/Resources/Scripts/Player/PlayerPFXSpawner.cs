@@ -6,13 +6,14 @@ using UnityEngine;
 // effects in relation to the player model:
 namespace Resources.Scripts.Player{
     public class PlayerPFXSpawner : MonoBehaviour{
+        
         // Scripts:
-        [SerializeField] private PlayerMovement _playerMovementScript;
-        [SerializeField] private LightDetection _lightDetectionScript;
+        private PlayerData _playerDataScript;
+        private LightDetection _lightDetectionScript;
         [SerializeField] private RadiusChecker _groundCheckScript;
         
         // PFX Parent:
-        [SerializeField] private Transform _pfxParent;
+        private Transform _pfxParent;
         
         // Values:
         [SerializeField] private float _dashOffsetX = 2f;
@@ -20,15 +21,25 @@ namespace Resources.Scripts.Player{
         [SerializeField] private float _doubleJumpOffsetX = 1f;
         [SerializeField] private float _doubleJumpOffsetY = 2f;
 
+
+        private void Awake(){
+            
+            // Fetch components:
+            _playerDataScript = GetComponent<PlayerData>();
+            _lightDetectionScript = GetComponent<LightDetection>();
+            _pfxParent = GameObject.FindGameObjectWithTag("PFXParent").transform;
+        }
+
         internal void SpawnLandPfx(){
-            // If player in light, spawn light leaves:
+            
+            // Spawn light leaves:
             if (_lightDetectionScript._inLight){
                 Instantiate(UnityEngine.Resources.Load<GameObject>
                         ("Prefabs/Environment/CelestialGrove/PFX/Land-Leaves-Light"),
                     _groundCheckScript._transform.position,
                     Quaternion.identity);
             }
-            // If player in light, spawn shadow leaves:
+            // Spawn shadow leaves:
             else{
                 Instantiate(UnityEngine.Resources.Load<GameObject>
                         ("Prefabs/Environment/CelestialGrove/PFX/Land-Leaves"),
@@ -38,8 +49,8 @@ namespace Resources.Scripts.Player{
         }
         internal void SpawnDashPfx(){
             
-            if (_playerMovementScript._isFacingRight){
-                // Player facing right, spawn pfx to go left:
+            // Player facing right, spawn pfx to go left:
+            if (_playerDataScript._isFacingRight){
                 Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/PFX/Player/Dash-Burst-Right"),
                     new Vector3(transform.position.x - _dashOffsetX, transform.position.y - _dashOffsetY,
                         transform.position.z), Quaternion.identity, _pfxParent);
@@ -53,7 +64,6 @@ namespace Resources.Scripts.Player{
         }
         internal void SpawnDashDownPfx(){
             
-            // Player facing right, spawn pfx to go left:
             Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/PFX/Player/Dash-Burst-Down"),
                 new Vector3(transform.position.x, transform.position.y - _dashOffsetY,
                     transform.position.z), Quaternion.identity, _pfxParent);

@@ -799,8 +799,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4704847312f93a439348f4e3daaa09a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _boxCollider2D: {fileID: 402465833}
-  _circleCollider2D: {fileID: 542220381}
   _originalColliderSize: {x: 0.17, y: 0.24}
   _originalColliderOffset: {x: 0, y: -0.15}
   _dashColliderSize: {x: 0.15, y: 0.2}
@@ -1418,8 +1416,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 542220379}
-  - component: {fileID: 542220382}
   - component: {fileID: 542220380}
+  - component: {fileID: 542220382}
   - component: {fileID: 542220384}
   - component: {fileID: 542220389}
   - component: {fileID: 542220386}
@@ -1488,24 +1486,6 @@ MonoBehaviour:
   _playerCollisionScript: {fileID: 402465832}
   _groundCheckScript: {fileID: 542220387}
   _ceilingCheckScript: {fileID: 542220385}
-  _walkSpeed: 65
-  _jumpForce: 470
-  _maxAirTime: 0.9
-  _doubleJumpAvailable: 0
-  _doubleJumpCost: 25
-  _doubleJumpForce: 18
-  _doubleJumpDelay: 0.2
-  _dashSpeed: 20
-  _dashThresholdCost: 20
-  _dashDownSpeed: 15
-  _dashKnockBack: {x: 12, y: 10}
-  _dashKnockBackDelay: 0.2
-  _dashShadowDecrement: 0.75
-  _dashMod: 5
-  _damagedKnockBackDelay: 0.15
-  _isFacingRight: 1
-  _damageIFrames: 3
-  _inIFrames: 0
 --- !u!58 &542220381
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -1538,6 +1518,25 @@ MonoBehaviour:
   _hoodDownSprite: {fileID: 96665910}
   _hoodUpSpriteAnim: {fileID: 1939667212}
   _hoodDownSpriteAnim: {fileID: 96665912}
+  _walkSpeed: 65
+  _jumpForce: 470
+  _maxAirTime: 0.9
+  _doubleJumpAvailable: 0
+  _doubleJumpAirTime: 0.5
+  _doubleJumpCost: 25
+  _doubleJumpForce: 18
+  _doubleJumpDelay: 0.2
+  _dashSpeed: 20
+  _dashThresholdCost: 20
+  _dashDownSpeed: 15
+  _dashKnockBack: {x: 12, y: 10}
+  _dashKnockBackDelay: 0.2
+  _dashShadowDecrement: 2
+  _landDelay: 0.15
+  _damagedKnockBackDelay: 0.15
+  _isFacingRight: 1
+  _damageIFrames: 3
+  _inIFrames: 0
 --- !u!50 &542220383
 Rigidbody2D:
   serializedVersion: 4
@@ -1607,8 +1606,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cfcee707821d67429402c0730dbde10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerMovementScript: {fileID: 542220380}
-  _lightDetectionScript: {fileID: 542220378}
   _groundCheckScript: {fileID: 542220387}
   _pfxParent: {fileID: 1786553935}
   _dashOffsetX: 0
@@ -6829,7 +6826,7 @@ GameObject:
   - component: {fileID: 2090327177}
   m_Layer: 0
   m_Name: Camera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7093,7 +7090,7 @@ PrefabInstance:
     - target: {fileID: 6034168422677770765, guid: 8a63c46da8e368541b2e42e8eb655bc1,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.2
+      value: -2.9
       objectReference: {fileID: 0}
     - target: {fileID: 6034168422677770765, guid: 8a63c46da8e368541b2e42e8eb655bc1,
         type: 3}
@@ -7386,6 +7383,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6656284439653742760, guid: e193f2cee130e39469a69c5a8d6c66f1,
+        type: 3}
+      propertyPath: _maxHp
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 6656284439653742760, guid: e193f2cee130e39469a69c5a8d6c66f1,
         type: 3}

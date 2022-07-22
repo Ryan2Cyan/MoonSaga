@@ -61,6 +61,7 @@ namespace Resources.Scripts.Player{
             }
         }
         internal void DecrementShadowMeter(float value){
+            
             _shadowMeter -= value;
             _playerUIHandlerScript.DecrementShadowSlider(value);
             _playerUIHandlerScript._delay = true;

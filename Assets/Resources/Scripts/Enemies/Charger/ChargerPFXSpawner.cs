@@ -9,7 +9,8 @@ namespace Resources.Scripts.Enemies.Charger{
         internal void SpawnArmourSparkPfx(){
             
             Instantiate(UnityEngine.Resources.Load<GameObject>("Prefabs/PFX/Enemy/Enemy-Sparks"), new 
-                    Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity);
+                    Vector3(transform.position.x, transform.position.y, transform.position.z), Quaternion.identity,
+                _pfxParent);
         }
     }
 }

@@ -8,8 +8,13 @@ namespace Resources.Scripts.Enemies.General{
          private Transform _playerTransform;
         [SerializeField] internal Vector2 _offset;
         
+        // PFX Parent:
+        internal Transform _pfxParent;
+        
         private void Awake(){
+            
             _playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+            _pfxParent = GameObject.FindGameObjectWithTag("PFXParent").transform;
         }
 
         internal void SpawnDamagedPfx(){
@@ -34,7 +39,8 @@ namespace Resources.Scripts.Enemies.General{
                         transform.position.x + _offset.x,
                         transform.position.y + _offset.y,
                         transform.position.z),
-                    Quaternion.identity);
+                    Quaternion.identity,
+                    _pfxParent);
             }
         }
     }

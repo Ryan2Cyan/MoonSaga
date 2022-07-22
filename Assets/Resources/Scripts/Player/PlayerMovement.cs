@@ -1,18 +1,20 @@
 using System;
+using Resources.Scripts.Camera;
 using Resources.Scripts.General;
 using UnityEngine;
 
-// Code within this class is responsible (only) for the movement of the 
-// player character.
+// Code within this class is a state machine of which controls
+// the movement and actions of the player:
 namespace Resources.Scripts.Player
 {
     public class PlayerMovement : MonoBehaviour{
 
+        // State:
         [SerializeField] internal playerMoveState _state = playerMoveState.Idle;
-
-
+        
         // Scripts:
         private ShadowMeter _shadowMeterScript;
+        private CameraShake _cameraShakeScript;
         [SerializeField] private PlayerCollision _playerCollisionScript;
         private PlayerData _playerDataScript;
         private PlayerPFXSpawner _playerPfxSpawnerScript;
@@ -21,47 +23,6 @@ namespace Resources.Scripts.Player
         private PlayerUIHandler _playerUIHandler;
         private ActionMap _actionMapScript;
         private MonoBehaviourUtility _monoBehaviourUtilityScript;
-
-        // Walking:
-        [Range(0, 100f)] [SerializeField] protected float _walkSpeed = 37.5f;
-        
-        // Jump:
-        [Range(0, 1000.0f)] [SerializeField] private float _jumpForce = 100f;
-        [Range(0, 1.0f)] [SerializeField] private float _maxAirTime = 0.5f;
-        private float _airTimer;
-        private bool _inJump;
-        
-        // Double Jump:
-        [SerializeField] private bool _doubleJumpAvailable = true;
-        [Range(0, 100)] [SerializeField] private int _doubleJumpCost = 10;
-        [Range(0, 1000.0f)] [SerializeField] private float _doubleJumpForce = 100f;
-        [Range(0, 1.0f)] [SerializeField] private float _doubleJumpDelay = 0.15f;
-        
-        // Dash:
-        [Range(0, 100.0f)] [SerializeField] private float _dashSpeed = 100f;
-        [SerializeField] private float _dashThresholdCost = 20f;
-        [Range(0, 100.0f)] [SerializeField] private float _dashDownSpeed = 100f;
-        [SerializeField] private Vector2 _dashKnockBack;
-        [SerializeField] private float _dashKnockBackDelay = 0.1f;
-        [SerializeField] private float _dashShadowDecrement = 0.1f;
-        [Range(0f, 10f)] [SerializeField] private float _dashMod = 5f;
-       
-        
-        // Land:
-        private const float _landDelay = 0.1f;
-        private float _landTimer = _landDelay;
-        
-        // Damaged:
-        [SerializeField] private float _damagedKnockBackDelay = 0.1f;
-        private float _knockBackTimer;
-
-        // Orientation:
-        [SerializeField] internal bool _isFacingRight = true;
-
-        // Damage values:
-        [SerializeField] private float _damageIFrames = 0.5f;
-        [SerializeField] internal bool _inIFrames;
-        private float _damageIFramesTimer;
 
         // Inputs:
         private float _horizontalInput;
@@ -77,9 +38,6 @@ namespace Resources.Scripts.Player
 
         private void Awake(){
             
-            // Set values:
-            _doubleJumpAvailable = true;
-            
             // Fetch components:
             _shadowMeterScript = GetComponent<ShadowMeter>();
             // _playerCollisionScript = GetComponent<PlayerCollision>();
@@ -87,15 +45,18 @@ namespace Resources.Scripts.Player
             _playerUIHandler = GetComponent<PlayerUIHandler>();
             _monoBehaviourUtilityScript = GameObject.Find("Utility").GetComponent<MonoBehaviourUtility>();
             _playerDataScript = GetComponent<PlayerData>();
+            _cameraShakeScript = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<CameraShake>();
             
-            // Generate action map:
+            // Generate action map to read user inputs:
             _actionMapScript = new ActionMap();
             _actionMapScript.Enable();
         }
-
         private void Update(){
 
+            // Check inputs from the user:
             ProcessInput();
+            
+            // Process inputs depending on player's state:
             ProcessStateInput();
             
             // Update player animations:
@@ -103,6 +64,8 @@ namespace Resources.Scripts.Player
             _playerDataScript._hoodDownSpriteAnim.SetInteger(State, (int)_state);
         }
         private void FixedUpdate(){
+            
+            // Process all state movements:
             ProcessStateMovement();
         }
 
@@ -117,6 +80,7 @@ namespace Resources.Scripts.Player
             DamagedCheck();
         }
         private void IdleMovement(){
+            
             ApplyNormMovement(8.0f);
         }
         
@@ -135,32 +99,16 @@ namespace Resources.Scripts.Player
         
         private void JumpInput(){
 
-            _airTimer -= Time.deltaTime;
-
-            // If jump time expires [Air Control]:
-            if (_airTimer < 0.0f){
-                _playerDataScript._rigidbody2D.velocity = new Vector2(_playerDataScript._rigidbody2D.velocity.x, 
-                    _playerDataScript._rigidbody2D.velocity.y / 2.0f);
-                _state = playerMoveState.AirControl;
-            }
-
-            // Player releases jump [Air Control]:
-            if (_jumpRelease && !_groundCheckScript._collided){
-                _playerDataScript._rigidbody2D.velocity = new Vector2(_playerDataScript._rigidbody2D.velocity.x, 
-                    _playerDataScript._rigidbody2D.velocity.y / 2.0f);
-                _state = playerMoveState.AirControl;
-            }
-
-            // Player hits ceiling [Air Control]:
-            if (_ceilingCheckScript._collided){
-                _playerDataScript._rigidbody2D.velocity = new Vector2(_playerDataScript._rigidbody2D.velocity.x, 
-                    _playerDataScript._rigidbody2D.velocity.y / 2.0f);
-                _state = playerMoveState.AirControl;
+            // If jump time expires, player releases jump key, or player hits ceiling [Air Control]:
+            _playerDataScript._airTimer -= Time.deltaTime;
+            if (_playerDataScript._airTimer < 0.0f || _jumpRelease || _ceilingCheckScript._collided){
+                StopYAxisMovement();
+                SetDefaultState();
             }
 
             // Set bool to false to prevent another force being applied if player hits another ground:
             if (!_groundCheckScript._collided)
-                _inJump = false;
+                _playerDataScript._isJumping = false;
 
             DashCheck();
             DamagedCheck();
@@ -168,8 +116,9 @@ namespace Resources.Scripts.Player
         private void JumpMovement(){
 
             // Apply force when jumping:
-            if (_groundCheckScript._collided && _inJump)
-                _playerDataScript._rigidbody2D.AddForce(new Vector2(_playerDataScript._rigidbody2D.velocity.x, _jumpForce));
+            if (_playerDataScript._isJumping)
+                _playerDataScript._rigidbody2D.AddForce(
+                    new Vector2(_playerDataScript._rigidbody2D.velocity.x, _playerDataScript._jumpForce));
             
             ApplyNormMovement(7.0f);
         }
@@ -178,10 +127,10 @@ namespace Resources.Scripts.Player
 
             // If player touches the ground [Land]:
             if (_groundCheckScript._collided){
-                _state = playerMoveState.Land;
-                
-                // Spawn pfx:
+                _playerDataScript._landTimer = _playerDataScript._landDelay;
+                _playerDataScript._doubleJumpAvailable = true;
                 _playerPfxSpawnerScript.SpawnLandPfx();
+                _state = playerMoveState.Land;
             }
 
             DoubleJumpCheck();
@@ -194,17 +143,11 @@ namespace Resources.Scripts.Player
         }
         
         private void LandInput(){
-            
-            _landTimer -= Time.deltaTime;
 
-            // Amount of time the player can be in the Land state is finished:
-            if (_landTimer <= 0.0f){
-                _landTimer = _landDelay;
-                _state = playerMoveState.Idle;
-            }
-
-            // Make double jump & dash available when on the ground:
-            _doubleJumpAvailable = true;
+            // Once timer expires [Idle]:
+            _playerDataScript._landTimer -= Time.deltaTime;
+            if (_playerDataScript._landTimer <= 0.0f)
+                SetDefaultState();
 
             WalkCheck();
             JumpCheck();
@@ -220,19 +163,18 @@ namespace Resources.Scripts.Player
             // Check if the player hit an enemy:
             DashHitCheck();
             IFramesCheck();
-
         }
         private void DashMovement(){
 
             // Reduce shadow meter:
-            _shadowMeterScript.DecrementShadowMeter(_dashShadowDecrement * _dashMod);
+            _shadowMeterScript.DecrementShadowMeter(_playerDataScript._dashShadowDecrement);
             
             // Apply horizontal force depending on the player's facing direction:
-            _playerDataScript._rigidbody2D.velocity = _isFacingRight switch{
+            _playerDataScript._rigidbody2D.velocity = _playerDataScript._isFacingRight switch{
                 true => // Dash right
-                    new Vector2(_dashSpeed, 0f),
+                    new Vector2(_playerDataScript._dashSpeed, 0f),
                 false => // Dash left
-                    new Vector2(-_dashSpeed, 0f)
+                    new Vector2(-_playerDataScript._dashSpeed, 0f)
             };
         }
         
@@ -240,7 +182,8 @@ namespace Resources.Scripts.Player
             
             // Check if the dash has ended:
             if (_shadowMeterScript._shadowMeter < 0f || _dashDownRelease)
-                SetDefaultState();
+                _state = playerMoveState.AirControl;
+            
             if (_groundCheckScript._collided){
                 _state = playerMoveState.Land;
                 _playerPfxSpawnerScript.SpawnLandPfx();
@@ -253,57 +196,52 @@ namespace Resources.Scripts.Player
         private void DashDownMovement(){
             
             // Reduce shadow meter:
-            _shadowMeterScript.DecrementShadowMeter(_dashShadowDecrement * _dashMod);
+            _shadowMeterScript.DecrementShadowMeter(_playerDataScript._dashShadowDecrement);
 
             // Apply force:
-            _playerDataScript._rigidbody2D.velocity = new Vector2(0f, -_dashDownSpeed);
+            _playerDataScript._rigidbody2D.velocity = new Vector2(0f, -_playerDataScript._dashDownSpeed);
         }
         
         private void DashHitInput(){
-            
-            // On hit, the player can dash & double jump again:
-            _doubleJumpAvailable = true;
-            
+
             // Check for end of dash hit:
             if (_dashRelease || _dashDownRelease || _shadowMeterScript._shadowMeter <= 0f || !
                 _playerCollisionScript._enemyCollision){
+                _playerDataScript._rigidbody2D.constraints = RigidbodyConstraints2D.None;
+                _playerDataScript._rigidbody2D.constraints = RigidbodyConstraints2D.FreezeRotation;
+                _playerDataScript._knockBackTimer = _playerDataScript._dashKnockBackDelay;
                 _state = playerMoveState.DashRecover;
-                _knockBackTimer = _dashKnockBackDelay;
             }
-
-            // Prevent the player from moving:
-            _playerDataScript._rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
         }
         private void DashHitMovement(){
             
             // Reduce shadow meter:
-            _shadowMeterScript.DecrementShadowMeter(_dashShadowDecrement);
+            _shadowMeterScript.DecrementShadowMeter(_playerDataScript._dashShadowDecrement);
         }
         
         private void DashRecoverInput(){
-            _knockBackTimer -= Time.deltaTime;
-            _playerDataScript._rigidbody2D.constraints = RigidbodyConstraints2D.None;
-            _playerDataScript._rigidbody2D.constraints = RigidbodyConstraints2D.FreezeRotation;
+            
+            // Once timer expires [Idle/AirControl]:
+            _playerDataScript._knockBackTimer -= Time.deltaTime;
+            if (_playerDataScript._knockBackTimer <= 0f)
+                SetDefaultState();
         }
         private void DashRecoverMovement(){
             
-                // Knock back the player:
-                _playerDataScript._rigidbody2D.velocity =
-                    _isFacingRight
-                        ? new Vector2(-_dashKnockBack.x, _dashKnockBack.y)
-                        : new Vector2(_dashKnockBack.x, _dashKnockBack.y);
-                if (_knockBackTimer <= 0f)
-                    SetDefaultState();
+            // Knock back the player:
+            _playerDataScript._rigidbody2D.velocity =
+                _playerDataScript._isFacingRight
+                    ? new Vector2(-_playerDataScript._dashKnockBack.x, _playerDataScript._dashKnockBack.y)
+                    : new Vector2(_playerDataScript._dashKnockBack.x, _playerDataScript._dashKnockBack.y);
         }
         
         private void DoubleJumpInput(){
 
-            _airTimer -= Time.deltaTime;
+            _playerDataScript._airTimer -= Time.deltaTime;
 
             // If jump time expires [Air Control]:
-            if (_airTimer < 0f){
-                _playerDataScript._rigidbody2D.velocity = new Vector2(_playerDataScript._rigidbody2D.velocity.x, 
-                    _playerDataScript._rigidbody2D.velocity.y / 2.0f);
+            if (_playerDataScript._airTimer < 0f){
+                StopYAxisMovement();
                 _state = playerMoveState.AirControl;
             }
 
@@ -312,24 +250,26 @@ namespace Resources.Scripts.Player
         private void DoubleJumpMovement(){
 
             // Apply force when jumping:
-            if(_airTimer <= 0.1f)
+            if(_playerDataScript._airTimer <= _playerDataScript._doubleJumpAirTime)
                 _playerDataScript._rigidbody2D.velocity = 
-                    new Vector2(_playerDataScript._rigidbody2D.velocity.x, _doubleJumpForce);
+                    new Vector2(_playerDataScript._rigidbody2D.velocity.x, _playerDataScript._doubleJumpForce);
             ApplyNormMovement(7.0f);
         }
         
         private void DamagedInput(){
             
             // Knock back timer:
-            _knockBackTimer -= Time.deltaTime;
-            if (_knockBackTimer <= 0f)
+            _playerDataScript._knockBackTimer -= Time.deltaTime;
+            if (_playerDataScript._knockBackTimer <= 0f)
                 SetDefaultState();
         }
         private void DamagedMovement(){
+            
             // Knock back the player:
             _playerDataScript._rigidbody2D.velocity =
-                _isFacingRight ? new Vector2(-_dashKnockBack.x, _dashKnockBack.y) : 
-                    new Vector2(_dashKnockBack.x, _dashKnockBack.y);
+                _playerDataScript._isFacingRight ? 
+                    new Vector2(-_playerDataScript._dashKnockBack.x, _playerDataScript._dashKnockBack.y) : 
+                    new Vector2(_playerDataScript._dashKnockBack.x, _playerDataScript._dashKnockBack.y);
         }
         
         // Process state functions:
@@ -412,24 +352,6 @@ namespace Resources.Scripts.Player
             ResetInput();
         }
 
-        private void ApplyNormMovement(float movementSpeed){
-
-            // Calculate direction:
-            float direction = _horizontalInput * Time.fixedDeltaTime;
-
-            // Check if the player needs to be flipped depending on move direction:
-            if (direction > 0.0f && !_isFacingRight) // Flip Right
-                transform.localScale = UtilityFunctions.Flip(transform.localScale, ref _isFacingRight);
-
-            else if (direction < 0.0f && _isFacingRight) // Flip Left
-                transform.localScale = UtilityFunctions.Flip(transform.localScale, ref _isFacingRight);
-
-            // Move the character via target velocity:
-            Vector2 targetVelocity = new Vector2(direction * movementSpeed, _playerDataScript._rigidbody2D.velocity.y);
-            
-            _playerDataScript._rigidbody2D.velocity = targetVelocity;
-        }
-
         private void ProcessInput(){
 
             // Inputs Variables:
@@ -442,10 +364,10 @@ namespace Resources.Scripts.Player
             
             // Process horizontal input:
             if (_actionMapScript.Player.Movement.ReadValue<Vector2>().x > 0f)
-                _horizontalInput = 1f * _walkSpeed;
+                _horizontalInput = 1f * _playerDataScript._walkSpeed;
 
             else if (_actionMapScript.Player.Movement.ReadValue<Vector2>().x < 0f)
-                _horizontalInput = -1f * _walkSpeed;
+                _horizontalInput = -1f * _playerDataScript._walkSpeed;
             else
                 _horizontalInput = 0f;
         }
@@ -478,55 +400,53 @@ namespace Resources.Scripts.Player
             if (_horizontalInput < 0.0f || _horizontalInput > 0.0f && _groundCheckScript._collided)
                 _state = playerMoveState.Walking;
         }
-
         private void FallCheck(){
             if (!_groundCheckScript._collided)
                 _state = playerMoveState.AirControl;
         }
         private void JumpCheck(){
+            
             // If player presses jump button [Jump]:
             if (_jumpPress && !_ceilingCheckScript._collided){
                 _state = playerMoveState.Jump;
-                _airTimer = _maxAirTime;
-                _inJump = true;
+                _playerDataScript._airTimer = _playerDataScript._maxAirTime;
+                _playerDataScript._isJumping = true;
             }
         }
         private void DashCheck(){
             
-            if (_dashPress && _shadowMeterScript._shadowMeter >= _dashThresholdCost){
-                _state = playerMoveState.Dash;
-                        
-                // Spawn pfx:
+            if (_dashPress && _shadowMeterScript._shadowMeter >= _playerDataScript._dashThresholdCost){
                 _playerPfxSpawnerScript.SpawnDashPfx();
+                _state = playerMoveState.Dash;
             }
 
             if (_dashDownPress && _shadowMeterScript._shadowMeter > 0f){
-                _state = playerMoveState.DashDown;
                 _playerPfxSpawnerScript.SpawnDashDownPfx();
+                _state = playerMoveState.DashDown;
             }
         }
         private void DoubleJumpCheck(){
 
-            // Check if the player has enough shadow meter:
-            if (_shadowMeterScript._shadowMeter >= _doubleJumpCost){
-                // Check if player presses jump input:
-                if (_jumpPress && _doubleJumpAvailable){
-                    _state = playerMoveState.DoubleJump;
-                    _shadowMeterScript.DecrementShadowMeter(_doubleJumpCost);
-                    _doubleJumpAvailable = false;
-                    _airTimer = _doubleJumpDelay;
-                    
-                    // Spawn pfx:
-                    _playerPfxSpawnerScript.SpawnDoubleJumpPfx();
-                }
+            // Check for conditions to double jump:
+            if (_shadowMeterScript._shadowMeter >= _playerDataScript._doubleJumpCost && _jumpPress &&
+                _playerDataScript._doubleJumpAvailable ){
+                _shadowMeterScript.DecrementShadowMeter(_playerDataScript._doubleJumpCost);
+                _playerDataScript._doubleJumpAvailable = false;
+                _playerDataScript._airTimer = _playerDataScript._doubleJumpDelay;
+                _playerPfxSpawnerScript.SpawnDoubleJumpPfx();
+                _state = playerMoveState.DoubleJump;
             }
         }
         private void DashHitCheck(){
+            
             // Check if the player hit an enemy:
             if (_playerCollisionScript._enemyCollision){
-                _state = playerMoveState.DashHit;
-                _knockBackTimer = _dashKnockBackDelay;
+                _playerDataScript._doubleJumpAvailable = true;
+                _playerDataScript._knockBackTimer = _playerDataScript._dashKnockBackDelay;
                 _monoBehaviourUtilityScript.StartSleep(0.05f);
+                _cameraShakeScript.StartShake(0.1f, 0.2f);
+                _playerDataScript._rigidbody2D.constraints = RigidbodyConstraints2D.FreezeAll;
+                _state = playerMoveState.DashHit;
             }
 
             HitArmourCheck();
@@ -534,14 +454,15 @@ namespace Resources.Scripts.Player
         private void DamagedCheck(){
             
             // Player touched enemy - they take damage:
-            if (_playerCollisionScript._enemyCollision && !_inIFrames){
-                _knockBackTimer = _damagedKnockBackDelay;
-                _state = playerMoveState.Damaged;
+            if (_playerCollisionScript._enemyCollision && !_playerDataScript._inIFrames){
+                _playerDataScript._knockBackTimer = _playerDataScript._damagedKnockBackDelay;
                 _monoBehaviourUtilityScript.StartSleep(0.2f);
+                _cameraShakeScript.StartShake(0.1f, 0.4f);
                 _playerUIHandler.ReduceHitPoint();
-                _damageIFramesTimer = _damageIFrames;
-                _inIFrames = true;
+                _playerDataScript._damageIFramesTimer = _playerDataScript._damageIFrames;
+                _playerDataScript._inIFrames = true;
                 _playerPfxSpawnerScript.SpawnDamagedPfx();
+                _state = playerMoveState.Damaged;
             }
 
             // Check for i frames:
@@ -551,19 +472,45 @@ namespace Resources.Scripts.Player
             
             // Player hit armour, they are deflected:
             if (_playerCollisionScript._enemyArmourCollision){
-                _knockBackTimer = _damagedKnockBackDelay;
-                _state = playerMoveState.Damaged;
+                _playerDataScript._knockBackTimer = _playerDataScript._damagedKnockBackDelay;
+                _cameraShakeScript.StartShake(0.1f, 0.2f);
                 _playerPfxSpawnerScript.SpawnArmourSparkPfx();
+                _state = playerMoveState.Damaged;
             }
         }
         private void IFramesCheck(){
             
             // Check for i frames:
-            _damageIFramesTimer -= Time.deltaTime;
-            if (_damageIFramesTimer <= 0f)
-                _inIFrames = false;
+            _playerDataScript._damageIFramesTimer -= Time.deltaTime;
+            if (_playerDataScript._damageIFramesTimer <= 0f)
+                _playerDataScript._inIFrames = false;
         }
-}
+        
+        // Movement functions:
+        private void ApplyNormMovement(float movementSpeed){
+
+            // Calculate direction:
+            float direction = _horizontalInput * Time.fixedDeltaTime;
+
+            // Check if the player needs to be flipped depending on move direction:
+            if (direction > 0.0f && !_playerDataScript._isFacingRight) // Flip Right
+                transform.localScale = UtilityFunctions.Flip(transform.localScale, ref _playerDataScript._isFacingRight);
+            else if (direction < 0.0f && _playerDataScript._isFacingRight) // Flip Left
+                transform.localScale = UtilityFunctions.Flip(transform.localScale, ref _playerDataScript._isFacingRight);
+
+            // Move the character via target velocity:
+            _playerDataScript._rigidbody2D.velocity = new Vector2(
+                direction * movementSpeed, 
+                _playerDataScript._rigidbody2D.velocity.y);
+        }
+        private void StopYAxisMovement(){
+            
+            // Set y-axis velocity to half:
+            _playerDataScript._rigidbody2D.velocity = new Vector2(
+                _playerDataScript._rigidbody2D.velocity.x, 
+                _playerDataScript._rigidbody2D.velocity.y / 2.0f);
+        }
+    }
 
     internal enum playerMoveState{
         Idle = 0, Walking = 1, Jump = 2, DoubleJump = 3, AirControl = 4, Land = 5, Dash = 6, DashHit = 7, 

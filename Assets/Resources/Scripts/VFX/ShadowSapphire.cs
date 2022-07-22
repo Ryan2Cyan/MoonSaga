@@ -73,7 +73,6 @@ namespace Resources.Scripts.VFX{
             
             // Check for collision with player:
             if (_collided){
-                Debug.Log("Call");
                 // Increment number of shadow sapphires:
                 GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerUIHandler>().
                     IncrementShadowSapphires(_value);

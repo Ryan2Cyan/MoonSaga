@@ -310,6 +310,7 @@ namespace Resources.Scripts.Enemies.Charger{
             // If HP is 0 [Death]:
             if (_chargerDataScript._hp <= 0f){
                 _chargerDataScript._triggerCollider.SetActive(false);
+                _chargerDataScript._armourCollider.gameObject.SetActive(false);
                 _chargerDataScript._isActive = false;
                 _chargerDataScript._knockBackTimer = _chargerDataScript._knockBackDelay;
                 _state = enemyMoveState.Death;
