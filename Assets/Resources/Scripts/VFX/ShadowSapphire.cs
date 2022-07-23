@@ -15,14 +15,12 @@ namespace Resources.Scripts.VFX{
         private BoxCollider2D _boxCollider2D;
         private Animator _animator;
         [SerializeField] public int _value;
-        [SerializeField] private float _minX;
-        [SerializeField] private float _maxX;
-        [SerializeField] private float _minY;
-        [SerializeField] private float _maxY;
+        [SerializeField] private Vector2 _minForce;
+        [SerializeField] private Vector2 _maxForce;
         private GameObject[] _sceneEnemies;
         [SerializeField] private float _shineTimeMin = 3f;
         [SerializeField] private float _shineTimeMax = 10f;
-        [SerializeField] private float _shineTimer;
+        private float _shineTimer;
 
         public bool _collided;
         
@@ -41,7 +39,9 @@ namespace Resources.Scripts.VFX{
             _shineTimer = Random.Range(_shineTimeMin, _shineTimeMax);
             
             // Apply force on spawn:
-            _rigidbody2D.AddForce(new Vector2(Random.Range(_minX, _maxX), Random.Range(_minY, _maxY)));
+            _rigidbody2D.AddForce(new Vector2(
+                Random.Range(_minForce.x, _maxForce.x), 
+                Random.Range(_minForce.y, _maxForce.y)));
             
             // Ignore colliders:
             _sceneEnemies = GameObject.FindGameObjectsWithTag("Enemy");
@@ -76,13 +76,6 @@ namespace Resources.Scripts.VFX{
                 // Increment number of shadow sapphires:
                 GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerUIHandler>().
                     IncrementShadowSapphires(_value);
-                Destroy(gameObject);
-            }
-        }
-        
-        private void OnCollisionEnter2D(Collision2D other){
-            
-            if (other.gameObject.CompareTag("Player")){
                 Destroy(gameObject);
             }
         }

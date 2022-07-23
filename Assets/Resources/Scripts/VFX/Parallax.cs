@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Resources.Scripts.VFX{
     public class Parallax : MonoBehaviour{
 
-        [SerializeField] private UnityEngine.Camera _mainCam;
+        private UnityEngine.Camera _mainCam;
         [SerializeField] private float _parallaxMod;
         private float _length;
         private float _startPos;
@@ -11,6 +11,8 @@ namespace Resources.Scripts.VFX{
 
         private void Awake(){
             
+            // Fetch components:
+            _mainCam = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<UnityEngine.Camera>();
             _startPos = transform.position.x;
             _length = GetComponent<SpriteRenderer>().bounds.size.x;
         }

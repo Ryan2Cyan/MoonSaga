@@ -152,12 +152,13 @@ namespace Resources.Scripts.Player
             WalkCheck();
             JumpCheck();
             DamagedCheck();
+            DashCheck();
         }
         
         private void DashInput(){
             
             // Check if the dash has ended:
-            if (_shadowMeterScript._shadowMeter < 0f || _dashRelease)
+            if (_shadowMeterScript._shadowMeter <= 0f || _dashRelease)
                 SetDefaultState();
 
             // Check if the player hit an enemy:
@@ -262,6 +263,10 @@ namespace Resources.Scripts.Player
             _playerDataScript._knockBackTimer -= Time.deltaTime;
             if (_playerDataScript._knockBackTimer <= 0f)
                 SetDefaultState();
+            
+            // Make sure the player is unlocked when no longer colliding with enemy:
+            _playerDataScript._rigidbody2D.constraints = RigidbodyConstraints2D.None;
+            _playerDataScript._rigidbody2D.constraints = RigidbodyConstraints2D.FreezeRotation;
         }
         private void DamagedMovement(){
             

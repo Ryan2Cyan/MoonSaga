@@ -15,46 +15,49 @@ namespace Resources.Scripts.Player{
         private GameData _gameDataScript;
         
         // Shadow meter:
-        [SerializeField] private Slider _shadowSlider;
-        [SerializeField] private Slider _subtractSlider;
-        private float _maxValue = 100;
+        private Slider _shadowSlider;
+        private Slider _subtractSlider;
         private const float _minValue = 0;
-        [SerializeField] private float _sliderDecrementDelay = 1.5f;
-        private float _sliderDecrementTimer;
-        internal bool _delay;
+        [SerializeField] internal float _sliderDecrementDelay = 1.5f;
+        internal float _sliderDecrementTimer;
         
         // Hit points:
-        [SerializeField] private GameObject _hitPointsParent;
-        [SerializeField] private List<Image> _hitPointUI;
+        private GameObject _hitPointsParent;
+        private List<Image> _hitPointUI;
         [SerializeField] private float _hitPointSubtractDelay = 0.1f;
         private float _hitPointSubtractTimer;
         
         // Shadow sapphires:
-        [SerializeField] private GameObject _shadowSapphiresUI;
-        [SerializeField] private TextMeshProUGUI _totalCounter;
-        [SerializeField] private TextMeshProUGUI _tempCounter;
+        private GameObject _shadowSapphiresUI;
+        private TextMeshProUGUI _totalCounter;
+        private TextMeshProUGUI _tempCounter;
         [SerializeField] private float _tempDelay;
         private float _tempDelayTimer;
         [SerializeField] private float _tempSubtractTime;
-        private float _tempSubtractTimer;
-        [SerializeField] private bool _deactivateAdd;
-        [SerializeField] private int _tempValue;
+        private float _tempSubtractTimer; 
         [SerializeField] private int _totalValue;
+        private bool _deactivateAdd;
+        private int _tempValue;
 
 
         private void Awake(){
             
             // Fetch components:
             _shadowMeterScript = GetComponent<ShadowMeter>();
+            _shadowSlider = GameObject.Find("Shadow-Slider").GetComponent<Slider>();
+            _subtractSlider = GameObject.Find("Subtract-Slider").GetComponent<Slider>();
             _gameDataScript = GameObject.Find("Data-Manager").GetComponent<GameData>();
+            _hitPointsParent = GameObject.Find("Hit-Points");
+            _shadowSapphiresUI = GameObject.Find("Shadow-Sapphires");
+            _totalCounter = _shadowSapphiresUI.transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+            _tempCounter = _shadowSapphiresUI.transform.GetChild(2).GetComponent<TextMeshProUGUI>();
             
             // Set values for sliders:
-            _maxValue = _shadowMeterScript._maxShadow;
-            UtilityFunctions.SetSliderF(ref _shadowSlider, _minValue, _maxValue, _minValue);
-            UtilityFunctions.SetSliderF(ref _subtractSlider, _minValue, _maxValue, _minValue);
-            _sliderDecrementTimer = 0f;
+            UtilityFunctions.SetSliderF(ref _shadowSlider, _minValue, _shadowMeterScript._maxShadow, _minValue);
+            UtilityFunctions.SetSliderF(ref _subtractSlider, _minValue, _shadowMeterScript._maxShadow, _minValue);
 
             // For each hit point, add UI element:
+            _hitPointUI = new List<Image>();
             for (int i = 0; i < _gameDataScript.maxPoints; i++){
                 _hitPointUI.Add(_hitPointsParent.transform.GetChild(i).GetComponent<Image>());
             }
@@ -71,27 +74,21 @@ namespace Resources.Scripts.Player{
             UpdateHitPoints();
             // Update shadow sapphires:
             UpdateShadowSapphireUI();
+            
         }
 
         public void DecrementShadowSlider(float value){
+            
             _subtractSlider.value = _shadowSlider.value;
             _shadowSlider.value -= value;
         }
         private void UpdateSubtractSlider(){
-            
+
+            // Once timer expires, make the subtract value same as shadow value:
             _sliderDecrementTimer -= Time.deltaTime;
-            // If the player uses a move and subtracts shadow, then delay the white bar:
-            if (_delay){
-                _sliderDecrementTimer = _sliderDecrementDelay;
-                _delay = false;
-            }
-            
-            // White bar delay, then catch up:
             if (_sliderDecrementTimer <= 0f){
                 if (_subtractSlider.value > _shadowSlider.value)
                     _subtractSlider.value -= 1f;
-                else if (_subtractSlider.value < _shadowSlider.value)
-                    _subtractSlider.value = 0f;
             }
         }
         public void ReduceHitPoint(){
@@ -103,17 +100,14 @@ namespace Resources.Scripts.Player{
             
             for (int i = 0; i < _gameDataScript.maxPoints; i++){
                 // Full hit points:
-                if (i < _gameDataScript.hitPoints){
+                if (i < _gameDataScript.hitPoints)
                     _hitPointUI[i].sprite = UnityEngine.Resources.Load<Sprite>("Sprites/UI/Hitpoints/hitpoint-full");
-                }
                 // Hit point the player just lost:
-                else if (i == _gameDataScript.hitPoints && _hitPointSubtractTimer > 0f){
+                else if (i == _gameDataScript.hitPoints && _hitPointSubtractTimer > 0f)
                     _hitPointUI[i].sprite = UnityEngine.Resources.Load<Sprite>("Sprites/UI/Hitpoints/hitpoint-subtract");
-                }
                 // Empty hit points:
-                else{
+                else
                     _hitPointUI[i].sprite = UnityEngine.Resources.Load<Sprite>("Sprites/UI/Hitpoints/hitpoint-empty");
-                }
             }
         }
         public void IncrementShadowSapphires(int value){
@@ -173,6 +167,7 @@ namespace Resources.Scripts.Player{
             // Store original UI pos:
             Vector3 originalPos = _shadowSapphiresUI.transform.position;
 
+            // Change UI position for duration:
             float elapsed = 0.0f;
             while (elapsed < duration){
                 _shadowSapphiresUI.transform.position = new Vector2(
@@ -181,7 +176,6 @@ namespace Resources.Scripts.Player{
                 elapsed += Time.deltaTime;
                 yield return null;
             }
-            
             // Reset to original pos:
             _shadowSapphiresUI.transform.position = originalPos;
         }

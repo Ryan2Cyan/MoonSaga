@@ -1,3 +1,4 @@
+using System;
 using Resources.Scripts.Lighting;
 using UnityEngine;
 
@@ -33,38 +34,64 @@ namespace Resources.Scripts.Player{
 
         private void Update(){
             
-            // Increment shadow meter over time, if it is not being decremented:
-            if(_playerMovementScript._state != playerMoveState.Dash &&
-               _playerMovementScript._state != playerMoveState.DashHit)
-                IncrementShadowMeter();
-            
-            // Clamp shadow value:
-            if (_shadowMeter > _maxShadow)
-                _shadowMeter = _maxShadow;
-            if (_shadowMeter < 0f)
-                _shadowMeter = 0f;
+            // Increment shadow meter over time based on player state:
+            switch (_playerMovementScript._state){
+                case playerMoveState.Idle:
+                    IncrementShadowMeter();
+                    break;
+                case playerMoveState.Walking:
+                    IncrementShadowMeter();
+                    break;
+                case playerMoveState.Jump:
+                    IncrementShadowMeter();
+                    break;
+                case playerMoveState.DoubleJump:
+                    IncrementShadowMeter();
+                    break;
+                case playerMoveState.AirControl:
+                    IncrementShadowMeter();
+                    break;
+                case playerMoveState.Land:
+                    IncrementShadowMeter();
+                    break;
+                case playerMoveState.Dash:
+                    break;
+                case playerMoveState.DashHit:
+                    break;
+                case playerMoveState.DashRecover:
+                    IncrementShadowMeter();
+                    break;
+                case playerMoveState.Damaged:
+                    IncrementShadowMeter();
+                    break;
+                case playerMoveState.DashDown:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
         private void IncrementShadowMeter(){
-
-            // Decrease timer:
+            
+            // Once timer expires, increment based on if player is in light or not:
             _incrementTimer -= Time.deltaTime;
-
-            // Player in light:
-            if (_lightDetectionScript._inLight && _incrementTimer <= 0.0f){
-                _shadowMeter += _lightValue;
-                _incrementTimer = _incrementDelayLight;
-            }
-            // Player in shadow:
-            else if (_incrementTimer <= 0.0f){
-                _shadowMeter += _shadowValue;
-                _incrementTimer = _incrementDelayShadow;
+            if (_incrementTimer <= 0f){
+                _shadowMeter += _lightDetectionScript._inLight ? _lightValue : _shadowValue;
+                _incrementTimer = _lightDetectionScript._inLight ? _incrementDelayLight : _incrementDelayShadow;
+                
+                // Clamp shadow value:
+                if (_shadowMeter > _maxShadow)
+                    _shadowMeter = _maxShadow;
             }
         }
         internal void DecrementShadowMeter(float value){
             
             _shadowMeter -= value;
             _playerUIHandlerScript.DecrementShadowSlider(value);
-            _playerUIHandlerScript._delay = true;
+            _playerUIHandlerScript._sliderDecrementTimer = _playerUIHandlerScript._sliderDecrementDelay;
+            
+            // Clamp shadow value:
+            if (_shadowMeter < 0f)
+                _shadowMeter = 0f;
         }
     }
 }

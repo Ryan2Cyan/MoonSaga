@@ -82,10 +82,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _groundCheckScript: {fileID: 579472975949450231}
   _value: 5
-  _minX: -300
-  _maxX: 300
-  _minY: 600
-  _maxY: 900
+  _minForce: {x: -300, y: 600}
+  _maxForce: {x: 300, y: 900}
   _shineTimeMin: 3
   _shineTimeMax: 10
   _shineTimer: 0
