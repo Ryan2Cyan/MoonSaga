@@ -200,10 +200,10 @@ namespace Resources.Scripts.Enemies.Charger{
             }
             
             // Check if the enemy has been hit by the player:
-            if (_enemyColliderScript._collidingWithPlayer && _playerMovementScript._state == playerMoveState.DashHit){
-                _chargerDataScript._armourCollider.enabled = true;
-                _state = enemyMoveState.Damaged;
-            }
+            // if (_enemyColliderScript._collidingWithPlayer && _playerMovementScript._state == playerMoveState.DashHit){
+            //     _chargerDataScript._armourCollider.enabled = true;
+            //     _state = enemyMoveState.Damaged;
+            // }
         }
         private void StunnedMovement(){
             
@@ -301,8 +301,8 @@ namespace Resources.Scripts.Enemies.Charger{
         private void DamagedCheck(){
             
             // Check if the enemy has been hit by the player:
-            if (_enemyColliderScript._collidingWithPlayer && _playerMovementScript._state == playerMoveState.DashHit)
-                _state = enemyMoveState.Damaged;
+            // if (_enemyColliderScript._collidingWithPlayer && _playerMovementScript._state == playerMoveState.DashHit)
+                // _state = enemyMoveState.Damaged;
             
         }
         private void DeathCheck(){

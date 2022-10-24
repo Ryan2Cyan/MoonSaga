@@ -10,7 +10,7 @@ namespace Resources.Scripts.Camera{
         private PlayerData _playerDataScript;
         private bool _isFacingRight;
         [SerializeField] private Vector2 _offset;
-        [Range(0f, 1f)] [SerializeField] private float _smoothSpeed = 0.125f;
+        [Range(0f, 0.1f)] [SerializeField] private float _smoothSpeed = 0.05f;
         
 
         private void Awake(){
@@ -28,8 +28,8 @@ namespace Resources.Scripts.Camera{
 
             // Calculate the desired position of the camera - alter x-axis offset depending on player's direction:
             Vector2 desiredPos = _isFacingRight switch{
-                true => new Vector2(_target.position.x + _offset.x + 1f, _target.position.y + _offset.y),
-                false => new Vector2(_target.position.x + _offset.x - 1f, _target.position.y + _offset.y)
+                true => new Vector2(_target.position.x + _offset.x, _target.position.y + _offset.y),
+                false => new Vector2(_target.position.x + -_offset.x, _target.position.y + _offset.y)
             };
 
             // Lerp the camera towards the target:

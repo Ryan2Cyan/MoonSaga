@@ -34,41 +34,41 @@ namespace Resources.Scripts.Player{
 
         private void Update(){
             
-            // Increment shadow meter over time based on player state:
-            switch (_playerMovementScript._state){
-                case playerMoveState.Idle:
-                    IncrementShadowMeter();
-                    break;
-                case playerMoveState.Walking:
-                    IncrementShadowMeter();
-                    break;
-                case playerMoveState.Jump:
-                    IncrementShadowMeter();
-                    break;
-                case playerMoveState.DoubleJump:
-                    IncrementShadowMeter();
-                    break;
-                case playerMoveState.AirControl:
-                    IncrementShadowMeter();
-                    break;
-                case playerMoveState.Land:
-                    IncrementShadowMeter();
-                    break;
-                case playerMoveState.Dash:
-                    break;
-                case playerMoveState.DashHit:
-                    break;
-                case playerMoveState.DashRecover:
-                    IncrementShadowMeter();
-                    break;
-                case playerMoveState.Damaged:
-                    IncrementShadowMeter();
-                    break;
-                case playerMoveState.DashDown:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            // // Increment shadow meter over time based on player state:
+            // switch (_playerMovementScript._state){
+            //     case playerMoveState.Idle:
+            //         IncrementShadowMeter();
+            //         break;
+            //     case playerMoveState.Walking:
+            //         IncrementShadowMeter();
+            //         break;
+            //     case playerMoveState.Jump:
+            //         IncrementShadowMeter();
+            //         break;
+            //     case playerMoveState.DoubleJump:
+            //         IncrementShadowMeter();
+            //         break;
+            //     case playerMoveState.AirControl:
+            //         IncrementShadowMeter();
+            //         break;
+            //     case playerMoveState.Land:
+            //         IncrementShadowMeter();
+            //         break;
+            //     case playerMoveState.Dash:
+            //         break;
+            //     case playerMoveState.DashHit:
+            //         break;
+            //     case playerMoveState.DashRecover:
+            //         IncrementShadowMeter();
+            //         break;
+            //     case playerMoveState.Damaged:
+            //         IncrementShadowMeter();
+            //         break;
+            //     case playerMoveState.DashDown:
+            //         break;
+            //     default:
+            //         throw new ArgumentOutOfRangeException();
+            // }
         }
         private void IncrementShadowMeter(){
             

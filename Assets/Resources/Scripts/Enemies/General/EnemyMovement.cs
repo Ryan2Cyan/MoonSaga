@@ -154,8 +154,8 @@ namespace Resources.Scripts.Enemies.General{
         private void DamagedCheck(){
             
             // Check if the enemy has been hit by the player:
-            if (_enemyColliderScript._collidingWithPlayer && _playerMovementScript._state == playerMoveState.DashHit)
-                _state = enemyMoveState.Damaged;
+            // if (_enemyColliderScript._collidingWithPlayer && _playerMovementScript._state == playerMoveState.DashHit)
+            //     _state = enemyMoveState.Damaged;
             
         }
         private void DeathCheck(){

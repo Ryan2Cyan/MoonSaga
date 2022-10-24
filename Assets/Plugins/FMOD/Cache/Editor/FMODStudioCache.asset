@@ -15,7 +15,7 @@ MonoBehaviour:
   Path: Assets/Resources/FMOD/MoonSaga/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 637929579639501952
+  lastModified: 638022168384217118
   LoadResult: 0
   FileSizes: []
   Exists: 1
@@ -34,7 +34,7 @@ MonoBehaviour:
   Path: Assets/Resources/FMOD/MoonSaga/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 637929579639542959
+  lastModified: 638022168384227144
   LoadResult: 0
   FileSizes:
   - Name: Desktop
@@ -85,5 +85,5 @@ MonoBehaviour:
   - {fileID: -5595115902664616874}
   StringsBanks:
   - {fileID: -4828441294689627009}
-  stringsBankWriteTime: 637929579639542959
+  stringsBankWriteTime: 638022168384227144
   cacheVersion: 6

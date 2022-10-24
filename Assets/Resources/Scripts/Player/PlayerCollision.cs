@@ -90,51 +90,51 @@ namespace Resources.Scripts.Player{
         private void UpdateColliderSize(){
             
             // Change the size of the player's collider depending on state:
-            switch (_playerMovementScript._state){
-                
-                case playerMoveState.Idle:
-                    _boxCollider2D.size = _originalColliderSize;
-                    _boxCollider2D.offset = _originalColliderOffset;
-                    break;
-                case playerMoveState.Walking:
-                    _boxCollider2D.size = _originalColliderSize;
-                    _boxCollider2D.offset = _originalColliderOffset;
-                    break;
-                case playerMoveState.Jump:
-                    _boxCollider2D.size = _originalColliderSize;
-                    _boxCollider2D.offset = _originalColliderOffset;
-                    break;
-                case playerMoveState.DoubleJump:
-                    _boxCollider2D.size = _originalColliderSize;
-                    _boxCollider2D.offset = _originalColliderOffset;
-                    break;
-                case playerMoveState.AirControl:
-                    _boxCollider2D.size = _originalColliderSize;
-                    _boxCollider2D.offset = _originalColliderOffset;
-                    break;
-                case playerMoveState.Land:
-                    _boxCollider2D.size = _originalColliderSize;
-                    _boxCollider2D.offset = _originalColliderOffset;
-                    break;
-                case playerMoveState.Dash:
-                    _boxCollider2D.size = _dashColliderSize;
-                    _boxCollider2D.offset = _dashColliderOffset;
-                    break;
-                case playerMoveState.DashHit:
-                    break;
-                case playerMoveState.DashRecover:
-                    _boxCollider2D.size = _originalColliderSize;
-                    _boxCollider2D.offset = _originalColliderOffset;
-                    break;
-                case playerMoveState.Damaged:
-                    break;
-                case playerMoveState.DashDown:
-                    _boxCollider2D.size = _dashDownColliderSize;
-                    _boxCollider2D.offset = _dashDownColliderOffset;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            // switch (_playerMovementScript._state){
+                //
+                // case playerMoveState.Idle:
+                //     _boxCollider2D.size = _originalColliderSize;
+                //     _boxCollider2D.offset = _originalColliderOffset;
+                //     break;
+                // case playerMoveState.Walking:
+                //     _boxCollider2D.size = _originalColliderSize;
+                //     _boxCollider2D.offset = _originalColliderOffset;
+                //     break;
+                // case playerMoveState.Jump:
+                //     _boxCollider2D.size = _originalColliderSize;
+                //     _boxCollider2D.offset = _originalColliderOffset;
+                //     break;
+                // case playerMoveState.DoubleJump:
+                //     _boxCollider2D.size = _originalColliderSize;
+                //     _boxCollider2D.offset = _originalColliderOffset;
+                //     break;
+                // case playerMoveState.AirControl:
+                //     _boxCollider2D.size = _originalColliderSize;
+                //     _boxCollider2D.offset = _originalColliderOffset;
+                //     break;
+                // case playerMoveState.Land:
+                //     _boxCollider2D.size = _originalColliderSize;
+                //     _boxCollider2D.offset = _originalColliderOffset;
+                //     break;
+                // case playerMoveState.Dash:
+                //     _boxCollider2D.size = _dashColliderSize;
+                //     _boxCollider2D.offset = _dashColliderOffset;
+                //     break;
+                // case playerMoveState.DashHit:
+                //     break;
+                // case playerMoveState.DashRecover:
+                //     _boxCollider2D.size = _originalColliderSize;
+                //     _boxCollider2D.offset = _originalColliderOffset;
+                //     break;
+                // case playerMoveState.Damaged:
+                //     break;
+                // case playerMoveState.DashDown:
+                //     _boxCollider2D.size = _dashDownColliderSize;
+                //     _boxCollider2D.offset = _dashDownColliderOffset;
+                //     break;
+                // default:
+                //     throw new ArgumentOutOfRangeException();
+            // }
         }
     }
 }
